@@ -7,3 +7,4 @@ RPM, polymers, solvents, concentration, and transmission vs time and temperature
 
 - [ ] Copy code from CSST\_App for data loading
     - [ ] Write test cases
+        - [ ] Configure test data
