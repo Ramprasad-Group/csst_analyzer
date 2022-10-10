@@ -1,6 +1,7 @@
 **/__pycache__/
 
 !.gitignore
+**/.ipynb_checkpoints/
 data/
 
 *.swp
