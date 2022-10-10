@@ -95,7 +95,7 @@ class CSSTA:
 
         matplotlib.rc('font', **font)
 
-        fig = Figure(figsize=figsize, tight_layout=True)
+        fig = plt.figure(figsize=figsize, tight_layout=True)
         ax1 = fig.add_subplot(111)
         # Make ax2
         ax2 = ax1.twinx()
@@ -115,18 +115,11 @@ class CSSTA:
         for trans in transmissions:
             ax1.plot(self.df['hours'], trans, color=cmap[curr], linewidth=2.5)
             curr += 1
-        if for_gui:
-            fs = 14
-            if len(self.samples) > 2:
-                offset = -0.425
-            else:
-                offset = -0.35
+        fs = 14
+        if len(self.samples) > 2:
+            offset = -0.425
         else:
-            fs = 18
-            if len(self.samples) > 2:
-                offset = -0.25
-            else:
-                offset = -0.175
+            offset = -0.35
         ax1.legend(legend, bbox_to_anchor=(0,offset,1,0.1), loc="lower left",
                    mode="expand", ncol=2, fontsize=fs)
         return fig
