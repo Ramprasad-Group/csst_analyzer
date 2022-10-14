@@ -128,7 +128,7 @@ class CSSTA:
         return fig
 
     def average_transmission_at_temp(self, temp: float, 
-                temp_range: float = 0.01) -> List[AverageTransmission]:
+                temp_range: float = 0) -> List[AverageTransmission]:
         """"Returns the average transmission at temperature for each reactor 
 
         :parameter temp: Temperature to average at.
