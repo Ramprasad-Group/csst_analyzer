@@ -154,7 +154,9 @@ class CSSTA:
             # places
             mean = round(temp_df[reactor_col].mean(), 2)
             std = round(temp_df[reactor_col].std(), 2)
+            transmissions = temp_df[reactor_col].to_list()
             average_transmissions.append(AverageTransmission(reactor=sample,
                     temp=temp, temp_range=temp_range*2,
-                    transmission=mean, std=std))
+                    average_transmission=mean, std=std, 
+                    transmissions=transmissions))
         return average_transmissions
