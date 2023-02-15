@@ -19,8 +19,13 @@ class Reactor(BaseModel):
         temperature_program: Program used to tune and define the crystal 16 run
         transmission: list of transmission values.
         time: Time unit and list of values for the experiment. 
-        temperature: Temperature unit and list of values for the experiment
-        stir_rate: Stirring rate unit and list of values for the experiment
+        actual_temperature: Temperature unit and list of values for the experiment's
+            true temperatures
+        set_temperature: Temperature unit and list of values for the experiment's
+            set temperatures
+        stir_rate: Stirring rate unit and list of values for the experiment. Unknown
+            why this is different than bottom stir_rate
+        bottom_stir_rate: Stiring rate of the bottom stirer
     """
     solvent: str
     polymer: str
@@ -28,9 +33,11 @@ class Reactor(BaseModel):
     # referenced properties
     temperature_program: TemperatureProgram
     transmission: PropertyValues
-    temperature: PropertyValues
+    actual_temperature: PropertyValues
+    set_temperature: PropertyValues
     time: PropertyValues
-    stir_rate: PropertyValues
+    stir_rates: PropertyValues
+    bottom_stir_rate: PropertyValue
 
 class PropertyValue(BaseModel):
     name: str

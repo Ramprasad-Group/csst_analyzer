@@ -1,5 +1,5 @@
 import math
-from typing import List
+from typing import List, TextIO
 from datetime import datetime
 
 import pandas as pd
@@ -9,7 +9,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
-from csst.analyzer.models import AverageTransmission
+from csst.analyzer.models import (
+    Reactor,
+    PropertyValue,
+    PropertyValues,
+    TemperatureProgram,
+    AverageTransmission
+)
 
 __version__ = "0.1.0"
 
@@ -18,38 +24,95 @@ cmap = ["#2D3142", "#E1DAAE", "#058ED9", "#848FA2"]
 tempc = "#CC2D35"
 
 
-class CSSTA:
-    """Crystal 16 Dissolition/Solubility Test Analyzer (CSSTA)
-
-    Analyzes CSST data and returns generated plots and analysis
-    """
+class Analyzer:
+    """Crystal 16 Dissolition/Solubility Test Analyzer"""
     def __init__(self, data_path: str):
-        """Initialize analyzer by importing data
+        # initialize necessary attributes
+        self.Reactors = []
+
+    def load_from_file(self, data_path: str):
+        """Load data from a file"""
+        # file data
+        self.version = None
+
+        # experiment details
+        self.experiment_details = None
+        self.experiment_number = None
+        self.experimentor = None
+        self.project = None
+        self.lab_journal = None
+        self.description = None
+        self.start_of_experiment = None
+        self.temperature_program = None
+
+        # data details
+        self.set_temperature = None
+        self.actual_temperature = None
+        self.time = None
+        self.stir_rate = None
+
+        # Need to find start of data and save header information
+        with open(data_path, "r", encoding="utf-8") as f:
+            first_line = f.readline().strip('\n')
+            self.version = first_line.split(',')[1].split(':')[1].strip()
+            if self.version == '1014':
+                self._load_file_version_1014(f)
+
+    def _load_file_version_1014(self, f: TextIO):
+        """Loads file version 1014
 
         Args:
-            data_path: File location of csv data.
+            f: open file to read data from
         """
-        # Need to find start of data and save header information
-        f = open(data_path, "r", encoding="utf-8")
-        data_start = 0
-        header_data = {}
-        Lines = f.readlines()
-        for line in Lines:
-            # Pandas clears out blank spaces, so we can ignore those when
-            # counting the start location of the data
-            line = line.replace("\n", "")
-            if len(line) == 0:
-                continue
+        data_line_start = 1
+        # load header data and find where the Temperature Program starts
+        # initialize reactor data
+        reactors = []
+        for line in f:
+            # remove newline characters and csv commas
+            line = line.strip("\n")
+            line = line.strip(',')
             data_start += 1
-            if "Data Block" in line:
+            # found temperature program start
+            if "Temperature Program" in line:
                 break
-            else:
-                line = line.split(",")
+            line = line.split(",")
+            if line[0] == 'Experiment details':
                 if len(line) > 1:
-                    key = line[0]
-                    val = line[1:]
-                    header_data[key] = val
-        f.close()
+                    self.experiment_details = line[1]
+            elif line[0] == 'ExperimentNumber':
+                if len(line) > 1:
+                    self.experiment_number = line[1]
+            elif line[0] == 'Experimentor':
+                if len(line) > 1:
+                    self.experimentor = line[1]
+            elif line[0] == 'Project':
+                if len(line) > 1:
+                    self.project = line[1]
+            elif line[0] == 'Labjournal':
+                if len(line) > 1:
+                    self.lab_journal = line[1]
+            elif line[0] == 'Description':
+                if len(line) > 1:
+                    self.description = line[1]
+            elif line[0] == 'Start of Experiment':
+                if len(line) > 1:
+                    # e.g., 2/24/2022  2:22:00 PM
+                    self.start_of_experiment = datetime.strptime(
+                        line[1], 
+                        '%m/%d/%Y %H:%M:%S %p'
+                    ) 
+            elif 'Reactor' in line[0]:
+                # e.g., Reactor1,5 mg/ml PEG in TOL
+                reactor_data = line[1].split()
+                reactors.append({
+                    'conc': reactor_data[0],
+                    'conc_unit': reactor_data[1],
+                    'polymer': reactor_data[2],
+                    'solvent': reactor_data[4]
+                }
+
+
         self.df = pd.read_csv(data_path, header=data_start)
         times = self.df["Decimal Time [mins]"]
         num_times = []
