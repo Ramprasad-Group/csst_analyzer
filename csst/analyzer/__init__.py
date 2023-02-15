@@ -9,7 +9,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
-from csst.csst_analyzer.models import AverageTransmission
+from csst.analyzer.models import AverageTransmission
 
 __version__ = "0.1.0"
 

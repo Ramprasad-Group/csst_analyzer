@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 import numpy as np
 
-from csst import csst_analyzer
-from csst.csst_analyzer import CSSTA
+from csst import analyzer
+from csst.analyzer import CSSTA
 from .fixtures.data import cssta_obj, fake_cssta_data
 
 @pytest.fixture

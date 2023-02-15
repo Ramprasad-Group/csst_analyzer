@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from csst.csst_analyzer import CSSTA
+from csst.analyzer import CSSTA
 
 @pytest.fixture
 def cssta_obj():

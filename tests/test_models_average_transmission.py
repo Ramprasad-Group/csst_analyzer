@@ -1,7 +1,7 @@
-"""Tests csst.csst_analyzer.models.AverageTransmission"""
+"""Tests csst.analyzer.models.AverageTransmission"""
 import pytest
 
-from csst.csst_analyzer.models import AverageTransmission
+from csst.analyzer.models import AverageTransmission
 from .fixtures.data import cssta_obj, fake_cssta_data
 
 def test_average_transmission_get_solubility_based_on_average(fake_cssta_data):
