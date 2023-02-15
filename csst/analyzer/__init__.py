@@ -23,12 +23,11 @@ class CSSTA:
 
     Analyzes CSST data and returns generated plots and analysis
     """
-
-    def __init__(self, data_path):
+    def __init__(self, data_path: str):
         """Initialize analyzer by importing data
 
-        :parameter data_path: File location of csv data on computer
-        :type data_path: str
+        Args:
+            data_path: File location of csv data.
         """
         # Need to find start of data and save header information
         f = open(data_path, "r", encoding="utf-8")
