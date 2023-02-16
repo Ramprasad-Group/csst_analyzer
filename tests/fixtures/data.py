@@ -219,7 +219,7 @@ def manual_1014():
     return cssta
 
 @pytest.fixture
-def test_cssta(cssta):
+def test_cssta(cssta_1014):
     """Convert cssta_obj dataframe reactor data
 
     Reactor1 data will be simple be the actual temp

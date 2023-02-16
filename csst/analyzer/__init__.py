@@ -33,7 +33,7 @@ class Analyzer:
     """Crystal 16 Dissolition/Solubility Test Analyzer"""
     def __init__(self):
         # initialize necessary attributes
-        self.Reactors = []
+        self.reactors = []
 
     @classmethod
     def load_from_file(cls, data_path: str) -> 'Analyzer':
@@ -78,7 +78,7 @@ class Analyzer:
         """
         # load header data and find where the Temperature Program starts
         # initialize reactor data
-        reactors = []
+        reactors = {}
         for line in f:
             # remove newline characters and csv commas
             line = line.strip("\n")
@@ -113,8 +113,7 @@ class Analyzer:
                 reactor_data = line[1].split()
                 # Ignore reactors that are empty
                 if float(reactor_data[0]) != 0:
-                    reactors.append({
-                        'reactor': line[0].strip(),
+                    reactors[line[0].strip()] = {
                         'conc': PropertyValue(
                             name = 'concentration',
                             value = float(reactor_data[0]),
@@ -122,7 +121,7 @@ class Analyzer:
                         ),
                         'polymer': reactor_data[2].strip(),
                         'solvent': reactor_data[4].strip()
-                    })
+                    }
 
         # Load temperature program
         block = None
@@ -249,22 +248,32 @@ class Analyzer:
             values = df[actual_temp_col].to_list()
         )
         stir_col = [col for col in df.columns if 'Stirring' in col][0]
-        self.stir_rate = PropertyValues(
+        self.stir_rates = PropertyValues(
             name = 'stir_rate',
             unit = stir_col.split('[')[1].strip(']').strip(),
             values = df[stir_col].to_list()
         )
 
-        return 
-        # Find samples
-        samples = {}
-        for key in header_data:
-            if "Reactor" in key:
-                val = header_data[key][0]
-                val.split(" ")
-                if int(val[0]) != 0:
-                    samples[key] = header_data[key][0]
-        self.samples = samples
+        # configure reactors
+        for reactor, parameters in reactors.items():
+            reactor_col = [col for col in df.columns if reactor in col][0]
+            self.reactors.append(Reactor(
+                solvent = parameters['solvent'],
+                polymer = parameters['polymer'],
+                conc = parameters['conc'],
+                transmission = PropertyValues(
+                    name = 'transmission',
+                    unit = reactor_col.split('[')[1].strip(']').strip(),
+                    values = df[reactor_col].to_list()
+                ),
+                temperature_program = self.temperature_program,
+                actual_temperature = self.actual_temperature,
+                set_temperature = self.set_temperature,
+                experiment_runtime = self.experiment_runtime,
+                stir_rates = self.stir_rates,
+                bottom_stir_rate = self.bottom_stir_rate
+            ))
+
 
     def plot_dat(self, figsize=(8, 6)):
         """Plots transmission vs time and temperature"""
