@@ -49,7 +49,7 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
     assert manual_1014.temperature_program == csste_1014.temperature_program
 
     datablock_size = 32337 - 38
-    assert len(csste_1014.experiment_runtime.values) == datablock_size
+    assert len(csste_1014.time_since_experiment_start.values) == datablock_size
 
     assert csste_1014.set_temperature.unit == "°C"
     assert len(csste_1014.set_temperature.values) == datablock_size

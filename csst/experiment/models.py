@@ -62,7 +62,8 @@ class Reactor(BaseModel):
     """Reactor reading of transmission data
 
     Each reactor accesses references to shared temperaure, time,
-    stir_rate and temperature program data. Data is shared to avoid duplicating data
+    stir_rate and temperature program data in an experiment. 
+    Data is shared to avoid duplicating data
     if several reactor access the same temperature, time, etc... data. This data is
     passed to the reactor because it influences the reactor transmission values.
 
@@ -74,7 +75,7 @@ class Reactor(BaseModel):
         conc: concentration of the polymer in the solvent
         temperature_program: Program used to tune and define the crystal 16 run
         transmission: list of transmission values.
-        experiment_runtime: Time unit and list of values for the experiment.
+        time_since_experiment_start: Time unit and list of values for the experiment.
         actual_temperature: Temperature unit and list of values for the experiment's
             true temperatures
         set_temperature: Temperature unit and list of values for the experiment's
@@ -92,6 +93,6 @@ class Reactor(BaseModel):
     transmission: PropertyValues
     actual_temperature: PropertyValues
     set_temperature: PropertyValues
-    experiment_runtime: PropertyValues
+    time_since_experiment_start: PropertyValues
     stir_rates: PropertyValues
     bottom_stir_rate: PropertyValue

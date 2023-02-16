@@ -15,37 +15,64 @@ from csst.experiment.models import (
 
 
 class Experiment:
-    """Loads Crystal 16 Dissolition/Solubility Test Experiments"""
+    """Loads Crystal 16 Dissolition/Solubility Test Experiments
+
+    Attributes:
+        version: version of the data file
+        experiment_details (str):
+        experiment_number (str):
+        project (str):
+        lab_journal (str):
+        description (str):
+        start_of_experiment (datetime.datetime): 
+            date the experiment started
+        temperature_program (TemperatureProgram):
+            Program used to tune solvent, load polymers and change the 
+            experiment temperature conditions.
+        bottom_stir_rate (PropertyValue):
+            Rate spinner is spinning at the bottom of the sample during the course
+            of the experiment.
+        set_temperature (PropertyValues):
+            List of set temperatures the experiment is supposed to be at during each
+            time step.
+        actual_temperature (PropertyValues):
+            List of actual temperature the experiment is at during each time step.
+        time_since_experiment_start (PropertyValues):
+            List of times corresponding to when the experiment was started. Indices
+            match actual/set temperatures, stir_rates and reactor transmissions indices.
+        stir_rates (PropertyValues):
+            Unknown stir rates measured by machine. Typically 0 and separate from the
+            bottom stir rate.
+        reactors (List[Reactor]):
+            List of reactors. Each reactor keeps track of the polymer, solvent,
+            concentration and tranmission percentage (see Reactor documentation).
+    """
 
     def __init__(self):
+        """Initialize attirbutes"""
+        # experiment details
+        self.version = None
+        self.experiment_details = None
+        self.experiment_number = None
+        self.experimenter = None
+        self.project = None
+        self.lab_journal = None
+        self.description = None
+        self.start_of_experiment = None
+        self.temperature_program = None
+
+        # data details
+        self.bottom_stir_rate = None
+        self.set_temperature = None
+        self.actual_temperature = None
+        self.time_since_experiment_start = None
+        self.stir_rates = None
         self.reactors = []
 
     @classmethod
     def load_from_file(cls, data_path: str) -> "Experiment":
         """Load data from a file"""
-        # file data
         obj = cls()
-        obj.version = None
-
-        # experiment details
-        obj.experiment_details = None
-        obj.experiment_number = None
-        obj.experimenter = None
-        obj.project = None
-        obj.lab_journal = None
-        obj.description = None
-        obj.start_of_experiment = None
-
-        # temperature program details
-        obj.temperature_program = None
-        obj.bottom_stir_rate = None
-
-        # data details
-        obj.set_temperature = None
-        obj.actual_temperature = None
-        obj.time = None
-        obj.stir_rate = None
-
         # Need to find start of data and save header information
         with open(data_path, "r", encoding="utf-8") as f:
             first_line = f.readline().strip("\n")
@@ -200,7 +227,7 @@ class Experiment:
         df = pd.read_csv(f)
         # get time in hours
         times = df["Decimal Time [mins]"]
-        experiment_runtime = []
+        time_since_experiment_start = []
         for time in times:
             # Account for when day in
             if "." in time:
@@ -209,9 +236,9 @@ class Experiment:
             else:
                 t = datetime.strptime(time, "%H:%M:%S")
                 val = t.hour + t.minute / 60 + t.second / 3600
-            experiment_runtime.append(val)
-        self.experiment_runtime = PropertyValues(
-            name="time", unit="hour", values=experiment_runtime
+            time_since_experiment_start.append(val)
+        self.time_since_experiment_start = PropertyValues(
+            name="time", unit="hour", values=time_since_experiment_start
         )
 
         set_temp_col = [col for col in df.columns if "Temperature Setpoint" in col][0]
@@ -249,7 +276,7 @@ class Experiment:
                     temperature_program=self.temperature_program,
                     actual_temperature=self.actual_temperature,
                     set_temperature=self.set_temperature,
-                    experiment_runtime=self.experiment_runtime,
+                    time_since_experiment_start=self.time_since_experiment_start,
                     stir_rates=self.stir_rates,
                     bottom_stir_rate=self.bottom_stir_rate,
                 )

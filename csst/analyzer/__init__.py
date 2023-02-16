@@ -9,7 +9,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
-from csst.Analyzer.models import AverageTransmission
+from csst.analyzer.models import AverageTransmission
+from csst.experiment import Experiment
 
 
 __version__ = "0.1.0"
@@ -23,7 +24,7 @@ class Analyzer:
     """Crystal 16 Dissolition/Solubility Test Analyzer"""
 
     def __init__(self):
-        pass
+        self.experiments = []
 
     def plot_dat(self, figsize=(8, 6)):
         """Plots transmission vs time and temperature"""
