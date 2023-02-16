@@ -1,6 +1,5 @@
 import math
 from typing import List, TextIO
-from datetime import datetime
 
 import pandas as pd
 import numpy as np
@@ -16,6 +15,7 @@ from csst.analyzer.models import (
     TemperatureProgram,
     AverageTransmission
 )
+from csst.analyzer.helpers import try_parsing_date
 
 __version__ = "0.1.0"
 
@@ -26,37 +26,41 @@ tempc = "#CC2D35"
 
 class Analyzer:
     """Crystal 16 Dissolition/Solubility Test Analyzer"""
-    def __init__(self, data_path: str):
+    def __init__(self):
         # initialize necessary attributes
         self.Reactors = []
 
-    def load_from_file(self, data_path: str):
+    @classmethod
+    def load_from_file(cls, data_path: str) -> 'Analyzer':
         """Load data from a file"""
         # file data
-        self.version = None
+        obj = cls()
+        obj.version = None
 
         # experiment details
-        self.experiment_details = None
-        self.experiment_number = None
-        self.experimentor = None
-        self.project = None
-        self.lab_journal = None
-        self.description = None
-        self.start_of_experiment = None
-        self.temperature_program = None
+        obj.experiment_details = None
+        obj.experiment_number = None
+        obj.experimenter = None
+        obj.project = None
+        obj.lab_journal = None
+        obj.description = None
+        obj.start_of_experiment = None
+        obj.temperature_program = None
 
         # data details
-        self.set_temperature = None
-        self.actual_temperature = None
-        self.time = None
-        self.stir_rate = None
+        obj.set_temperature = None
+        obj.actual_temperature = None
+        obj.time = None
+        obj.stir_rate = None
 
         # Need to find start of data and save header information
         with open(data_path, "r", encoding="utf-8") as f:
             first_line = f.readline().strip('\n')
-            self.version = first_line.split(',')[1].split(':')[1].strip()
-            if self.version == '1014':
-                self._load_file_version_1014(f)
+            obj.version = first_line.split(',')[1].split(':')[1].strip()
+            if obj.version == '1014':
+                obj._load_file_version_1014(f)
+
+        return obj
 
     def _load_file_version_1014(self, f: TextIO):
         """Loads file version 1014
@@ -64,7 +68,7 @@ class Analyzer:
         Args:
             f: open file to read data from
         """
-        data_line_start = 1
+        data_block_line_number = 1
         # load header data and find where the Temperature Program starts
         # initialize reactor data
         reactors = []
@@ -72,7 +76,7 @@ class Analyzer:
             # remove newline characters and csv commas
             line = line.strip("\n")
             line = line.strip(',')
-            data_start += 1
+            data_block_line_number += 1
             # found temperature program start
             if "Temperature Program" in line:
                 break
@@ -85,7 +89,7 @@ class Analyzer:
                     self.experiment_number = line[1]
             elif line[0] == 'Experimentor':
                 if len(line) > 1:
-                    self.experimentor = line[1]
+                    self.experimenter = line[1]
             elif line[0] == 'Project':
                 if len(line) > 1:
                     self.project = line[1]
@@ -97,23 +101,21 @@ class Analyzer:
                     self.description = line[1]
             elif line[0] == 'Start of Experiment':
                 if len(line) > 1:
-                    # e.g., 2/24/2022  2:22:00 PM
-                    self.start_of_experiment = datetime.strptime(
-                        line[1], 
-                        '%m/%d/%Y %H:%M:%S %p'
-                    ) 
+                    self.start_of_experiment = try_parsing_date(line[1])
             elif 'Reactor' in line[0]:
                 # e.g., Reactor1,5 mg/ml PEG in TOL
                 reactor_data = line[1].split()
-                reactors.append({
-                    'conc': reactor_data[0],
-                    'conc_unit': reactor_data[1],
-                    'polymer': reactor_data[2],
-                    'solvent': reactor_data[4]
-                }
+                # Ignore reactors that are empty
+                if float(reactor_data[0]) != 0:
+                    reactors.append({
+                        'conc': float(reactor_data[0]),
+                        'conc_unit': reactor_data[1],
+                        'polymer': reactor_data[2],
+                        'solvent': reactor_data[4]
+                    })
 
-
-        self.df = pd.read_csv(data_path, header=data_start)
+        return
+        self.df = pd.read_csv(data_path, header=data_block_line_number)
         times = self.df["Decimal Time [mins]"]
         num_times = []
         for time in times:

@@ -4,19 +4,19 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from csst.analyzer import CSSTA
+from csst.analyzer import Analyzer
 
 
 @pytest.fixture
-def cssta_obj():
-    cssta_obj = CSSTA(
+def cssta():
+    cssta = Analyzer.load_from_file(
         str(Path(__file__).parent.absolute() / ".." / "test_data" / "example_data.csv")
     )
-    return cssta_obj
+    return cssta
 
 
 @pytest.fixture
-def fake_cssta_data(cssta_obj):
+def test_cssta(cssta):
     """Convert cssta_obj dataframe reactor data
 
     Reactor1 data will be simple be the actual temp

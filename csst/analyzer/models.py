@@ -2,6 +2,20 @@ from typing import List, ClassVar
 
 from pydantic import BaseModel
 
+class PropertyValue(BaseModel):
+    name: str
+    unit: str
+    value: float
+
+class PropertyValues(BaseModel):
+    name: str
+    unit: str
+    values: List[float]
+
+class TemperatureProgram(BaseModel):
+    # TODO Implement once mona describes fully
+    deactivated: bool = True
+
 class Reactor(BaseModel):
     """Reactor reading of transmission data
 
@@ -39,19 +53,6 @@ class Reactor(BaseModel):
     stir_rates: PropertyValues
     bottom_stir_rate: PropertyValue
 
-class PropertyValue(BaseModel):
-    name: str
-    unit: str
-    values: List[float]
-
-class PropertyValue(BaseModel):
-    name: str
-    unit: str
-    value: float
-
-class TemperatureProgram(BaseModel):
-    # TODO Implement once mona describes fully
-    deactivated: bool = True
 
 class AverageTransmission(BaseModel):
     reactor: str

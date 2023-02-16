@@ -1,30 +1,35 @@
 from pathlib import Path
+import datetime
 
 import pytest
 import numpy as np
 
 from csst import analyzer
-from csst.analyzer import CSSTA
-from .fixtures.data import cssta_obj, fake_cssta_data
+from csst.analyzer import Analyzer
+from .fixtures.data import cssta, test_cssta
 
-
-@pytest.fixture
-def csst_expected():
+def test_analyzer_init_from_file_version_1014():
+    cssta = Analyzer.load_from_file(
+        str(Path("test_data") / "example_data_version_1014.csv")
+    )
     samples = {
         "Reactor1": "5.11 mg/ml PEG in MeOH",
         "Reactor2": "5.19 mg/ml PEO in MeOH",
         "Reactor3": "5.10 mg/ml PVP in MeOH",
     }
-    return samples
+    assert cssta.experiment_details == 'example experiment details'
+    assert cssta.experiment_number == '0'
+    assert cssta.experimenter == 'tester'
+    assert cssta.project == 'example data version 1014'
+    assert cssta.lab_journal is None
+    assert cssta.description == 'test'
+    assert cssta.start_of_experiment == datetime.datetime(
+        year=2022, month=8, day=19, hour=13, minute=54
+    )
 
 
-def test_CSSTA_init(csst_expected):
-    csst_obj = CSSTA(str(Path("test_data") / "example_data.csv"))
-    assert csst_obj.samples == csst_expected
-
-
-def test_average_transmission_at_temp(fake_cssta_data):
-    average_transmissions = fake_cssta_data.average_transmission_at_temp(
+def test_average_transmission_at_temp(test_cssta):
+    average_transmissions = test_cssta.average_transmission_at_temp(
         temp=25, temp_range=0
     )
     # These values because temp_range is 0 and we generated fake data
@@ -43,7 +48,7 @@ def test_average_transmission_at_temp(fake_cssta_data):
             for transmission in average.transmissions:
                 assert round(transmission, 2) == round(np.log(26), 2)
 
-    average_transmissions = fake_cssta_data.average_transmission_at_temp(
+    average_transmissions = test_cssta.average_transmission_at_temp(
         temp=25, temp_range=10
     )
     for average in average_transmissions:
