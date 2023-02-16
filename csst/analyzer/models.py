@@ -65,7 +65,7 @@ class Reactor(BaseModel):
         conc: concentration of the polymer in the solvent
         temperature_program: Program used to tune and define the crystal 16 run
         transmission: list of transmission values.
-        time: Time unit and list of values for the experiment. 
+        experiment_runtime: Time unit and list of values for the experiment. 
         actual_temperature: Temperature unit and list of values for the experiment's
             true temperatures
         set_temperature: Temperature unit and list of values for the experiment's
@@ -82,7 +82,7 @@ class Reactor(BaseModel):
     transmission: PropertyValues
     actual_temperature: PropertyValues
     set_temperature: PropertyValues
-    time: PropertyValues
+    experiment_runtime: PropertyValues
     stir_rates: PropertyValues
     bottom_stir_rate: PropertyValue
 

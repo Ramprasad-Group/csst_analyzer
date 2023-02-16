@@ -1,5 +1,6 @@
 import math
 from copy import deepcopy
+from datetime import datetime
 from typing import List, TextIO
 
 import pandas as pd
@@ -75,7 +76,6 @@ class Analyzer:
         Args:
             f: open file to read data from
         """
-        data_block_line_number = 1
         # load header data and find where the Temperature Program starts
         # initialize reactor data
         reactors = []
@@ -83,7 +83,6 @@ class Analyzer:
             # remove newline characters and csv commas
             line = line.strip("\n")
             line = line.strip(',')
-            data_block_line_number += 1
             # found temperature program start
             if "Temperature Program" in line:
                 break
@@ -115,10 +114,14 @@ class Analyzer:
                 # Ignore reactors that are empty
                 if float(reactor_data[0]) != 0:
                     reactors.append({
-                        'conc': float(reactor_data[0]),
-                        'conc_unit': reactor_data[1],
-                        'polymer': reactor_data[2],
-                        'solvent': reactor_data[4]
+                        'reactor': line[0].strip(),
+                        'conc': PropertyValue(
+                            name = 'concentration',
+                            value = float(reactor_data[0]),
+                            unit = reactor_data[1].strip()
+                        ),
+                        'polymer': reactor_data[2].strip(),
+                        'solvent': reactor_data[4].strip()
                     })
 
         # Load temperature program
@@ -134,7 +137,6 @@ class Analyzer:
             line = line.strip("\n")
             line = line.strip(',')
             line = line.split(',')
-            data_block_line_number += 1
             # finished reading temperature block
             if "Data Block" in line[0]:
                 break
@@ -213,10 +215,12 @@ class Analyzer:
             experiment = experiment
         )
 
-        return
-        self.df = pd.read_csv(data_path, header=data_block_line_number)
-        times = self.df["Decimal Time [mins]"]
-        num_times = []
+        # load data block and get set temperature, actual temperature, time and 
+        # stir rates
+        df = pd.read_csv(f)
+        # get time in hours
+        times = df["Decimal Time [mins]"]
+        experiment_runtime = []
         for time in times:
             # Account for when day in
             if "." in time:
@@ -225,11 +229,33 @@ class Analyzer:
             else:
                 t = datetime.strptime(time, "%H:%M:%S")
                 val = t.hour + t.minute / 60 + t.second / 3600
-            num_times.append(val)
-        self.df["hours"] = num_times
+            experiment_runtime.append(val)
+        self.experiment_runtime = PropertyValues(
+            name = 'time',
+            unit = 'hour',
+            values = experiment_runtime
+        )
+        
+        set_temp_col = [col for col in df.columns if 'Temperature Setpoint' in col][0]
+        self.set_temperature = PropertyValues(
+            name = 'temperature',
+            unit = set_temp_col.split('[')[1].strip(']').strip(),
+            values = df[set_temp_col].to_list()
+        )
+        actual_temp_col = [col for col in df.columns if 'Temperature Actual' in col][0]
+        self.actual_temperature = PropertyValues(
+            name = 'temperature',
+            unit = actual_temp_col.split('[')[1].strip(']').strip(),
+            values = df[actual_temp_col].to_list()
+        )
+        stir_col = [col for col in df.columns if 'Stirring' in col][0]
+        self.stir_rate = PropertyValues(
+            name = 'stir_rate',
+            unit = stir_col.split('[')[1].strip(']').strip(),
+            values = df[stir_col].to_list()
+        )
 
-        self.header_data = header_data
-
+        return 
         # Find samples
         samples = {}
         for key in header_data:

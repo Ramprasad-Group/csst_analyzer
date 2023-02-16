@@ -8,6 +8,9 @@ from csst.analyzer import Analyzer
 from .fixtures.data import cssta_1014, test_cssta, manual_1014
 
 def test_analyzer_init_from_file_version_1014(cssta_1014, manual_1014):
+    """cssta_1014 is the loaded data, manual_1014 is manually read data from the
+        data file cssta_1014 reads from
+    """
     # test headers
     assert cssta_1014.experiment_details == manual_1014.experiment_details
     assert cssta_1014.experiment_number == manual_1014.experiment_number
@@ -32,6 +35,19 @@ def test_analyzer_init_from_file_version_1014(cssta_1014, manual_1014):
         assert manual_1014.temperature_program.experiment[i] == cssta_1014.temperature_program.experiment[i]
 
     assert manual_1014.temperature_program == cssta_1014.temperature_program
+
+    datablock_size = 32337 - 38
+    assert len(cssta_1014.experiment_runtime.values) == datablock_size
+
+    assert cssta_1014.set_temperature.unit == '°C'
+    assert len(cssta_1014.set_temperature.values) == datablock_size
+
+    assert cssta_1014.actual_temperature.unit == '°C'
+    assert len(cssta_1014.actual_temperature.values) == datablock_size
+    assert cssta_1014.actual_temperature.values != cssta_1014.set_temperature.values
+
+    assert cssta_1014.stir_rate.unit == 'rpm'
+    assert len(cssta_1014.stir_rate.values) == datablock_size
 
 
 
