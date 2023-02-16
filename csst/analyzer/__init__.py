@@ -1,4 +1,5 @@
 import math
+from copy import deepcopy
 from typing import List, TextIO
 
 import pandas as pd
@@ -12,8 +13,11 @@ from csst.analyzer.models import (
     Reactor,
     PropertyValue,
     PropertyValues,
+    TemperatureChange,
+    TemperatureHold,
     TemperatureProgram,
-    AverageTransmission
+    AverageTransmission,
+    TemperatureSettingEnum
 )
 from csst.analyzer.helpers import try_parsing_date
 
@@ -45,7 +49,10 @@ class Analyzer:
         obj.lab_journal = None
         obj.description = None
         obj.start_of_experiment = None
+
+        # temperature program details
         obj.temperature_program = None
+        obj.bottom_stir_rate = None
 
         # data details
         obj.set_temperature = None
@@ -113,6 +120,98 @@ class Analyzer:
                         'polymer': reactor_data[2],
                         'solvent': reactor_data[4]
                     })
+
+        # Load temperature program
+        block = None
+        tuning = False
+        loading_samples = False
+        running_experiment = False
+        solvent_tune = []
+        sample_load = []
+        experiment = []
+        for line in f:
+            # remove newline characters and csv commas
+            line = line.strip("\n")
+            line = line.strip(',')
+            line = line.split(',')
+            data_block_line_number += 1
+            # finished reading temperature block
+            if "Data Block" in line[0]:
+                break
+            # switch which part of the temperature program is being read depending on
+            # indicators in the file
+            if 'Block' in line[0]:
+                block = line[1]
+                tuning = True
+            elif 'Tune' in line[0]:
+                tuning = False
+                loading_samples = True
+            elif 'Stir (Bottom)' in line[0]:
+                self.bottom_stir_rate = PropertyValue(
+                    name = 'bottom_stir_rate',
+                    unit = line[2].strip(),
+                    value = float(line[1])
+                )
+                loading_samples = False
+                running_experiment = True
+            # Only have experience with bottom stir rate, not sure what to do if the 
+            # stir rate is not bottom
+            elif 'Stir' in line[0]:
+                raise ValueError('Only expected bottom stir rate in temperature program')
+
+            # Load temperature program details
+            else:
+                step = None
+                if 'Heat to' in line[0] or 'Cool to' in line[0]:
+                    if 'Heat' in line[0]:
+                        setting = TemperatureSettingEnum.HEAT
+                    else:
+                        setting = TemperatureSettingEnum.COOL
+                    rate = line[4].strip()
+                    temp_unit = rate.split('/')[0]
+                    step = TemperatureChange(
+                        setting = setting,
+                        to = PropertyValue(
+                            name = 'temperature',
+                            unit = temp_unit,
+                            value = float(line[1])
+                        ),
+                        rate = PropertyValue(
+                            name = 'temperature_change_rate',
+                            unit = rate,
+                            value = float(line[3])
+                        )
+                    )
+                elif 'Hold at' in line[0]:
+                    step = TemperatureHold(
+                        at = PropertyValue(
+                            name = 'temperature',
+                            # a heat to or cool to block will always be before hold at
+                            # so the temp unit can be assumed to be the same as the 
+                            # prior heat to or cool to
+                            unit = temp_unit,
+                            value = float(line[1])
+                        ),
+                        for_ = PropertyValue(
+                            name = 'time',
+                            unit = line[4].strip(),
+                            value = float(line[3])
+                        )
+                    )
+                if step is not None:
+                    if tuning:
+                        solvent_tune.append(step)
+                    elif loading_samples:
+                        sample_load.append(step)
+                    elif running_experiment:
+                        experiment.append(step)
+
+        self.temperature_program = TemperatureProgram(
+            block = block,
+            solvent_tune = solvent_tune,
+            sample_load = sample_load,
+            experiment = experiment
+        )
 
         return
         self.df = pd.read_csv(data_path, header=data_block_line_number)

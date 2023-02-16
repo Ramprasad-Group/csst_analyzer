@@ -1,31 +1,39 @@
 from pathlib import Path
-import datetime
 
 import pytest
 import numpy as np
 
 from csst import analyzer
 from csst.analyzer import Analyzer
-from .fixtures.data import cssta, test_cssta
+from .fixtures.data import cssta_1014, test_cssta, manual_1014
 
-def test_analyzer_init_from_file_version_1014():
-    cssta = Analyzer.load_from_file(
-        str(Path("test_data") / "example_data_version_1014.csv")
-    )
-    samples = {
-        "Reactor1": "5.11 mg/ml PEG in MeOH",
-        "Reactor2": "5.19 mg/ml PEO in MeOH",
-        "Reactor3": "5.10 mg/ml PVP in MeOH",
-    }
-    assert cssta.experiment_details == 'example experiment details'
-    assert cssta.experiment_number == '0'
-    assert cssta.experimenter == 'tester'
-    assert cssta.project == 'example data version 1014'
-    assert cssta.lab_journal is None
-    assert cssta.description == 'test'
-    assert cssta.start_of_experiment == datetime.datetime(
-        year=2022, month=8, day=19, hour=13, minute=54
-    )
+def test_analyzer_init_from_file_version_1014(cssta_1014, manual_1014):
+    # test headers
+    assert cssta_1014.experiment_details == manual_1014.experiment_details
+    assert cssta_1014.experiment_number == manual_1014.experiment_number
+    assert cssta_1014.experimenter == manual_1014.experimenter
+    assert cssta_1014.project == manual_1014.project
+    assert cssta_1014.lab_journal == manual_1014.lab_journal
+    assert cssta_1014.description == manual_1014.description
+    assert cssta_1014.start_of_experiment == manual_1014.start_of_experiment
+
+    assert cssta_1014.temperature_program.block == manual_1014.temperature_program.block
+    assert cssta_1014.bottom_stir_rate == manual_1014.bottom_stir_rate
+    assert len(manual_1014.temperature_program.solvent_tune) == len(cssta_1014.temperature_program.solvent_tune)
+    for i in range(len(cssta_1014.temperature_program.solvent_tune)):
+        assert manual_1014.temperature_program.solvent_tune[i] == cssta_1014.temperature_program.solvent_tune[i]
+
+    assert len(manual_1014.temperature_program.sample_load) == len(cssta_1014.temperature_program.sample_load)
+    for i in range(len(cssta_1014.temperature_program.sample_load)):
+        assert manual_1014.temperature_program.sample_load[i] == cssta_1014.temperature_program.sample_load[i]
+
+    assert len(manual_1014.temperature_program.experiment) == len(cssta_1014.temperature_program.experiment)
+    for i in range(len(cssta_1014.temperature_program.experiment)):
+        assert manual_1014.temperature_program.experiment[i] == cssta_1014.temperature_program.experiment[i]
+
+    assert manual_1014.temperature_program == cssta_1014.temperature_program
+
+
 
 
 def test_average_transmission_at_temp(test_cssta):

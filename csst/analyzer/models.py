@@ -1,20 +1,53 @@
-from typing import List, ClassVar
+from enum import Enum
+from typing import List, ClassVar, Union
 
 from pydantic import BaseModel
 
+class PropertyNameEnum(str, Enum):
+    TEMP = 'temperature'
+    TRANS = 'transmission'
+    BOTTOM_STIR_RATE = 'bottom_stir_rate'
+    STIR_RATE = 'stir_rate'
+    CONC = 'concentration'
+    TIME = 'time'
+    TEMPERATURE_CHANGE_RATE = 'temperature_change_rate'
+
 class PropertyValue(BaseModel):
-    name: str
+    name: PropertyNameEnum
     unit: str
     value: float
 
 class PropertyValues(BaseModel):
-    name: str
+    name: PropertyNameEnum
     unit: str
     values: List[float]
 
+class TemperatureSettingEnum(str, Enum):
+    HEAT = 'heat'
+    COOL = 'cool'
+
+class TemperatureChange(BaseModel):
+    setting: TemperatureSettingEnum
+    to: PropertyValue
+    rate: PropertyValue
+
+class TemperatureHold(BaseModel):
+    at: PropertyValue
+    for_: PropertyValue
+
 class TemperatureProgram(BaseModel):
-    # TODO Implement once mona describes fully
-    deactivated: bool = True
+    """Temperature program an experiment runs
+
+    Args:
+        block: Block samples are loaded in to (e.g., 'A', 'B'...)
+        solvent_tune: Tuning process for the solvent prior to loading samples
+        sample_load: Temperature samples held at while polymers loaded into the solvent
+        experiment: Temperature program for the experiment after tuning and loading
+    """
+    block: str
+    solvent_tune: List[Union[TemperatureChange, TemperatureHold]]
+    sample_load: List[Union[TemperatureChange, TemperatureHold]]
+    experiment: List[Union[TemperatureChange, TemperatureHold]]
 
 class Reactor(BaseModel):
     """Reactor reading of transmission data
