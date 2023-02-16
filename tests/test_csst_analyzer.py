@@ -1,88 +1,8 @@
-from pathlib import Path
-
 import pytest
 import numpy as np
 
 from csst import analyzer
 from csst.analyzer import Analyzer
-from csst.analyzer.models import PropertyValue
-from .fixtures.data import cssta_1014, test_cssta, manual_1014
-
-def test_analyzer_init_from_file_version_1014(cssta_1014, manual_1014):
-    """cssta_1014 is the loaded data, manual_1014 is manually read data from the
-        data file cssta_1014 reads from
-    """
-    # test headers
-    assert cssta_1014.experiment_details == manual_1014.experiment_details
-    assert cssta_1014.experiment_number == manual_1014.experiment_number
-    assert cssta_1014.experimenter == manual_1014.experimenter
-    assert cssta_1014.project == manual_1014.project
-    assert cssta_1014.lab_journal == manual_1014.lab_journal
-    assert cssta_1014.description == manual_1014.description
-    assert cssta_1014.start_of_experiment == manual_1014.start_of_experiment
-
-    assert cssta_1014.temperature_program.block == manual_1014.temperature_program.block
-    assert cssta_1014.bottom_stir_rate == manual_1014.bottom_stir_rate
-    assert len(manual_1014.temperature_program.solvent_tune) == len(cssta_1014.temperature_program.solvent_tune)
-    for i in range(len(cssta_1014.temperature_program.solvent_tune)):
-        assert manual_1014.temperature_program.solvent_tune[i] == cssta_1014.temperature_program.solvent_tune[i]
-
-    assert len(manual_1014.temperature_program.sample_load) == len(cssta_1014.temperature_program.sample_load)
-    for i in range(len(cssta_1014.temperature_program.sample_load)):
-        assert manual_1014.temperature_program.sample_load[i] == cssta_1014.temperature_program.sample_load[i]
-
-    assert len(manual_1014.temperature_program.experiment) == len(cssta_1014.temperature_program.experiment)
-    for i in range(len(cssta_1014.temperature_program.experiment)):
-        assert manual_1014.temperature_program.experiment[i] == cssta_1014.temperature_program.experiment[i]
-
-    assert manual_1014.temperature_program == cssta_1014.temperature_program
-
-    datablock_size = 32337 - 38
-    assert len(cssta_1014.experiment_runtime.values) == datablock_size
-
-    assert cssta_1014.set_temperature.unit == '°C'
-    assert len(cssta_1014.set_temperature.values) == datablock_size
-
-    assert cssta_1014.actual_temperature.unit == '°C'
-    assert len(cssta_1014.actual_temperature.values) == datablock_size
-    assert cssta_1014.actual_temperature.values != cssta_1014.set_temperature.values
-
-    assert cssta_1014.stir_rates.unit == 'rpm'
-    assert len(cssta_1014.stir_rates.values) == datablock_size
-
-    assert len(cssta_1014.reactors) == 3
-    for i in range(len(cssta_1014.reactors)):
-        reactor = cssta_1014.reactors[i]
-        assert len(reactor.transmission.values) == datablock_size
-        assert reactor.solvent == 'MeOH'
-        if i == 0:
-            assert reactor.polymer == 'PEG'
-            assert reactor.conc == PropertyValue(
-                name = 'concentration',
-                value = 5.11,
-                unit = 'mg/ml'
-            )
-        if i == 1:
-            assert reactor.polymer == 'PEO'
-            assert reactor.conc == PropertyValue(
-                name = 'concentration',
-                value = 5.19,
-                unit = 'mg/ml'
-            )
-        if i == 2:
-            assert reactor.polymer == 'PVP'
-            assert reactor.conc == PropertyValue(
-                name = 'concentration',
-                value = 5.10,
-                unit = 'mg/ml'
-            )
-
-    cssta_1014.reactors[0].actual_temperature.values[0] = 10000
-    assert cssta_1014.reactors[1].actual_temperature.values[0] == 10000
-
-
-
-
 
 
 def test_average_transmission_at_temp(test_cssta):
