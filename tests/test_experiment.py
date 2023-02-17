@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from csst.experiment.models import PropertyValue
 from .fixtures.data import csste_1014, test_csste, manual_1014
@@ -56,7 +57,9 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
 
     assert csste_1014.actual_temperature.unit == "°C"
     assert len(csste_1014.actual_temperature.values) == datablock_size
-    assert csste_1014.actual_temperature.values != csste_1014.set_temperature.values
+    assert not np.array_equal(
+        csste_1014.actual_temperature.values, csste_1014.set_temperature.values
+    )
 
     assert csste_1014.stir_rates.unit == "rpm"
     assert len(csste_1014.stir_rates.values) == datablock_size

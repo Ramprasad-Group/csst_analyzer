@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Union
 
+import numpy as np
 from pydantic import BaseModel
 
 
@@ -19,12 +20,20 @@ class PropertyValue(BaseModel):
     unit: str
     value: float
 
+    def __str__(self):
+        return f"{self.name} ({self.unit})"
 
 class PropertyValues(BaseModel):
     name: PropertyNameEnum
     unit: str
-    values: List[float]
+    values: Union[List[float], np.ndarray]
 
+    class Config:
+        # added to allow np.ndarray type
+        arbitrary_types_allowed = True
+
+    def __str__(self):
+        return f"{self.name} ({self.unit})"
 
 class TemperatureSettingEnum(str, Enum):
     HEAT = "heat"
@@ -96,3 +105,6 @@ class Reactor(BaseModel):
     time_since_experiment_start: PropertyValues
     stir_rates: PropertyValues
     bottom_stir_rate: PropertyValue
+
+    def __str__(self):
+        return f"{self.conc.value} {self.conc.unit} {self.polymer} in {self.solvent}"

@@ -245,19 +245,19 @@ class Experiment:
         self.set_temperature = PropertyValues(
             name="temperature",
             unit=set_temp_col.split("[")[1].strip("]").strip(),
-            values=df[set_temp_col].to_list(),
+            values=df[set_temp_col].to_numpy(),
         )
         actual_temp_col = [col for col in df.columns if "Temperature Actual" in col][0]
         self.actual_temperature = PropertyValues(
             name="temperature",
             unit=actual_temp_col.split("[")[1].strip("]").strip(),
-            values=df[actual_temp_col].to_list(),
+            values=df[actual_temp_col].to_numpy(),
         )
         stir_col = [col for col in df.columns if "Stirring" in col][0]
         self.stir_rates = PropertyValues(
             name="stir_rate",
             unit=stir_col.split("[")[1].strip("]").strip(),
-            values=df[stir_col].to_list(),
+            values=df[stir_col].to_numpy(),
         )
 
         # configure reactors
@@ -271,7 +271,7 @@ class Experiment:
                     transmission=PropertyValues(
                         name="transmission",
                         unit=reactor_col.split("[")[1].strip("]").strip(),
-                        values=df[reactor_col].to_list(),
+                        values=df[reactor_col].to_numpy(),
                     ),
                     temperature_program=self.temperature_program,
                     actual_temperature=self.actual_temperature,
