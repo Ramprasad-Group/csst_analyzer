@@ -23,6 +23,7 @@ class PropertyValue(BaseModel):
     def __str__(self):
         return f"{self.name} ({self.unit})"
 
+
 class PropertyValues(BaseModel):
     name: PropertyNameEnum
     unit: str
@@ -34,6 +35,7 @@ class PropertyValues(BaseModel):
 
     def __str__(self):
         return f"{self.name} ({self.unit})"
+
 
 class TemperatureSettingEnum(str, Enum):
     HEAT = "heat"
@@ -71,7 +73,7 @@ class Reactor(BaseModel):
     """Reactor reading of transmission data
 
     Each reactor accesses references to shared temperaure, time,
-    stir_rate and temperature program data in an experiment. 
+    stir_rate and temperature program data in an experiment.
     Data is shared to avoid duplicating data
     if several reactor access the same temperature, time, etc... data. This data is
     passed to the reactor because it influences the reactor transmission values.

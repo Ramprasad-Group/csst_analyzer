@@ -13,6 +13,7 @@ __version__ = "0.1.0"
 cmap = ["#2D3142", "#E1DAAE", "#058ED9", "#848FA2"]
 tempc = "#CC2D35"
 
+
 def experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     """Plots transmission vs time and temperature vs time for one experiment"""
     # Change parameters for plot
@@ -24,13 +25,14 @@ def experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     ax1 = fig.add_subplot(111)
     # Make ax2
     ax2 = ax1.twinx()
-    ax2.set_ylabel(str(experiment.actual_temperature).capitalize(), 
-                   color=tempc)
+    ax2.set_ylabel(str(experiment.actual_temperature).capitalize(), color=tempc)
     ax2.tick_params(axis="y", labelcolor=tempc)
     ax2.plot(
-        experiment.time_since_experiment_start.values, 
-        experiment.actual_temperature.values, 
-        color=tempc, linestyle="dashed", alpha=0.5
+        experiment.time_since_experiment_start.values,
+        experiment.actual_temperature.values,
+        color=tempc,
+        linestyle="dashed",
+        alpha=0.5,
     )
 
     # plot ax1
@@ -41,10 +43,13 @@ def experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     ax1.tick_params(axis="y", labelcolor="black")
     curr = 0
     for reactor in experiment.reactors:
-        ax1.plot(reactor.time_since_experiment_start.values,
-                 reactor.transmission.values, 
-                 color=cmap[curr], linewidth=2.5,
-                 label=str(reactor))
+        ax1.plot(
+            reactor.time_since_experiment_start.values,
+            reactor.transmission.values,
+            color=cmap[curr],
+            linewidth=2.5,
+            label=str(reactor),
+        )
         curr += 1
     fs = 14
     if len(experiment.reactors) > 2:

@@ -3,10 +3,11 @@ import pytest
 
 from csst.analyzer import (
     process_reactor_transmission_at_temp,
-    process_reactor_transmission_at_temps
+    process_reactor_transmission_at_temps,
 )
 from csst.experiment.models import PropertyValues, PropertyValue
 from .fixtures.data import reactor
+
 
 def test_process_reactor_transmission_at_temp(reactor):
     """Tests processing of transmission. See reactor fixture for data"""
@@ -36,6 +37,7 @@ def test_process_reactor_transmission_at_temp(reactor):
 
     assert process_reactor_transmission_at_temp(reactor, temp=0) is None
 
+
 def test_process_reactor_transmission_at_temps(reactor):
     # reactor values sorted by temp would be
     # temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
@@ -48,8 +50,9 @@ def test_process_reactor_transmission_at_temps(reactor):
     assert averages == expected_averages
     assert temps == [5, 10, 15, 20]
 
-    ptransmissions = process_reactor_transmission_at_temps(reactor, [6, 11, 16, 19, 21],
-                                                           2)
+    ptransmissions = process_reactor_transmission_at_temps(
+        reactor, [6, 11, 16, 19, 21], 2
+    )
     averages = [ptrans.average for ptrans in ptransmissions]
     temps = [ptrans.average_temperature for ptrans in ptransmissions]
     averages.sort()

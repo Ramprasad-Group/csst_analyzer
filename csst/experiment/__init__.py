@@ -24,10 +24,10 @@ class Experiment:
         project (str):
         lab_journal (str):
         description (str):
-        start_of_experiment (datetime.datetime): 
+        start_of_experiment (datetime.datetime):
             date the experiment started
         temperature_program (TemperatureProgram):
-            Program used to tune solvent, load polymers and change the 
+            Program used to tune solvent, load polymers and change the
             experiment temperature conditions.
         bottom_stir_rate (PropertyValue):
             Rate spinner is spinning at the bottom of the sample during the course
