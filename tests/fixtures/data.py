@@ -7,11 +7,13 @@ import pytest
 
 from csst.experiment import Experiment
 from csst.experiment.models import (
+    Reactor,
     TemperatureProgram,
     TemperatureHold,
     TemperatureChange,
     TemperatureSettingEnum,
     PropertyValue,
+    PropertyValues
 )
 
 
@@ -127,30 +129,40 @@ def manual_1014():
 
 
 @pytest.fixture
-def test_csste(csste_1014):
-    """Convert csste_obj dataframe reactor data
+def reactor():
+    """Handcrafted reactor for testing
 
-    Reactor1 data will be simple be the actual temp
-
-    Reactor2 data will be the actual temp squared
-
-    Reactor3 data will be the log of the absolute value of the actual temp + 1
+        reactor values sorted by temp would be
+        temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
+        trans = [5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
     """
-    temp_col = [col for col in csste_obj.df.columns if "Temperature Actual" in col][0]
-    reactor_cols = [
-        col
-        for col in csste_obj.df.columns
-        for reactor in csste_obj.samples.keys()
-        if reactor in col
-    ]
-    for col in reactor_cols:
-        if "Reactor1" in col:
-            fake_data = csste_obj.df[temp_col].to_list()
-            csste_obj.df[col] = fake_data.copy()
-        if "Reactor2" in col:
-            fake_data = [t**2 for t in csste_obj.df[temp_col].to_list()]
-            csste_obj.df[col] = fake_data.copy()
-        if "Reactor3" in col:
-            fake_data = [np.log(abs(t) + 1) for t in csste_obj.df[temp_col].to_list()]
-            csste_obj.df[col] = fake_data.copy()
-    return csste_obj
+    time = PropertyValues(
+        name='time',
+        unit='hours',
+        values=np.linspace(0, 1, num=10)
+    )
+    temp = [5, 10, 15, 20, 20, 20, 20, 15, 10, 5]
+    actual_temperature = PropertyValues(
+        name='temperature',
+        unit='C',
+        values=np.array(temp)
+    )
+    trans = [5, 20, 50, 78, 79, 80, 78, 45, 22, 4]
+    transmission = PropertyValues(
+        name='transmission',
+        unit='%',
+        values=np.array(trans)
+    )
+    return Reactor.construct(
+        solvent=None,
+        polymer=None,
+        conc=None,
+        temperature_program=None,
+        set_temperature=None,
+        stir_rates=None,
+        bottom_stir_rate=None,
+        transmission=transmission,
+        actual_temperature=actual_temperature,
+        time_since_experiment_start=time,
+    )
+

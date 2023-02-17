@@ -1,51 +1,73 @@
+import logging
+from typing import Union, List
+import numpy as np
 
-from csst.analyzer.models import AverageTransmission
+from csst.analyzer.models import ProcessedTransmission
+from csst.experiment.models import Reactor
 
+logger = logging.getLogger(__name__)
 
-
-'''
-def average_transmission_at_temp(
-    temp: float, temp_range: float = 0
-) -> List[AverageTransmission]:
-    """ "Returns the average transmission at temperature for each reactor
-
-    :parameter temp: Temperature to average at.
-    :type temp: float
-    :parameter temp_range: When assessing transmissions at this temp,
-        look at rows with temp +- (temp_range / 2)
-    :type temp_range: float:
-    :return: List of AverageTransmission objects
-    :rtype: List[AverageTransmission]
+def process_reactor_transmission_at_temps(
+    reactor: Reactor,
+    temps: List[float],
+    temp_range: float = 0,
+) -> List[ProcessedTransmission]:
+    """Process the transmission values of the reactor at passed temps.
+    
+    Args:
+        reactor: reactor to process
+        temps: temperatures to process
+        temp_range: the range of temperatures the transmission is processed from
+            (e.g., average_temperature +- (temperature_range / 2)) non-inclusive of
+            the upper value.
     """
-    temp_col = [col for col in self.df.columns if "Temperature Actual" in col][0]
-    reactor_cols = [
-        col
-        for col in self.df.columns
-        for reactor in self.samples.keys()
-        if reactor in col
-    ]
-    temp_range /= 2
-    temp_df = self.df.loc[
-        (self.df[temp_col] >= (temp - temp_range))
-        & (self.df[temp_col] <= (temp + temp_range))
-    ]
-    average_transmissions = []
-    for reactor_col in reactor_cols:
-        sample = [col for col in self.samples.keys() if col in reactor_col][0]
-        # In data, most sig figs I've seen is 4, so round to 2 decimal
-        # places
-        mean = round(temp_df[reactor_col].mean(), 2)
-        std = round(temp_df[reactor_col].std(), 2)
-        transmissions = temp_df[reactor_col].to_list()
-        average_transmissions.append(
-            AverageTransmission(
-                reactor=sample,
-                temp=temp,
-                temp_range=temp_range * 2,
-                average_transmission=mean,
-                std=std,
-                transmissions=transmissions,
-            )
-        )
-    return average_transmissions
-'''
+    transmissions = []
+    for temp in temps:
+        ptrans = process_reactor_transmission_at_temp(reactor, temp, temp_range)
+        if ptrans is not None:
+            transmissions.append(ptrans)
+    return transmissions
+
+
+def process_reactor_transmission_at_temp(
+    reactor: Reactor,
+    temp: float, 
+    temp_range: float = 0
+) -> Union[None, ProcessedTransmission]:
+    """Returns the average transmission at temperature for the reactor
+
+    Args:
+        reactor: reactor to process
+        temp: temperature to process at
+        temp_range: the range of temperatures the transmission is processed from
+            (e.g., average_temperature +- (temperature_range / 2)) non-inclusive of
+            the upper value.
+
+    Returns:
+        Process transmission value or None
+    """
+    half_range = temp_range / 2
+    # where returns a tuple but since this is a 1d array, the tuple has one element
+    # that is the list of indices
+    if temp_range == 0:
+        temp_indices = np.where(
+            reactor.actual_temperature.values == temp
+        )[0]
+    else:
+        temp_indices = np.where((
+            (reactor.actual_temperature.values < temp + half_range)
+          & (reactor.actual_temperature.values >= temp - half_range)
+        ))[0]
+    if len(temp_indices) == 0:
+        logger.debug(f"No index found at temperature {temp} +/- "
+            + f"{round(temp_range / 2, 2)}")
+        return None
+    transmission = reactor.transmission.values[temp_indices]
+    return ProcessedTransmission(
+        reactor=reactor,
+        average_temperature=temp,
+        temperature_range=temp_range,
+        average=transmission.mean(),
+        median=np.median(transmission),
+        std=transmission.std()
+    )

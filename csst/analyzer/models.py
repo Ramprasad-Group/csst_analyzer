@@ -1,26 +1,30 @@
+from enum import Enum
 from typing import List, ClassVar
+
+from csst.experiment.models import Reactor
 
 from pydantic import BaseModel
 
+class SolubilityEnum(Enum):
+    SOLUBLE = 'soluble'
+    INSOLUBLE = 'insoluble'
+    PARTIAL = 'partially_soluble'
 
-class AverageTransmission(BaseModel):
-    reactor: str
-    temp: float
-    temp_range: float
-    transmissions: List[float]
-    average_transmission: float
+class ProcessedTransmission(BaseModel):
+    """model for processed transmission data
+
+    Args:
+        reactor: Reactor the data is processed from
+        average_temperature: the average temperature the transmission is processed from
+        temperature_range: the range of temperatures the transmission is processed from
+            (e.g., average_temperature +- (temperature_range / 2))
+        average: the average transmission
+        median: the median transmission
+        std: standard deviation of the transmissions
+    """
+    reactor: Reactor
+    average_temperature: float
+    temperature_range: float
+    average: float
+    median: float
     std: float
-
-    INSOLUBLE_BELOW_TRANSMISSION: ClassVar[float] = 10
-    SOLUBLE_ABOVE_TRANSMISSION: ClassVar[float] = 85
-    SOLUBLE: ClassVar[str] = "soluble"
-    PARTIAL: ClassVar[str] = "partially_soluble"
-    INSOLUBLE: ClassVar[str] = "insoluble"
-
-    def get_solubility_based_on_average(self):
-        if self.average_transmission <= self.INSOLUBLE_BELOW_TRANSMISSION:
-            return self.INSOLUBLE
-        elif self.average_transmission >= self.SOLUBLE_ABOVE_TRANSMISSION:
-            return self.SOLUBLE
-        else:
-            return self.PARTIAL
