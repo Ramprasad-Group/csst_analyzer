@@ -9,15 +9,16 @@ from csst.experiment.models import Reactor
 
 logger = logging.getLogger(__name__)
 
-    # reactor values sorted by temp would be
-    # temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
-    # trans = [5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
+
+# reactor values sorted by temp would be
+# temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
+# trans = [5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
 def process_reactor(reactor: Reactor) -> ProcessedReactor:
     """Process all reactor transmission data
-    
+
     Find the floor of the min actual temperature and ceil of the max actual temperature,
     then process each integer temperature +/- 0.5
-    
+
     Args:
         reactor: reactor to process
     """
@@ -26,7 +27,9 @@ def process_reactor(reactor: Reactor) -> ProcessedReactor:
     temps = list(range(min_temp, max_temp + 1))
     return ProcessedReactor(
         unprocessed_reactor=reactor,
-        temperatures=process_reactor_transmission_at_temps(reactor, temps, temp_range=1)
+        temperatures=process_reactor_transmission_at_temps(
+            reactor, temps, temp_range=1
+        ),
     )
 
 

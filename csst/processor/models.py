@@ -3,6 +3,7 @@ from csst.experiment.models import Reactor
 
 from pydantic import BaseModel
 
+
 class ProcessedTemperature(BaseModel):
     """model for processed temperature
 
@@ -14,11 +15,13 @@ class ProcessedTemperature(BaseModel):
         median_transmission: the median transmission
         transmission_std: standard deviation of the transmissions
     """
+
     average_temperature: float
     temperature_range: float
     average_transmission: float
     median_transmission: float
     transmission_std: float
+
 
 class ProcessedReactor(BaseModel):
     unprocessed_reactor: Reactor

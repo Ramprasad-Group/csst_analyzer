@@ -3,7 +3,7 @@ import pytest
 from csst.processor import (
     process_reactor_transmission_at_temp,
     process_reactor_transmission_at_temps,
-    process_reactor
+    process_reactor,
 )
 from csst.experiment.models import PropertyValues, PropertyValue
 from .fixtures.data import reactor
@@ -53,6 +53,7 @@ def test_process_reactor_transmission_at_temps(reactor):
     assert averages == expected_averages
     assert temps == [6, 11, 16, 21]
 
+
 def test_process_ractor_data(reactor):
     preactor = process_reactor(reactor)
     assert preactor.unprocessed_reactor == reactor
@@ -61,4 +62,3 @@ def test_process_ractor_data(reactor):
     temps = [ptemp.average_temperature for ptemp in preactor.temperatures]
     assert averages == expected_averages
     assert temps == [5, 10, 15, 20]
-    

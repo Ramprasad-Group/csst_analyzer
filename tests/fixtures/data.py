@@ -144,9 +144,9 @@ def reactor():
     trans = [5, 20, 50, 78, 79, 80, 78, 45, 22, 4]
     transmission = PropertyValues(name="transmission", unit="%", values=np.array(trans))
     return Reactor.construct(
-        solvent='test_solvent',
-        polymer='test_polymer',
-        conc=PropertyValue(name='concentration', value=5, unit='test_concentration'),
+        solvent="test_solvent",
+        polymer="test_polymer",
+        conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
         temperature_program=None,
         set_temperature=None,
         stir_rates=None,
