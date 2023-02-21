@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 
 from csst.experiment.models import PropertyValue
-from .fixtures.data import csste_1014, test_csste, manual_1014
+from .fixtures.data import csste_1014, manual_1014
 
 
 def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):

@@ -1,18 +1,40 @@
 import logging
 from typing import Union, List
+from math import floor, ceil
+
 import numpy as np
 
-from csst.analyzer.models import ProcessedTransmission
+from csst.processor.models import ProcessedTemperature, ProcessedReactor
 from csst.experiment.models import Reactor
 
 logger = logging.getLogger(__name__)
 
+    # reactor values sorted by temp would be
+    # temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
+    # trans = [5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
+def process_reactor(reactor: Reactor) -> ProcessedReactor:
+    """Process all reactor transmission data
+    
+    Find the floor of the min actual temperature and ceil of the max actual temperature,
+    then process each integer temperature +/- 0.5
+    
+    Args:
+        reactor: reactor to process
+    """
+    min_temp = floor(min(reactor.actual_temperature.values))
+    max_temp = ceil(max(reactor.actual_temperature.values))
+    temps = list(range(min_temp, max_temp + 1))
+    return ProcessedReactor(
+        unprocessed_reactor=reactor,
+        temperatures=process_reactor_transmission_at_temps(reactor, temps, temp_range=1)
+    )
 
-def reactor_transmission_at_temps(
+
+def process_reactor_transmission_at_temps(
     reactor: Reactor,
     temps: List[float],
     temp_range: float = 0,
-) -> List[ProcessedTransmission]:
+) -> List[ProcessedTemperature]:
     """Process the transmission values of the reactor at passed temps.
 
     Args:
@@ -24,15 +46,15 @@ def reactor_transmission_at_temps(
     """
     transmissions = []
     for temp in temps:
-        ptrans = reactor_transmission_at_temp(reactor, temp, temp_range)
+        ptrans = process_reactor_transmission_at_temp(reactor, temp, temp_range)
         if ptrans is not None:
             transmissions.append(ptrans)
     return transmissions
 
 
-def reactor_transmission_at_temp(
+def process_reactor_transmission_at_temp(
     reactor: Reactor, temp: float, temp_range: float = 0
-) -> Union[None, ProcessedTransmission]:
+) -> Union[None, ProcessedTemperature]:
     """Returns the average transmission at temperature for the reactor
 
     Args:
@@ -63,11 +85,10 @@ def reactor_transmission_at_temp(
         )
         return None
     transmission = reactor.transmission.values[temp_indices]
-    return ProcessedTransmission(
-        reactor=reactor,
+    return ProcessedTemperature(
         average_temperature=temp,
         temperature_range=temp_range,
-        average=transmission.mean(),
-        median=np.median(transmission),
-        std=transmission.std(),
+        average_transmission=transmission.mean(),
+        median_transmission=np.median(transmission),
+        transmission_std=transmission.std(),
     )
