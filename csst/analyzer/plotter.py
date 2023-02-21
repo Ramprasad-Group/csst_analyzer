@@ -1,11 +1,14 @@
-from typing import List
+from typing import List, Tuple
 
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.axes import Axes
+import seaborn as sns
 
 from csst.experiment import Experiment
 from csst.experiment.models import Reactor
+from csst.analyzer import Analyzer
 
 __version__ = "0.1.0"
 
@@ -14,7 +17,7 @@ cmap = ["#2D3142", "#E1DAAE", "#058ED9", "#848FA2"]
 tempc = "#CC2D35"
 
 
-def experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
+def plot_experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     """Plots transmission vs time and temperature vs time for one experiment"""
     # Change parameters for plot
     font = {"size": 18}
