@@ -10,4 +10,5 @@ experiment = Experiment.load_from_file(
     str(Path("data") / "MA-PP-TOL-5-15-30-50 mg.csv")
 )
 fig = plot_experiment(experiment)
-plt.show()
+plt.savefig(str(Path.cwd() / '..' / 'images' / 'experiment_one.png'))
+

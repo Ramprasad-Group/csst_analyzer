@@ -83,7 +83,9 @@ axes[1][0].set_xlabel("Temperature (C)")
 axes[1][0].set_ylabel("Transmission (%)")
 # delete left over axes
 fig.delaxes(axes[1][1])
-plt.show()
+plt.savefig(str(Path.cwd() / '..' / 'images' / 'experiment_one_processed.png'))
+plt.close('all')
+# plt.show()
 
 # plot another experiment alongside the first
 experiment2 = Experiment.load_from_file(
