@@ -76,16 +76,16 @@ class Analyzer:
             "reactor": str(reactor.unprocessed_reactor),
             "bottom_stir_rate": reactor.unprocessed_reactor.bottom_stir_rate.value,
             "bottom_stir_rate_unit": reactor.unprocessed_reactor.bottom_stir_rate.unit,
-            "stir_rate_unit": reactor.unprocessed_reactor.stir_rates.unit
+            "stir_rate_unit": reactor.unprocessed_reactor.stir_rates.unit,
         }
         for i in range(len(reactor.unprocessed_reactor.actual_temperature.values)):
             row["temperature"] = reactor.unprocessed_reactor.actual_temperature.values[
                 i
             ]
             row["transmission"] = reactor.unprocessed_reactor.transmission.values[i]
-            row["time"] = (
-                reactor.unprocessed_reactor.time_since_experiment_start.values[i]
-            )
+            row[
+                "time"
+            ] = reactor.unprocessed_reactor.time_since_experiment_start.values[i]
             row["set_temperature"] = reactor.unprocessed_reactor.set_temperature.values[
                 i
             ]

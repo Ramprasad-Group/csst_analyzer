@@ -46,7 +46,7 @@ def manual_1014():
         "Different concentratin of # - ## - ### mg/ mL  is being tested along with temprature going from 10-60 C",
         "Temp ramp rate: 0.5 C/min",
         "Mixing speed: 900 RPM",
-        "Hold time: 1 hr(hot)-2hrs (cold)"
+        "Hold time: 1 hr(hot)-2hrs (cold)",
     ]
     csste.start_of_experiment = datetime.datetime(
         year=2022, month=8, day=19, hour=13, minute=54
@@ -160,11 +160,7 @@ def reactor():
         temperature_program=None,
         set_temperature=actual_temperature,
         stir_rates=stirs,
-        bottom_stir_rate=PropertyValue(
-            name="bottom_stir_rate",
-            value=900,
-            unit='rpm'
-        ),
+        bottom_stir_rate=PropertyValue(name="bottom_stir_rate", value=900, unit="rpm"),
         transmission=transmission,
         actual_temperature=actual_temperature,
         time_since_experiment_start=time,
