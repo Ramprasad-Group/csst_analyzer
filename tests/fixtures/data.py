@@ -143,14 +143,20 @@ def reactor():
     )
     trans = [5, 20, 50, 78, 79, 80, 78, 45, 22, 4]
     transmission = PropertyValues(name="transmission", unit="%", values=np.array(trans))
+    stir = [0 for i in trans]
+    stirs = PropertyValues(name="stir_rate", unit="rpm", values=np.array(stir))
     return Reactor.construct(
         solvent="test_solvent",
         polymer="test_polymer",
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
         temperature_program=None,
-        set_temperature=None,
-        stir_rates=None,
-        bottom_stir_rate=None,
+        set_temperature=actual_temperature,
+        stir_rates=stirs,
+        bottom_stir_rate=PropertyValue(
+            name="bottom_stir_rate",
+            value=900,
+            unit='rpm'
+        ),
         transmission=transmission,
         actual_temperature=actual_temperature,
         time_since_experiment_start=time,
