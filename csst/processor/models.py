@@ -24,5 +24,12 @@ class ProcessedTemperature(BaseModel):
 
 
 class ProcessedReactor(BaseModel):
+    """Reactor that has been processed by the processor
+
+    Args:
+        unprocessed_reactor: The original, unprocessed reactor. All of its attributes
+            are then accessible from the processed reactor.
+        temperatures: List of processed temperatures.
+    """
     unprocessed_reactor: Reactor
     temperatures: List[ProcessedTemperature]

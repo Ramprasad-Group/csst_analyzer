@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment &mdash; CSST Analyzer v1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Processor" href="processor.html" />
+    <link rel="prev" title="Welcome to CSST Analyzer’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CSST Analyzer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Experiment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.Experiment"><code class="docutils literal notranslate"><span class="pre">Experiment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.version"><code class="docutils literal notranslate"><span class="pre">Experiment.version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.experiment_details"><code class="docutils literal notranslate"><span class="pre">Experiment.experiment_details</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.experiment_number"><code class="docutils literal notranslate"><span class="pre">Experiment.experiment_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.project"><code class="docutils literal notranslate"><span class="pre">Experiment.project</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.lab_journal"><code class="docutils literal notranslate"><span class="pre">Experiment.lab_journal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.description"><code class="docutils literal notranslate"><span class="pre">Experiment.description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.start_of_experiment"><code class="docutils literal notranslate"><span class="pre">Experiment.start_of_experiment</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.temperature_program"><code class="docutils literal notranslate"><span class="pre">Experiment.temperature_program</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.bottom_stir_rate"><code class="docutils literal notranslate"><span class="pre">Experiment.bottom_stir_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.set_temperature"><code class="docutils literal notranslate"><span class="pre">Experiment.set_temperature</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.actual_temperature"><code class="docutils literal notranslate"><span class="pre">Experiment.actual_temperature</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.time_since_experiment_start"><code class="docutils literal notranslate"><span class="pre">Experiment.time_since_experiment_start</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.stir_rates"><code class="docutils literal notranslate"><span class="pre">Experiment.stir_rates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.reactors"><code class="docutils literal notranslate"><span class="pre">Experiment.reactors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment._load_file_version_1014"><code class="docutils literal notranslate"><span class="pre">Experiment._load_file_version_1014()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.Experiment.load_from_file"><code class="docutils literal notranslate"><span class="pre">Experiment.load_from_file()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.TEMP"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.TEMP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.TRANS"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.TRANS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.BOTTOM_STIR_RATE"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.BOTTOM_STIR_RATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.STIR_RATE"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.STIR_RATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.CONC"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.CONC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.TIME"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.TIME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum.TEMPERATURE_CHANGE_RATE"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum.TEMPERATURE_CHANGE_RATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum._generate_next_value_"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum._generate_next_value_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum._member_type_"><code class="docutils literal notranslate"><span class="pre">PropertyNameEnum._member_type_</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.PropertyValue"><code class="docutils literal notranslate"><span class="pre">PropertyValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.PropertyValues"><code class="docutils literal notranslate"><span class="pre">PropertyValues</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.Reactor"><code class="docutils literal notranslate"><span class="pre">Reactor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.TemperatureChange"><code class="docutils literal notranslate"><span class="pre">TemperatureChange</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.TemperatureHold"><code class="docutils literal notranslate"><span class="pre">TemperatureHold</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.TemperatureProgram"><code class="docutils literal notranslate"><span class="pre">TemperatureProgram</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.models.TemperatureSettingEnum"><code class="docutils literal notranslate"><span class="pre">TemperatureSettingEnum</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.TemperatureSettingEnum.HEAT"><code class="docutils literal notranslate"><span class="pre">TemperatureSettingEnum.HEAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.TemperatureSettingEnum.COOL"><code class="docutils literal notranslate"><span class="pre">TemperatureSettingEnum.COOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.TemperatureSettingEnum._generate_next_value_"><code class="docutils literal notranslate"><span class="pre">TemperatureSettingEnum._generate_next_value_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csst.experiment.models.TemperatureSettingEnum._member_type_"><code class="docutils literal notranslate"><span class="pre">TemperatureSettingEnum._member_type_</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#helpers">Helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#csst.experiment.helpers.try_parsing_date"><code class="docutils literal notranslate"><span class="pre">try_parsing_date()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="processor.html">Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzer</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CSST Analyzer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Experiment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/experiment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-csst.experiment">
+<span id="experiment"></span><h1>Experiment<a class="headerlink" href="#module-csst.experiment" title="Permalink to this heading"></a></h1>
+<section id="id1">
+<h2>Experiment<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.Experiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><a class="headerlink" href="#csst.experiment.Experiment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Loads Crystal 16 Dissolition/Solubility Test Experiments</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#csst.experiment.Experiment.version" title="Permalink to this definition"></a></dt>
+<dd><p>version of the data file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.experiment_details">
+<span class="sig-name descname"><span class="pre">experiment_details</span></span><a class="headerlink" href="#csst.experiment.Experiment.experiment_details" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.experiment_number">
+<span class="sig-name descname"><span class="pre">experiment_number</span></span><a class="headerlink" href="#csst.experiment.Experiment.experiment_number" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.project">
+<span class="sig-name descname"><span class="pre">project</span></span><a class="headerlink" href="#csst.experiment.Experiment.project" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.lab_journal">
+<span class="sig-name descname"><span class="pre">lab_journal</span></span><a class="headerlink" href="#csst.experiment.Experiment.lab_journal" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#csst.experiment.Experiment.description" title="Permalink to this definition"></a></dt>
+<dd><p>Description information with each new line of the
+description appended to a list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.start_of_experiment">
+<span class="sig-name descname"><span class="pre">start_of_experiment</span></span><a class="headerlink" href="#csst.experiment.Experiment.start_of_experiment" title="Permalink to this definition"></a></dt>
+<dd><p>date the experiment started</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.temperature_program">
+<span class="sig-name descname"><span class="pre">temperature_program</span></span><a class="headerlink" href="#csst.experiment.Experiment.temperature_program" title="Permalink to this definition"></a></dt>
+<dd><p>Program used to tune solvent, load polymers and change the
+experiment temperature conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#csst.experiment.models.TemperatureProgram" title="csst.experiment.models.TemperatureProgram">TemperatureProgram</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.bottom_stir_rate">
+<span class="sig-name descname"><span class="pre">bottom_stir_rate</span></span><a class="headerlink" href="#csst.experiment.Experiment.bottom_stir_rate" title="Permalink to this definition"></a></dt>
+<dd><p>Rate spinner is spinning at the bottom of the sample during the course
+of the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue">PropertyValue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.set_temperature">
+<span class="sig-name descname"><span class="pre">set_temperature</span></span><a class="headerlink" href="#csst.experiment.Experiment.set_temperature" title="Permalink to this definition"></a></dt>
+<dd><p>List of set temperatures the experiment is supposed to be at during each
+time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues">PropertyValues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.actual_temperature">
+<span class="sig-name descname"><span class="pre">actual_temperature</span></span><a class="headerlink" href="#csst.experiment.Experiment.actual_temperature" title="Permalink to this definition"></a></dt>
+<dd><p>List of actual temperature the experiment is at during each time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues">PropertyValues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.time_since_experiment_start">
+<span class="sig-name descname"><span class="pre">time_since_experiment_start</span></span><a class="headerlink" href="#csst.experiment.Experiment.time_since_experiment_start" title="Permalink to this definition"></a></dt>
+<dd><p>List of times corresponding to when the experiment was started. Indices
+match actual/set temperatures, stir_rates and reactor transmissions indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues">PropertyValues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.stir_rates">
+<span class="sig-name descname"><span class="pre">stir_rates</span></span><a class="headerlink" href="#csst.experiment.Experiment.stir_rates" title="Permalink to this definition"></a></dt>
+<dd><p>Unknown stir rates measured by machine. Typically 0 and separate from the
+bottom stir rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues">PropertyValues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.reactors">
+<span class="sig-name descname"><span class="pre">reactors</span></span><a class="headerlink" href="#csst.experiment.Experiment.reactors" title="Permalink to this definition"></a></dt>
+<dd><p>List of reactors. Each reactor keeps track of the polymer, solvent,
+concentration and tranmission percentage (see Reactor documentation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#csst.experiment.models.Reactor" title="csst.experiment.models.Reactor">Reactor</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Initialize attirbutes</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="csst.experiment.Experiment._load_file_version_1014">
+<span class="sig-name descname"><span class="pre">_load_file_version_1014</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.Experiment._load_file_version_1014" title="Permalink to this definition"></a></dt>
+<dd><p>Loads file version 1014</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> – open file to read data from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="csst.experiment.Experiment.load_from_file">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#csst.experiment.Experiment" title="csst.experiment.Experiment"><span class="pre">Experiment</span></a></span></span><a class="headerlink" href="#csst.experiment.Experiment.load_from_file" title="Permalink to this definition"></a></dt>
+<dd><p>Load data from a file</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<span class="target" id="module-csst.experiment.models"></span><section id="models">
+<h2>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h2>
+<dl class="py class enum">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum">
+<em class="property"><span class="pre">enum</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">PropertyNameEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Member Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+<p>Valid values are as follows:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.TEMP">
+<span class="sig-name descname"><span class="pre">TEMP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.TEMP:</span> <span class="pre">'temperature'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.TEMP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.TRANS">
+<span class="sig-name descname"><span class="pre">TRANS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.TRANS:</span> <span class="pre">'transmission'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.TRANS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.BOTTOM_STIR_RATE">
+<span class="sig-name descname"><span class="pre">BOTTOM_STIR_RATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.BOTTOM_STIR_RATE:</span> <span class="pre">'bottom_stir_rate'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.BOTTOM_STIR_RATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.STIR_RATE">
+<span class="sig-name descname"><span class="pre">STIR_RATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.STIR_RATE:</span> <span class="pre">'stir_rate'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.STIR_RATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.CONC">
+<span class="sig-name descname"><span class="pre">CONC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.CONC:</span> <span class="pre">'concentration'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.CONC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.TIME">
+<span class="sig-name descname"><span class="pre">TIME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.TIME:</span> <span class="pre">'time'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.TIME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum.TEMPERATURE_CHANGE_RATE">
+<span class="sig-name descname"><span class="pre">TEMPERATURE_CHANGE_RATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;PropertyNameEnum.TEMPERATURE_CHANGE_RATE:</span> <span class="pre">'temperature_change_rate'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum.TEMPERATURE_CHANGE_RATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code> and its members also have the following methods:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum._generate_next_value_">
+<span class="sig-name descname"><span class="pre">_generate_next_value_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum._generate_next_value_" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the next value when not given.</p>
+<p>name: the name of the member
+start: the initial start value or None
+count: the number of existing members
+last_value: the last value assigned or None</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyNameEnum._member_type_">
+<span class="sig-name descname"><span class="pre">_member_type_</span></span><a class="headerlink" href="#csst.experiment.models.PropertyNameEnum._member_type_" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">PropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum" title="csst.experiment.models.PropertyNameEnum"><span class="pre">PropertyNameEnum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.PropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Generic class to hold a single property value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the property being stored. Only those in PropertyNameEnum are
+allowed to check for as the package is not designed for other properties.</p></li>
+<li><p><strong>unit</strong> – Unit of the property (e.g., K (Kelvin), mg/ml, etc…)</p></li>
+<li><p><strong>value</strong> – Float value of the property</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.models.PropertyValues">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">PropertyValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyNameEnum" title="csst.experiment.models.PropertyNameEnum"><span class="pre">PropertyNameEnum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.PropertyValues" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Generic class to hold a list or 1d numpy array of property values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the property being stored. Only those in PropertyNameEnum are
+allowed to check for as the package is not designed for other properties.</p></li>
+<li><p><strong>unit</strong> – Unit of the property (e.g., K (Kelvin), mg/ml, etc…)</p></li>
+<li><p><strong>value</strong> – List or 1d numpy array of the property values</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.models.Reactor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">Reactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polymer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><span class="pre">PropertyValue</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature_program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.TemperatureProgram" title="csst.experiment.models.TemperatureProgram"><span class="pre">TemperatureProgram</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transmission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues"><span class="pre">PropertyValues</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues"><span class="pre">PropertyValues</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues"><span class="pre">PropertyValues</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_since_experiment_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues"><span class="pre">PropertyValues</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stir_rates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValues" title="csst.experiment.models.PropertyValues"><span class="pre">PropertyValues</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_stir_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><span class="pre">PropertyValue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.Reactor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Reactor reading of transmission data</p>
+<p>Each reactor accesses references to shared temperaure, time,
+stir_rate and temperature program data in an experiment.
+Data is shared to avoid duplicating data
+if several reactor access the same temperature, time, etc… data. This data is
+passed to the reactor because it influences the reactor transmission values.</p>
+<p>Indices in the time, transmission, temperature and stir rate lists all match up</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solvent</strong> – name of the solvent</p></li>
+<li><p><strong>polymer</strong> – name of the polymer</p></li>
+<li><p><strong>conc</strong> – concentration of the polymer in the solvent</p></li>
+<li><p><strong>temperature_program</strong> – Program used to tune and define the crystal 16 run</p></li>
+<li><p><strong>transmission</strong> – list of transmission values.</p></li>
+<li><p><strong>time_since_experiment_start</strong> – Time unit and list of values for the experiment.</p></li>
+<li><p><strong>actual_temperature</strong> – Temperature unit and list of values for the experiment’s
+true temperatures</p></li>
+<li><p><strong>set_temperature</strong> – Temperature unit and list of values for the experiment’s
+set temperatures</p></li>
+<li><p><strong>stir_rate</strong> – Stirring rate unit and list of values for the experiment. Unknown
+why this is different than bottom stir_rate</p></li>
+<li><p><strong>bottom_stir_rate</strong> – Stiring rate of the bottom stirer</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureChange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">TemperatureChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.TemperatureSettingEnum" title="csst.experiment.models.TemperatureSettingEnum"><span class="pre">TemperatureSettingEnum</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><span class="pre">PropertyValue</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><span class="pre">PropertyValue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.TemperatureChange" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Temperature change model for temperature program</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>setting</strong> – If the change is to heat or cool.</p></li>
+<li><p><strong>to</strong> – New temperature value to cool too.</p></li>
+<li><p><strong>rate</strong> – Rate of change for the temperature value.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureHold">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">TemperatureHold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><span class="pre">PropertyValue</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">for_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><span class="pre">PropertyValue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.TemperatureHold" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Temperature hold model for temperature program</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>at</strong> (<a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><em>PropertyValue</em></a>) – Temperature to hold program at</p></li>
+<li><p><strong>for_</strong> (<a class="reference internal" href="#csst.experiment.models.PropertyValue" title="csst.experiment.models.PropertyValue"><em>PropertyValue</em></a>) – How long to hold the program at the specified temperature</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureProgram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">TemperatureProgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvent_tune</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#csst.experiment.models.TemperatureChange" title="csst.experiment.models.TemperatureChange"><span class="pre">TemperatureChange</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#csst.experiment.models.TemperatureHold" title="csst.experiment.models.TemperatureHold"><span class="pre">TemperatureHold</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_load</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#csst.experiment.models.TemperatureChange" title="csst.experiment.models.TemperatureChange"><span class="pre">TemperatureChange</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#csst.experiment.models.TemperatureHold" title="csst.experiment.models.TemperatureHold"><span class="pre">TemperatureHold</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#csst.experiment.models.TemperatureChange" title="csst.experiment.models.TemperatureChange"><span class="pre">TemperatureChange</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#csst.experiment.models.TemperatureHold" title="csst.experiment.models.TemperatureHold"><span class="pre">TemperatureHold</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.TemperatureProgram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Temperature program an experiment runs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block</strong> – Block samples are loaded in to (e.g., ‘A’, ‘B’…)</p></li>
+<li><p><strong>solvent_tune</strong> – Tuning process for the solvent prior to loading samples</p></li>
+<li><p><strong>sample_load</strong> – Temperature samples held at while polymers loaded into the solvent</p></li>
+<li><p><strong>experiment</strong> – Temperature program for the experiment after tuning and loading</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class enum">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureSettingEnum">
+<em class="property"><span class="pre">enum</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.experiment.models.</span></span><span class="sig-name descname"><span class="pre">TemperatureSettingEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.TemperatureSettingEnum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Member Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+<p>Valid values are as follows:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureSettingEnum.HEAT">
+<span class="sig-name descname"><span class="pre">HEAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TemperatureSettingEnum.HEAT:</span> <span class="pre">'heat'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.TemperatureSettingEnum.HEAT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureSettingEnum.COOL">
+<span class="sig-name descname"><span class="pre">COOL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TemperatureSettingEnum.COOL:</span> <span class="pre">'cool'&gt;</span></em><a class="headerlink" href="#csst.experiment.models.TemperatureSettingEnum.COOL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code> and its members also have the following methods:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureSettingEnum._generate_next_value_">
+<span class="sig-name descname"><span class="pre">_generate_next_value_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.models.TemperatureSettingEnum._generate_next_value_" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the next value when not given.</p>
+<p>name: the name of the member
+start: the initial start value or None
+count: the number of existing members
+last_value: the last value assigned or None</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="csst.experiment.models.TemperatureSettingEnum._member_type_">
+<span class="sig-name descname"><span class="pre">_member_type_</span></span><a class="headerlink" href="#csst.experiment.models.TemperatureSettingEnum._member_type_" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<span class="target" id="module-csst.experiment.helpers"></span><section id="helpers">
+<h2>Helpers<a class="headerlink" href="#helpers" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="csst.experiment.helpers.try_parsing_date">
+<span class="sig-prename descclassname"><span class="pre">csst.experiment.helpers.</span></span><span class="sig-name descname"><span class="pre">try_parsing_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.experiment.helpers.try_parsing_date" title="Permalink to this definition"></a></dt>
+<dd><p>Parse multiple date types or raise ValueError</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to CSST Analyzer’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="processor.html" class="btn btn-neutral float-right" title="Processor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Joe Kern.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

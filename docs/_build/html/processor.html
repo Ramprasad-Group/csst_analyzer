@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Processor &mdash; CSST Analyzer v1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Analyzer" href="analyzer.html" />
+    <link rel="prev" title="Experiment" href="experiment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CSST Analyzer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">Experiment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Processor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Processor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#csst.processor.process_reactor"><code class="docutils literal notranslate"><span class="pre">process_reactor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.processor.process_reactor_transmission_at_temp"><code class="docutils literal notranslate"><span class="pre">process_reactor_transmission_at_temp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.processor.process_reactor_transmission_at_temps"><code class="docutils literal notranslate"><span class="pre">process_reactor_transmission_at_temps()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#csst.processor.models.ProcessedReactor"><code class="docutils literal notranslate"><span class="pre">ProcessedReactor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#csst.processor.models.ProcessedTemperature"><code class="docutils literal notranslate"><span class="pre">ProcessedTemperature</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzer</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CSST Analyzer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Processor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/processor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-csst.processor">
+<span id="processor"></span><h1>Processor<a class="headerlink" href="#module-csst.processor" title="Permalink to this heading"></a></h1>
+<section id="id1">
+<h2>Processor<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="csst.processor.process_reactor">
+<span class="sig-prename descclassname"><span class="pre">csst.processor.</span></span><span class="sig-name descname"><span class="pre">process_reactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="experiment.html#csst.experiment.models.Reactor" title="csst.experiment.models.Reactor"><span class="pre">Reactor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#csst.processor.models.ProcessedReactor" title="csst.processor.models.ProcessedReactor"><span class="pre">ProcessedReactor</span></a></span></span><a class="headerlink" href="#csst.processor.process_reactor" title="Permalink to this definition"></a></dt>
+<dd><p>Process all reactor transmission data</p>
+<p>Find the floor of the min actual temperature and ceil of the max actual temperature,
+then process each integer temperature +/- 0.5</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reactor</strong> – reactor to process</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="csst.processor.process_reactor_transmission_at_temp">
+<span class="sig-prename descclassname"><span class="pre">csst.processor.</span></span><span class="sig-name descname"><span class="pre">process_reactor_transmission_at_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="experiment.html#csst.experiment.models.Reactor" title="csst.experiment.models.Reactor"><span class="pre">Reactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#csst.processor.models.ProcessedTemperature" title="csst.processor.models.ProcessedTemperature"><span class="pre">ProcessedTemperature</span></a></span></span><a class="headerlink" href="#csst.processor.process_reactor_transmission_at_temp" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the average transmission at temperature for the reactor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactor</strong> – reactor to process</p></li>
+<li><p><strong>temp</strong> – temperature to process at</p></li>
+<li><p><strong>temp_range</strong> – the range of temperatures the transmission is processed from
+(e.g., average_temperature +- (temperature_range / 2)) non-inclusive of
+the upper value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Process transmission value or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="csst.processor.process_reactor_transmission_at_temps">
+<span class="sig-prename descclassname"><span class="pre">csst.processor.</span></span><span class="sig-name descname"><span class="pre">process_reactor_transmission_at_temps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="experiment.html#csst.experiment.models.Reactor" title="csst.experiment.models.Reactor"><span class="pre">Reactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#csst.processor.models.ProcessedTemperature" title="csst.processor.models.ProcessedTemperature"><span class="pre">ProcessedTemperature</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#csst.processor.process_reactor_transmission_at_temps" title="Permalink to this definition"></a></dt>
+<dd><p>Process the transmission values of the reactor at passed temps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reactor</strong> – reactor to process</p></li>
+<li><p><strong>temps</strong> – temperatures to process</p></li>
+<li><p><strong>temp_range</strong> – the range of temperatures the transmission is processed from
+(e.g., average_temperature +- (temperature_range / 2)) non-inclusive of
+the upper value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<span class="target" id="module-csst.processor.models"></span><section id="models">
+<h2>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.processor.models.ProcessedReactor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.processor.models.</span></span><span class="sig-name descname"><span class="pre">ProcessedReactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unprocessed_reactor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="experiment.html#csst.experiment.models.Reactor" title="csst.experiment.models.Reactor"><span class="pre">Reactor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#csst.processor.models.ProcessedTemperature" title="csst.processor.models.ProcessedTemperature"><span class="pre">ProcessedTemperature</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.processor.models.ProcessedReactor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Reactor that has been processed by the processor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unprocessed_reactor</strong> – The original, unprocessed reactor. All of its attributes
+are then accessible from the processed reactor.</p></li>
+<li><p><strong>temperatures</strong> – List of processed temperatures.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="csst.processor.models.ProcessedTemperature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">csst.processor.models.</span></span><span class="sig-name descname"><span class="pre">ProcessedTemperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">average_transmission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">median_transmission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transmission_std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#csst.processor.models.ProcessedTemperature" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>model for processed temperature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>average_temperature</strong> – the average temperature the transmission is processed from</p></li>
+<li><p><strong>temperature_range</strong> – the range of temperatures the transmission is processed from
+(e.g., average_temperature +- (temperature_range / 2))</p></li>
+<li><p><strong>average_transmission</strong> – the average transmission</p></li>
+<li><p><strong>median_transmission</strong> – the median transmission</p></li>
+<li><p><strong>transmission_std</strong> – standard deviation of the transmissions</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experiment.html" class="btn btn-neutral float-left" title="Experiment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analyzer.html" class="btn btn-neutral float-right" title="Analyzer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Joe Kern.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

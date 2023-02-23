@@ -17,7 +17,7 @@ def process_reactor(reactor: Reactor) -> ProcessedReactor:
     """Process all reactor transmission data
 
     Find the floor of the min actual temperature and ceil of the max actual temperature,
-    then process each integer temperature +/- 0.5
+    then process each integer temperature +/- 0.5. Skips the first 
 
     Args:
         reactor: reactor to process

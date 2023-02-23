@@ -16,15 +16,32 @@ class PropertyNameEnum(str, Enum):
 
 
 class PropertyValue(BaseModel):
+    """Generic class to hold a single property value
+
+    Args:
+        name: Name of the property being stored. Only those in PropertyNameEnum are
+            allowed to check for as the package is not designed for other properties.
+        unit: Unit of the property (e.g., K (Kelvin), mg/ml, etc...)
+        value: Float value of the property
+    """
     name: PropertyNameEnum
     unit: str
     value: float
 
     def __str__(self):
-        return f"{self.name} ({self.unit})"
+        """String representation is the name, value and unit"""
+        return f"{self.name.value} is {self.value} {self.unit}"
 
 
 class PropertyValues(BaseModel):
+    """Generic class to hold a list or 1d numpy array of property values
+
+    Args:
+        name: Name of the property being stored. Only those in PropertyNameEnum are
+            allowed to check for as the package is not designed for other properties.
+        unit: Unit of the property (e.g., K (Kelvin), mg/ml, etc...)
+        value: List or 1d numpy array of the property values
+    """
     name: PropertyNameEnum
     unit: str
     values: Union[List[float], np.ndarray]
@@ -34,6 +51,7 @@ class PropertyValues(BaseModel):
         arbitrary_types_allowed = True
 
     def __str__(self):
+        """String representation is just the name (unit) since values would be long"""
         return f"{self.name} ({self.unit})"
 
 
@@ -43,12 +61,25 @@ class TemperatureSettingEnum(str, Enum):
 
 
 class TemperatureChange(BaseModel):
+    """Temperature change model for temperature program
+
+    Args:
+        setting: If the change is to heat or cool.
+        to: New temperature value to cool too.
+        rate: Rate of change for the temperature value.
+    """
     setting: TemperatureSettingEnum
     to: PropertyValue
     rate: PropertyValue
 
 
 class TemperatureHold(BaseModel):
+    """Temperature hold model for temperature program
+
+    Args:
+        at: Temperature to hold program at
+        for\_: How long to hold the program at the specified temperature
+    """
     at: PropertyValue
     for_: PropertyValue
 
@@ -109,4 +140,5 @@ class Reactor(BaseModel):
     bottom_stir_rate: PropertyValue
 
     def __str__(self):
+        """String representation is the polymer in the solvent at the specific concentration"""
         return f"{self.conc.value} {self.conc.unit} {self.polymer} in {self.solvent}"
