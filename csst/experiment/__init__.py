@@ -23,7 +23,8 @@ class Experiment:
         experiment_number (str):
         project (str):
         lab_journal (str):
-        description (str):
+        description (List[str]): Description information with each new line of the
+            description appended to a list
         start_of_experiment (datetime.datetime):
             date the experiment started
         temperature_program (TemperatureProgram):
