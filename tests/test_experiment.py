@@ -15,6 +15,7 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
     assert csste_1014.experimenter == manual_1014.experimenter
     assert csste_1014.project == manual_1014.project
     assert csste_1014.lab_journal == manual_1014.lab_journal
+    print(csste_1014.description)
     assert csste_1014.description == manual_1014.description
     assert csste_1014.start_of_experiment == manual_1014.start_of_experiment
 

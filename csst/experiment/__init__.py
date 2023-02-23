@@ -91,6 +91,8 @@ class Experiment:
         # load header data and find where the Temperature Program starts
         # initialize reactor data
         reactors = {}
+        description = False
+        description_text = []
         for line in f:
             # remove newline characters and csv commas
             line = line.strip("\n")
@@ -98,42 +100,50 @@ class Experiment:
             # found temperature program start
             if "Temperature Program" in line:
                 break
-            line = line.split(",")
-            if line[0] == "Experiment details":
-                if len(line) > 1:
-                    self.experiment_details = line[1]
-            elif line[0] == "ExperimentNumber":
-                if len(line) > 1:
-                    self.experiment_number = line[1]
-            elif line[0] == "Experimentor":
-                if len(line) > 1:
-                    self.experimenter = line[1]
-            elif line[0] == "Project":
-                if len(line) > 1:
-                    self.project = line[1]
-            elif line[0] == "Labjournal":
-                if len(line) > 1:
-                    self.lab_journal = line[1]
-            elif line[0] == "Description":
-                if len(line) > 1:
-                    self.description = line[1]
-            elif line[0] == "Start of Experiment":
-                if len(line) > 1:
-                    self.start_of_experiment = try_parsing_date(line[1])
-            elif "Reactor" in line[0]:
-                # e.g., Reactor1,5 mg/ml PEG in TOL
-                reactor_data = line[1].split()
-                # Ignore reactors that are empty
-                if float(reactor_data[0]) != 0:
-                    reactors[line[0].strip()] = {
-                        "conc": PropertyValue(
-                            name="concentration",
-                            value=float(reactor_data[0]),
-                            unit=reactor_data[1].strip(),
-                        ),
-                        "polymer": reactor_data[2].strip(),
-                        "solvent": reactor_data[4].strip(),
-                    }
+            # description saved between description keyword and start of experiment
+            # keyword
+            elif description and "Start of Experiment" not in line:
+                description_text.append(line.strip())
+            else:
+                line = line.split(",")
+                if line[0] == "Experiment details":
+                    if len(line) > 1:
+                        self.experiment_details = line[1]
+                elif line[0] == "ExperimentNumber":
+                    if len(line) > 1:
+                        self.experiment_number = line[1]
+                elif line[0] == "Experimentor":
+                    if len(line) > 1:
+                        self.experimenter = line[1]
+                elif line[0] == "Project":
+                    if len(line) > 1:
+                        self.project = line[1]
+                elif line[0] == "Labjournal":
+                    if len(line) > 1:
+                        self.lab_journal = line[1]
+                elif line[0] == "Description":
+                    description = True
+                    if len(line) > 1:
+                        description_text.append(line[1])
+                elif line[0] == "Start of Experiment":
+                    description = False
+                    self.description = description_text
+                    if len(line) > 1:
+                        self.start_of_experiment = try_parsing_date(line[1])
+                elif "Reactor" in line[0]:
+                    # e.g., Reactor1,5 mg/ml PEG in TOL
+                    reactor_data = line[1].split()
+                    # Ignore reactors that are empty
+                    if float(reactor_data[0]) != 0:
+                        reactors[line[0].strip()] = {
+                            "conc": PropertyValue(
+                                name="concentration",
+                                value=float(reactor_data[0]),
+                                unit=reactor_data[1].strip(),
+                            ),
+                            "polymer": reactor_data[2].strip(),
+                            "solvent": reactor_data[4].strip(),
+                        }
 
         # Load temperature program
         block = None

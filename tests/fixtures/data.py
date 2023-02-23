@@ -39,7 +39,15 @@ def manual_1014():
     csste.experimenter = "tester"
     csste.project = "example data version 1014"
     csste.lab_journal = None
-    csste.description = "test"
+    csste.description = [
+        "test",
+        "CAS: ###-##-#",
+        "density:0.##",
+        "Different concentratin of # - ## - ### mg/ mL  is being tested along with temprature going from 10-60 C",
+        "Temp ramp rate: 0.5 C/min",
+        "Mixing speed: 900 RPM",
+        "Hold time: 1 hr(hot)-2hrs (cold)"
+    ]
     csste.start_of_experiment = datetime.datetime(
         year=2022, month=8, day=19, hour=13, minute=54
     )

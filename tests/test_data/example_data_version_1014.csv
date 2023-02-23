@@ -14,6 +14,12 @@ Labjournal,,,,,,,,
 ,,,,,,,,
 ,,,,,,,,
 Description,test,,,,,,,
+CAS: ###-##-#
+density:0.##
+Different concentratin of # - ## - ### mg/ mL  is being tested along with temprature going from 10-60 C
+Temp ramp rate: 0.5 C/min
+Mixing speed: 900 RPM
+Hold time: 1 hr(hot)-2hrs (cold)
 Start of Experiment,8/19/22 13:54,,,,,,,
 ,,,,,,,,
 Temperature Program,,,,,,,,
