@@ -31,5 +31,6 @@ class ProcessedReactor(BaseModel):
             are then accessible from the processed reactor.
         temperatures: List of processed temperatures.
     """
+
     unprocessed_reactor: Reactor
     temperatures: List[ProcessedTemperature]

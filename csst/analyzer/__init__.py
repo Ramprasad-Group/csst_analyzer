@@ -16,8 +16,8 @@ class Analyzer:
     Attributes:
         processed_reactors (List[ProcessedReactor]): List of processed reactors.
         unprocessed_df (pd.DataFrame): Pandas dataframe of all unprocessed reactor data.
-            Columns are 'reactor', 'polymer', 'solvent', 
-            'concentration', 'concentration_unit', 'set_temperature', 'temperature', 
+            Columns are 'reactor', 'polymer', 'solvent',
+            'concentration', 'concentration_unit', 'set_temperature', 'temperature',
             'temperature_unit', 'transmission', 'transmission_unit', 'time',
             'time_unit', 'stir_rate', 'stir_rate_unit', 'bottom_stir_rate',
             and 'bottom_stir_rate_unit'
@@ -37,7 +37,7 @@ class Analyzer:
             "temperature_unit",
         ]
         unproc_columns = [
-            "temperature", 
+            "temperature",
             "transmission",
             "set_temperature",
             "time",

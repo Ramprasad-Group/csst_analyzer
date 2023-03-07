@@ -174,5 +174,6 @@ Resulting in the following image:
 
 
 ## Developer TODOs
-- [ ] Load descriptions from CSST files
+- [x] Load descriptions from CSST files
 - [ ] Parse descriptions from CSST files
+- [ ] Skip tuning sections of data collection prior to processing

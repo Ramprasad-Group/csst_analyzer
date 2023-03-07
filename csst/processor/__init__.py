@@ -5,7 +5,8 @@ from math import floor, ceil
 import numpy as np
 
 from csst.processor.models import ProcessedTemperature, ProcessedReactor
-from csst.experiment.models import Reactor
+from csst.processor.helpers import find_index_after_sample_tune_and_load
+from csst.experiment.models import Reactor, TemperatureHold
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ def process_reactor(reactor: Reactor) -> ProcessedReactor:
     """Process all reactor transmission data
 
     Find the floor of the min actual temperature and ceil of the max actual temperature,
-    then process each integer temperature +/- 0.5. Skips the first 
+    then process each integer temperature +/- 0.5.
 
     Args:
         reactor: reactor to process
@@ -58,7 +59,10 @@ def process_reactor_transmission_at_temps(
 def process_reactor_transmission_at_temp(
     reactor: Reactor, temp: float, temp_range: float = 0
 ) -> Union[None, ProcessedTemperature]:
-    """Returns the average transmission at temperature for the reactor
+    """Returns the processed transmission values at the set temperature for the reactor
+
+    Data collected from the temperature program solvent tune and sample load stages
+    is skipped, as well as the first two minutes of data collected
 
     Args:
         reactor: reactor to process
@@ -70,9 +74,10 @@ def process_reactor_transmission_at_temp(
     Returns:
         Process transmission value or None
     """
+
     half_range = temp_range / 2
     # where returns a tuple but since this is a 1d array, the tuple has one element
-    # that is the list of indices
+    # that is the list of indices.
     if temp_range == 0:
         temp_indices = np.where(reactor.actual_temperature.values == temp)[0]
     else:
@@ -82,6 +87,8 @@ def process_reactor_transmission_at_temp(
                 & (reactor.actual_temperature.values >= temp - half_range)
             )
         )[0]
+    start_ind = find_index_after_sample_tune_and_load(reactor)
+    temp_indices = temp_indices[temp_indices >= start_ind]
     if len(temp_indices) == 0:
         logger.debug(
             f"No index found at temperature {temp} +/- " + f"{round(temp_range / 2, 2)}"

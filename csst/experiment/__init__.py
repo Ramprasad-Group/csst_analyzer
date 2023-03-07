@@ -136,15 +136,18 @@ class Experiment:
                     reactor_data = line[1].split()
                     # Ignore reactors that are empty
                     if float(reactor_data[0]) != 0:
-                        reactors[line[0].strip()] = {
-                            "conc": PropertyValue(
-                                name="concentration",
-                                value=float(reactor_data[0]),
-                                unit=reactor_data[1].strip(),
-                            ),
-                            "polymer": reactor_data[2].strip(),
-                            "solvent": reactor_data[4].strip(),
-                        }
+                        try:
+                            reactors[line[0].strip()] = {
+                                "conc": PropertyValue(
+                                    name="concentration",
+                                    value=float(reactor_data[0]),
+                                    unit=reactor_data[1].strip(),
+                                ),
+                                "polymer": reactor_data[2].strip(),
+                                "solvent": reactor_data[4].strip(),
+                            }
+                        except KeyError:
+                            logger.info(f"{line} missing polymer or solvent")
 
         # Load temperature program
         block = None

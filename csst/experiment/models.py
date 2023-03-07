@@ -24,6 +24,7 @@ class PropertyValue(BaseModel):
         unit: Unit of the property (e.g., K (Kelvin), mg/ml, etc...)
         value: Float value of the property
     """
+
     name: PropertyNameEnum
     unit: str
     value: float
@@ -42,6 +43,7 @@ class PropertyValues(BaseModel):
         unit: Unit of the property (e.g., K (Kelvin), mg/ml, etc...)
         value: List or 1d numpy array of the property values
     """
+
     name: PropertyNameEnum
     unit: str
     values: Union[List[float], np.ndarray]
@@ -68,6 +70,7 @@ class TemperatureChange(BaseModel):
         to: New temperature value to cool too.
         rate: Rate of change for the temperature value.
     """
+
     setting: TemperatureSettingEnum
     to: PropertyValue
     rate: PropertyValue
@@ -80,6 +83,7 @@ class TemperatureHold(BaseModel):
         at: Temperature to hold program at
         for\_: How long to hold the program at the specified temperature
     """
+
     at: PropertyValue
     for_: PropertyValue
 

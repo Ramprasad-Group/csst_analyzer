@@ -144,20 +144,41 @@ def reactor():
     temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
     trans = [5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
     """
-    time = PropertyValues(name="time", unit="hours", values=np.linspace(0, 1, num=10))
-    temp = [5, 10, 15, 20, 20, 20, 20, 15, 10, 5]
+    time = PropertyValues(name="time", unit="hours", values=np.linspace(0, 1.4, num=14))
+    temp = [0, 0, 0, 0, 5, 10, 15, 20, 20, 20, 20, 15, 10, 5]
     actual_temperature = PropertyValues(
         name="temperature", unit="C", values=np.array(temp)
     )
-    trans = [5, 20, 50, 78, 79, 80, 78, 45, 22, 4]
+    trans = [0, 0, 0, 0, 5, 20, 50, 78, 79, 80, 78, 45, 22, 4]
     transmission = PropertyValues(name="transmission", unit="%", values=np.array(trans))
     stir = [0 for i in trans]
     stirs = PropertyValues(name="stir_rate", unit="rpm", values=np.array(stir))
+    tuning = [
+        TemperatureChange(
+            setting=TemperatureSettingEnum.HEAT,
+            to=PropertyValue(name="temperature", value=20, unit="°C"),
+            rate=PropertyValue(name="temperature_change_rate", value=20, unit="°C/min"),
+        ),
+        TemperatureHold(
+            at=PropertyValue(name="temperature", value=20, unit="°C"),
+            for_=PropertyValue(name="time", value=360, unit="sec"),
+        ),
+    ]
+    sample_load = [
+        TemperatureHold(
+            at=PropertyValue(name="temperature", value=20, unit="°C"),
+            for_=PropertyValue(name="time", value=720, unit="sec"),
+        )
+    ]
+    temperature_program = TemperatureProgram(
+        block="A", solvent_tune=tuning, sample_load=sample_load, experiment=[]
+    )
+
     return Reactor.construct(
         solvent="test_solvent",
         polymer="test_polymer",
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
-        temperature_program=None,
+        temperature_program=temperature_program,
         set_temperature=actual_temperature,
         stir_rates=stirs,
         bottom_stir_rate=PropertyValue(name="bottom_stir_rate", value=900, unit="rpm"),

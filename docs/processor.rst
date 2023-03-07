@@ -10,3 +10,8 @@ Processor
 
    Models
    ======
+
+.. automodule:: csst.processor.helpers
+
+   Helpers
+   =======

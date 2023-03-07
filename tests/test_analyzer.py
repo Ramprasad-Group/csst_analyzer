@@ -17,8 +17,12 @@ def test_analyzer_add_reactor(reactor):
     assert analyzer.df.average_temperature.to_list() == [5, 10, 15, 20]
     temps = analyzer.unprocessed_df.temperature.to_list()
     temps.sort()
-    assert temps == [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
+    assert temps == [0, 0, 0, 0, 5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
     assert analyzer.unprocessed_df.transmission.to_list() == [
+        0,
+        0,
+        0,
+        0,
         5,
         20,
         50,
