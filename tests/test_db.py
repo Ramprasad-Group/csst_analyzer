@@ -5,12 +5,13 @@ import pytest
 # test if db and db_dev dependencies installed
 try:
     from pinrex import db
-    from sqlalchemy_utils import database_exists, create_database
 except ImportError:
     _db_option = False
 else:
     _db_option = True
 
+if _db_option:
+    from pinrex.db.models.polymer import Polymer
 
 def test_if_dependencies_installed():
     if not _db_option:
@@ -23,6 +24,5 @@ def test_if_dependencies_installed():
             returncode=5,
         )
 
-
-def test_connection(ssh_connection):
-    print(f"port is {os.environ.get('SSH_TUNNEL_HOST')}")
+def test_connection(session):
+    assert session.query(Polymer).first().smiles == "[*]SCCCC([*])=O"

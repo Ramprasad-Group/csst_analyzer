@@ -5,6 +5,7 @@ import pytest
 
 try:
     from csst.experiment import _db
+    from sqlalchemy_utils import database_exists, create_database
 except ImportError:
     _db_option = False
 else:
@@ -16,8 +17,23 @@ if _db_option:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker, scoped_session
     from sshtunnel import SSHTunnelForwarder
+    from pinrex.db.models.polymer import Polymer
+    from pinrex.db import Base
 
 if _db_option:
+    def seed_database(session):
+        polymers = [
+            {
+                "smiles": "[*]SCCCC([*])=O",
+                "fingerprint": {"temp": 1},
+                "category": "virtual_forward_synthesis",
+                "canonical_smiles": "[*]CCCSC([*])=O",
+            }
+        ]
+        for polymer in polymers:
+            session.add(Polymer(**polymer))
+
+        session.commit()
 
     @pytest.fixture(scope="module")
     def server():
@@ -45,7 +61,7 @@ if _db_option:
         server.stop()
 
     @pytest.fixture(scope="module")
-    def test_db(server):
+    def engine(server):
         db_server = "postgresql+psycopg2://{}:{}@{}:{}/{}_test".format(
             os.environ.get("CSST_DB_USER"),
             os.environ.get("CSST_DB_PASSWORD"),
@@ -56,9 +72,28 @@ if _db_option:
         engine = create_engine(db_server)
         if not database_exists(engine.url):
             create_database(engine.url)
-        else:
-            raise FileExistsError(
-                "Database already exists. Since the database is "
-                + "dropped at the end of testing, stopping the test."
-            )
+#         else:
+#             raise FileExistsError(
+#                 "Database already exists. Since the database is "
+#                 + "dropped at the end of testing, stopping the test."
+#             )
         return engine
+
+    @pytest.fixture(scope="module")
+    def setup_database(engine):
+        Base.metadata.create_all(engine)
+
+        yield
+
+        Base.metadata.drop_all(engine)
+
+    @pytest.fixture(scope="module")
+    def session(engine, setup_database):
+        connection = engine.connect()
+        transaction = connection.begin()
+        session = scoped_session(
+            sessionmaker(autocommit=False, autoflush=False, bind=connection)
+        )
+        seed_database(session)
+        yield session
+        transaction.rollback()
