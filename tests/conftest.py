@@ -2,10 +2,9 @@ from pathlib import Path
 import os
 
 import pytest
-
 try:
     from csst.experiment import _db
-    from sqlalchemy_utils import database_exists, create_database
+    from sqlalchemy_utils import database_exists, create_database, drop_database
 except ImportError:
     _db_option = False
 else:
@@ -72,12 +71,14 @@ if _db_option:
         engine = create_engine(db_server)
         if not database_exists(engine.url):
             create_database(engine.url)
-#         else:
-#             raise FileExistsError(
-#                 "Database already exists. Since the database is "
-#                 + "dropped at the end of testing, stopping the test."
-#             )
-        return engine
+        else:
+            raise FileExistsError(
+                "Database already exists. Since the database is "
+                + "dropped at the end of testing, stopping the test."
+            )
+        yield engine
+
+        drop_database(engine.url)
 
     @pytest.fixture(scope="module")
     def setup_database(engine):
