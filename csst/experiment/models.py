@@ -81,7 +81,7 @@ class TemperatureHold(BaseModel):
 
     Args:
         at: Temperature to hold program at
-        for\_: How long to hold the program at the specified temperature
+        for\\_: How long to hold the program at the specified temperature
     """
 
     at: PropertyValue
