@@ -2,13 +2,13 @@ from datetime import datetime
 from typing import TextIO
 
 import pandas as pd
+
 try:
     import csst.experiment._db as db
 except ImportError:
     _db_option = False
 else:
     _db_option = True
-
 
 
 from csst.experiment.helpers import try_parsing_date
@@ -304,8 +304,9 @@ class Experiment:
                     bottom_stir_rate=self.bottom_stir_rate,
                 )
             )
-    
+
     if _db_option:
+
         @classmethod
         def load_from_db(cls, data_path: str) -> "Experiment":
             pass

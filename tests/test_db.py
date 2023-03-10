@@ -1,5 +1,8 @@
+import os
+
 import pytest
 
+# test if db and db_dev dependencies installed
 try:
     from pinrex import db
     from sqlalchemy_utils import database_exists, create_database
@@ -8,11 +11,8 @@ except ImportError:
 else:
     _db_option = True
 
-if _db_option:
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import sessionmaker, scoped_session
 
-def test_database_connection():
+def test_if_dependencies_installed():
     if not _db_option:
         pytest.exit(
             reason=(
@@ -20,6 +20,9 @@ def test_database_connection():
                 + "dependencies are installed. Use `poetry install --with db,db_dev` "
                 + "to install them."
             ),
-            returncode=5
+            returncode=5,
         )
-    pass
+
+
+def test_connection(ssh_connection):
+    print(f"port is {os.environ.get('SSH_TUNNEL_HOST')}")
