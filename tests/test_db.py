@@ -25,4 +25,4 @@ pytest.importorskip(
 from pinrex.db.models.polymer import Polymer
 
 def test_connection(session):
-    assert session.query(Polymer).first().smiles == "[*]SCCCC([*])=O"
+    assert session.query(Polymer).first().smiles == "[*]CCO[*]"

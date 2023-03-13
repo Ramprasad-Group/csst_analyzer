@@ -16,22 +16,106 @@ if _db_option:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker, scoped_session
     from sshtunnel import SSHTunnelForwarder
-    from pinrex.db.models.polymer import Polymer
+    from pinrex.db.helpers import make_name_searchable
+    from pinrex.db.models.polymer import Polymer, PolymerName
+    from pinrex.db.models.solvent import Solvent, SolventName
+    from pinrex.db.models.lab import BrettmannLabPolymer, BrettmannLabSolvent
     from pinrex.db import Base
 
 if _db_option:
     def seed_database(session):
+        # polymers are PEG, PEO and PVP
+        # solvent is MeOH
         polymers = [
             {
-                "smiles": "[*]SCCCC([*])=O",
+                "id": 1,
+                "smiles": "[*]CCO[*]",
                 "fingerprint": {"temp": 1},
-                "category": "virtual_forward_synthesis",
-                "canonical_smiles": "[*]CCCSC([*])=O",
-            }
+                "category": "known",
+                "canonical_smiles": "[*]CCO[*]",
+            }, 
+            {
+                "id": 2,
+                "smiles": "[*]CC([*])N1CCCC1=O",
+                "fingerprint": {"temp": 1},
+                "category": "known",
+                "canonical_smiles": "[*]CC([*])N1CCCC1=O",
+            }, 
         ]
         for polymer in polymers:
             session.add(Polymer(**polymer))
+        session.commit()
+            
+        solvents = [
+            {
+                "id": 1,
+                "smiles": "CO",
+                "fingerprint": {"temp": 1}
+            }, 
+        ]
+        for solvent in solvents:
+            session.add(Solvent(**solvent))
+        session.commit()
 
+        polymer_names = [
+            {
+                "pol_id": 1,
+                "name": "PEG",
+                "search_name": make_name_searchable('PEG'),
+                "naming_convention": "abbreviation"
+            },
+            {
+                "pol_id": 1,
+                "name": "PEO",
+                "search_name": make_name_searchable('PEO'),
+                "naming_convention": "abbreviation"
+            },
+            {
+                "pol_id": 2,
+                "name": "PVP",
+                "search_name": make_name_searchable('PVP'),
+                "naming_convention": "abbreviation"
+            },
+        ]
+        for polymer in polymer_names:
+            session.add(PolymerName(**polymer))
+        session.commit()
+
+        solvent_names = [
+            {
+                "sol_id": 1,
+                "name": "MeOH",
+                "search_name": make_name_searchable('MeOH'),
+                "naming_convention": "abbreviation"
+            },
+        ]
+        for solvent in solvent_names:
+            session.add(SolventName(**solvent))
+        session.commit()
+
+        lab_solvents = [
+            {
+                "sol_id": 1,
+                "name": "methanol",
+                "percent_purity": 99
+            }
+        ]
+
+        for solvent in lab_solvents:
+            session.add(BrettmannLabSolvent(**solvent))
+        session.commit()
+
+        lab_polymers = [
+            {
+                "pol_id": 1,
+                "name": "PEG",
+                "number_average_mw_min": 9000,
+                "number_average_mw_max": 10000,
+                "supplier": "thermofischer"
+            }
+        ]
+        for polymer in lab_polymers:
+            session.add(BrettmannLabPolymer(**polymer))
         session.commit()
 
     @pytest.fixture(scope="module")
