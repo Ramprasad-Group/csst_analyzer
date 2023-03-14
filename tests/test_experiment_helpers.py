@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 
-from csst.experiment.helpers import try_parsing_date
+from csst.experiment.helpers import try_parsing_date, json_dumps
 
 
 def test_try_parsing_dates():
@@ -22,3 +22,12 @@ def test_try_parsing_dates():
 
     with pytest.raises(ValueError):
         try_parsing_date("January 6 2022")
+
+def test_json_dumps():
+    data = {
+        'test': 'data',
+        'atest2': 'data'
+    }
+    dump = json_dumps(data)
+    assert isinstance(dump, str)
+    assert dump == '{"atest2":"data","test":"data"}'

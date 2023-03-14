@@ -1,3 +1,5 @@
+from typing import Dict
+import json
 from datetime import datetime
 
 
@@ -11,3 +13,13 @@ def try_parsing_date(text):
         except ValueError:
             pass
     raise ValueError(f"{text} is not a valid datetime format")
+
+def json_dumps(data: Dict) -> str:
+    """Generates json dumps string of data in a deterministic manner"""
+    return json.dumps(
+        data,
+        ensure_ascii=False,
+        sort_keys=True,
+        indent=None,
+        separators=(',', ':'),
+    )

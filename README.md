@@ -177,3 +177,7 @@ Resulting in the following image:
 - [x] Load descriptions from CSST files
 - [ ] Parse descriptions from CSST files
 - [x] Skip tuning sections of data collection prior to processing
+- [ ] Add ability to upload raw data to a database
+- [ ] Add ability to load raw data from a database
+- [ ] Add ability to upload processed data to a database
+- [ ] Add ability to load processed data from a database

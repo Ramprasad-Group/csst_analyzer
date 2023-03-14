@@ -10,12 +10,12 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
     data file csste_1014 reads from
     """
     # test headers
+    assert csste_1014.file_name == manual_1014.file_name
     assert csste_1014.experiment_details == manual_1014.experiment_details
     assert csste_1014.experiment_number == manual_1014.experiment_number
     assert csste_1014.experimenter == manual_1014.experimenter
     assert csste_1014.project == manual_1014.project
     assert csste_1014.lab_journal == manual_1014.lab_journal
-    print(csste_1014.description)
     assert csste_1014.description == manual_1014.description
     assert csste_1014.start_of_experiment == manual_1014.start_of_experiment
 
@@ -88,3 +88,7 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
 
     csste_1014.reactors[0].actual_temperature.values[0] = 10000
     assert csste_1014.reactors[1].actual_temperature.values[0] == 10000
+
+def test_temperature_program_hash(manual_1014):
+    """This test will fail if the manual_1014 temperature program is changed at all"""
+    assert manual_1014.temperature_program.hash() == 'baa4a0e932fb273023e33317e51a5cc8'

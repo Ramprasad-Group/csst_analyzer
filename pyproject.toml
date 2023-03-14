@@ -18,7 +18,7 @@ pydantic = "^1.10.2"
 optional = true
 
 [tool.poetry.group.db.dependencies]
-pinrex-db-models = {git = "ssh://git@github.com/jdkern11/pinrex_db_models", rev = "v2.0.1" }
+pinrex-db-models = {git = "ssh://git@github.com/jdkern11/pinrex_db_models", rev = "v2.1.0" }
 sshtunnel = "^0.4.0"
 python-dotenv = "^1.0.0"
 

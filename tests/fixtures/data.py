@@ -34,6 +34,7 @@ def csste_1014():
 def manual_1014():
     """Manually reading of 1014 example data"""
     csste = Experiment()
+    csste.file_name = "example_data_version_1014.csv"
     csste.experiment_details = "example experiment details"
     csste.experiment_number = "0"
     csste.experimenter = "tester"
@@ -141,8 +142,8 @@ def reactor():
     """Handcrafted reactor for testing
 
     reactor values sorted by temp would be
-    temp = [5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
-    trans = [5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
+    temp = [0, 0, 0, 0, 5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
+    trans = [0, 0, 0, 0, 5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
     """
     time = PropertyValues(name="time", unit="hours", values=np.linspace(0, 1.4, num=14))
     temp = [0, 0, 0, 0, 5, 10, 15, 20, 20, 20, 20, 15, 10, 5]

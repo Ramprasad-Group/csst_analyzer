@@ -1,8 +1,11 @@
 from enum import Enum
+import hashlib
 from typing import List, Union
 
 import numpy as np
 from pydantic import BaseModel
+
+from csst.experiment.helpers import json_dumps
 
 
 class PropertyNameEnum(str, Enum):
@@ -102,6 +105,11 @@ class TemperatureProgram(BaseModel):
     solvent_tune: List[Union[TemperatureChange, TemperatureHold]]
     sample_load: List[Union[TemperatureChange, TemperatureHold]]
     experiment: List[Union[TemperatureChange, TemperatureHold]]
+
+    def hash(self) -> str:
+        """Generates deterministic hash in hex format of the temperature program"""
+        return hashlib.md5(json_dumps(self.json()).encode('utf-8')).digest().hex()
+        
 
 
 class Reactor(BaseModel):

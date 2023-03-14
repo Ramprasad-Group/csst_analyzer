@@ -1,3 +1,5 @@
+from typing import Dict
+from pathlib import Path
 from datetime import datetime
 from typing import TextIO
 
@@ -27,9 +29,11 @@ class Experiment:
     """Loads Crystal 16 Dissolition/Solubility Test Experiments
 
     Attributes:
-        version: version of the data file
+        file_name (str): name of the data file
+        version (str): version of the data file
         experiment_details (str):
         experiment_number (str):
+        experimenter (str):
         project (str):
         lab_journal (str):
         description (List[str]): Description information with each new line of the
@@ -61,6 +65,7 @@ class Experiment:
     def __init__(self):
         """Initialize attirbutes"""
         # experiment details
+        self.file_name = None
         self.version = None
         self.experiment_details = None
         self.experiment_number = None
@@ -79,6 +84,20 @@ class Experiment:
         self.stir_rates = None
         self.reactors = []
 
+    def dict(self) -> Dict[str, str]:
+        """Returns dictionary of experiment information, but no reactor, 
+        temperature program or file_name information"""
+        return {
+            'version': self.version,
+            'experiment_details': self.experiment_details,
+            'experiment_number': self.experiment_number,
+            'experimenter': self.experimenter,
+            'project': self.project,
+            'lab_journal': self.lab_journal,
+            'description': "\n".join(self.description),
+            'start_of_experiment': self.start_of_experiment
+        }
+
     @classmethod
     def load_from_file(cls, data_path: str) -> "Experiment":
         """Load data from a file"""
@@ -89,6 +108,7 @@ class Experiment:
             obj.version = first_line.split(",")[1].split(":")[1].strip()
             if obj.version == "1014":
                 obj._load_file_version_1014(f)
+        obj.file_name = Path(data_path).name
 
         return obj
 
