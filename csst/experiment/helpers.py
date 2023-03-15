@@ -14,6 +14,7 @@ def try_parsing_date(text):
             pass
     raise ValueError(f"{text} is not a valid datetime format")
 
+
 def json_dumps(data: Dict) -> str:
     """Generates json dumps string of data in a deterministic manner"""
     return json.dumps(
@@ -21,5 +22,5 @@ def json_dumps(data: Dict) -> str:
         ensure_ascii=False,
         sort_keys=True,
         indent=None,
-        separators=(',', ':'),
+        separators=(",", ":"),
     )

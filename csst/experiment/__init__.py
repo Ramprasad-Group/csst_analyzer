@@ -85,17 +85,17 @@ class Experiment:
         self.reactors = []
 
     def dict(self) -> Dict[str, str]:
-        """Returns dictionary of experiment information, but no reactor, 
+        """Returns dictionary of experiment information, but no reactor,
         temperature program or file_name information"""
         return {
-            'version': self.version,
-            'experiment_details': self.experiment_details,
-            'experiment_number': self.experiment_number,
-            'experimenter': self.experimenter,
-            'project': self.project,
-            'lab_journal': self.lab_journal,
-            'description': "\n".join(self.description),
-            'start_of_experiment': self.start_of_experiment
+            "version": self.version,
+            "experiment_details": self.experiment_details,
+            "experiment_number": self.experiment_number,
+            "experimenter": self.experimenter,
+            "project": self.project,
+            "lab_journal": self.lab_journal,
+            "description": "\n".join(self.description),
+            "start_of_experiment": self.start_of_experiment,
         }
 
     @classmethod

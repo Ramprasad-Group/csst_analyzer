@@ -34,6 +34,7 @@ def csste_1014():
 def manual_1014():
     """Manually reading of 1014 example data"""
     csste = Experiment()
+    csste.version = "test"
     csste.file_name = "example_data_version_1014.csv"
     csste.experiment_details = "example experiment details"
     csste.experiment_number = "0"
@@ -176,8 +177,8 @@ def reactor():
     )
 
     return Reactor.construct(
-        solvent="test_solvent",
-        polymer="test_polymer",
+        solvent="MeOH",
+        polymer="PEG",
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
         temperature_program=temperature_program,
         set_temperature=actual_temperature,

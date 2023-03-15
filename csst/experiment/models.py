@@ -108,8 +108,7 @@ class TemperatureProgram(BaseModel):
 
     def hash(self) -> str:
         """Generates deterministic hash in hex format of the temperature program"""
-        return hashlib.md5(json_dumps(self.json()).encode('utf-8')).digest().hex()
-        
+        return hashlib.md5(json_dumps(self.json()).encode("utf-8")).digest().hex()
 
 
 class Reactor(BaseModel):

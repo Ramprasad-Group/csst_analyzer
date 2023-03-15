@@ -23,11 +23,9 @@ def test_try_parsing_dates():
     with pytest.raises(ValueError):
         try_parsing_date("January 6 2022")
 
+
 def test_json_dumps():
-    data = {
-        'test': 'data',
-        'atest2': 'data'
-    }
+    data = {"test": "data", "atest2": "data"}
     dump = json_dumps(data)
     assert isinstance(dump, str)
     assert dump == '{"atest2":"data","test":"data"}'

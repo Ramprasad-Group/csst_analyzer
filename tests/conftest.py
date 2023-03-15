@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 
 import pytest
+
 try:
     from csst.experiment import _db
     from sqlalchemy_utils import database_exists, create_database, drop_database
@@ -20,6 +21,11 @@ if _db_option:
     from pinrex.db.models.polymer import Polymer, PolymerName
     from pinrex.db.models.solvent import Solvent, SolventName
     from pinrex.db.models.lab import BrettmannLabPolymer, BrettmannLabSolvent
+    from pinrex.db.models.csst import (
+        CSSTExperiment,
+        CSSTTemperatureProgram,
+        CSSTReactor,
+    )
     from pinrex.db import Base
 
 if _db_option:
@@ -78,7 +84,7 @@ if _db_option:
 
         Base.metadata.drop_all(engine)
 
-    @pytest.fixture(scope="module")
+    @pytest.fixture(scope="function")
     def session(engine, setup_database):
         connection = engine.connect()
         transaction = connection.begin()
@@ -90,6 +96,13 @@ if _db_option:
         transaction.rollback()
 
     def seed_database(session):
+        """Seeds database with items used during database testing
+
+        Note, if an id is set, no new items can be added without throwing an error
+        if the id of the new item == the set id. Indexing starts at 1, so if the id
+        is large it likely won't be reached. If the id is small, it assumes that
+        no new items will be added.
+        """
         # polymers are PEG, PEO and PVP
         # solvent is MeOH
         polymers = [
@@ -99,25 +112,21 @@ if _db_option:
                 "fingerprint": {"temp": 1},
                 "category": "known",
                 "canonical_smiles": "[*]CCO[*]",
-            }, 
+            },
             {
                 "id": 2,
                 "smiles": "[*]CC([*])N1CCCC1=O",
                 "fingerprint": {"temp": 1},
                 "category": "known",
                 "canonical_smiles": "[*]CC([*])N1CCCC1=O",
-            }, 
+            },
         ]
         for polymer in polymers:
             session.add(Polymer(**polymer))
         session.commit()
-            
+
         solvents = [
-            {
-                "id": 1,
-                "smiles": "CO",
-                "fingerprint": {"temp": 1}
-            }, 
+            {"id": 1, "smiles": "CO", "fingerprint": {"temp": 1}},
         ]
         for solvent in solvents:
             session.add(Solvent(**solvent))
@@ -127,20 +136,20 @@ if _db_option:
             {
                 "pol_id": 1,
                 "name": "PEG",
-                "search_name": make_name_searchable('PEG'),
-                "naming_convention": "abbreviation"
+                "search_name": make_name_searchable("PEG"),
+                "naming_convention": "abbreviation",
             },
             {
                 "pol_id": 1,
                 "name": "PEO",
-                "search_name": make_name_searchable('PEO'),
-                "naming_convention": "abbreviation"
+                "search_name": make_name_searchable("PEO"),
+                "naming_convention": "abbreviation",
             },
             {
                 "pol_id": 2,
                 "name": "PVP",
-                "search_name": make_name_searchable('PVP'),
-                "naming_convention": "abbreviation"
+                "search_name": make_name_searchable("PVP"),
+                "naming_convention": "abbreviation",
             },
         ]
         for polymer in polymer_names:
@@ -151,8 +160,14 @@ if _db_option:
             {
                 "sol_id": 1,
                 "name": "MeOH",
-                "search_name": make_name_searchable('MeOH'),
-                "naming_convention": "abbreviation"
+                "search_name": make_name_searchable("MeOH"),
+                "naming_convention": "abbreviation",
+            },
+            {
+                "sol_id": 1,
+                "name": "methanol",
+                "search_name": make_name_searchable("methanol"),
+                "naming_convention": "standard",
             },
         ]
         for solvent in solvent_names:
@@ -160,11 +175,7 @@ if _db_option:
         session.commit()
 
         lab_solvents = [
-            {
-                "sol_id": 1,
-                "name": "methanol",
-                "percent_purity": 99
-            }
+            {"id": 1, "sol_id": 1, "name": "methanol", "percent_purity": 99}
         ]
 
         for solvent in lab_solvents:
@@ -173,13 +184,58 @@ if _db_option:
 
         lab_polymers = [
             {
+                "id": 1,
                 "pol_id": 1,
                 "name": "PEG",
                 "number_average_mw_min": 9000,
                 "number_average_mw_max": 10000,
-                "supplier": "thermofischer"
-            }
+                "supplier": "thermofischer",
+            },
+            {
+                "id": 2,
+                "pol_id": 2,
+                "name": "PVP",
+                "number_average_mw_min": 11000,
+                "number_average_mw_max": 11000,
+                "supplier": "thermofischer",
+            },
         ]
         for polymer in lab_polymers:
             session.add(BrettmannLabPolymer(**polymer))
+        session.commit()
+
+        experiments = [
+            {"id": 10000, "version": "test"}  # make id large so clash doesn't occur
+        ]
+        for exp in experiments:
+            session.add(CSSTExperiment(**exp))
+        session.commit()
+
+        temp_programs = [
+            {
+                "id": 10000,  # make id large so clash doesn't occur
+                "block": "test",
+                "solvent_tune": [{}],
+                "sample_load": [{}],
+                "experiment": [{}],
+                "hash": "test",
+            }
+        ]
+        for temp_program in temp_programs:
+            session.add(CSSTTemperatureProgram(**temp_program))
+        session.commit()
+
+        reactors = [
+            {
+                "id": 10000,  # set to large number so clash doesn't occur
+                "bret_sol_id": 1,
+                "bret_pol_id": 1,
+                "csst_temperature_program_id": 10000,
+                "csst_experiment_id": 10000,
+                "conc": 0,
+                "conc_unit": "test",
+            }
+        ]
+        for reactor in reactors:
+            session.add(CSSTReactor(**reactor))
         session.commit()

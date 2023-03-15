@@ -10,8 +10,8 @@ def test_analyzer_add_reactor(reactor):
     assert len(analyzer.processed_reactors) == 0
     analyzer.add_reactor(reactor)
     assert len(analyzer.processed_reactors) == 1
-    assert list(analyzer.df.polymer.unique()) == ["test_polymer"]
-    assert list(analyzer.df.solvent.unique()) == ["test_solvent"]
+    assert list(analyzer.df.polymer.unique()) == ["PEG"]
+    assert list(analyzer.df.solvent.unique()) == ["MeOH"]
     assert list(analyzer.df.concentration_unit.unique()) == ["test_concentration"]
     assert analyzer.df.average_transmission.to_list() == [4.5, 21, 47.5, 78.75]
     assert analyzer.df.average_temperature.to_list() == [5, 10, 15, 20]
