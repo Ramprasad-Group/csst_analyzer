@@ -71,7 +71,7 @@ def load_from_db(
     obj.lab_journal = lab_journal
     obj.description = description
     obj.start_of_experiment = start_of_experiment
-    return db.getter.get_experiments(obj, Session)
+    return get_experiments_from_experiment_details(obj, Session)
 
 
 def get_experiments_from_experiment_details(
