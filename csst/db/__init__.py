@@ -2,14 +2,25 @@
 from typing import Union, List, Optional
 import logging
 from datetime import datetime
+logger = logging.getLogger(__name__)
 
-from sqlalchemy.orm.scoping import scoped_session
-from sqlalchemy.orm.session import Session
+try:
+    from sqlalchemy.orm.scoping import scoped_session
+    from sqlalchemy.orm.session import Session
+except ModuleNotFoundError:
+    msg = (
+        f"This subpackage can only be used if the optional database dependencies "
+        + "are installed and the database connection set up. Use "
+        + "`poetry install --with db` to install the dependencies and see the GitHub"
+        + " page for information on the database connection"
+    )
+    logger.warning(msg)
+    raise ModuleNotFoundError(msg)
+
 
 from csst.experiment import Experiment
 from csst.db import adder, getter
 
-logger = logging.getLogger(__name__)
 
 
 def add_experiment(experiment: Experiment, Session: Union[scoped_session, Session]):
