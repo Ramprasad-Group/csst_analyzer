@@ -10,7 +10,8 @@ from pinrex.db.models.csst import (
     CSSTTemperatureProgram,
     CSSTReactor,
     CSSTProperty,
-    CSSTReactorPropertyValue,
+    CSSTExperimentPropertyValue,
+    CSSTExperimentPropertyValues,
     CSSTReactorPropertyValues,
 )
 
@@ -21,7 +22,7 @@ from csst.experiment.models import (
     PropertyValues,
     TemperatureProgram,
 )
-from csst.experiment._db import getter
+from csst.db import getter
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +39,110 @@ def add_experiment(experiment: Experiment, Session: Union[scoped_session, Sessio
     with Session() as session:
         if session.query(CSSTExperiment).filter_by(**data).count() > 0:
             logger.info(f"{data} already added")
+            return
         else:
             data["file_name"] = experiment.file_name
             logger.info(f"Adding CSST Experiment {data} to the database")
-            session.add(CSSTExperiment(**data))
+            exp = CSSTExperiment(**data)
+            session.add(exp)
             session.commit()
+            session.refresh(exp)
+    add_experiment_property_value(exp.id, experiment.bottom_stir_rate, Session)
+    add_experiment_property_values(exp.id, experiment.actual_temperature, Session)
+    # use optional name since actual temperature will clash with set temperature
+    add_experiment_property_values(
+        exp.id, experiment.set_temperature, Session, "set_temperature"
+    )
+    add_experiment_property_values(
+        exp.id, experiment.time_since_experiment_start, Session
+    )
+    add_experiment_property_values(exp.id, experiment.stir_rates, Session)
+
+
+def add_experiment_property_values(
+    experiment_id: int,
+    prop: PropertyValues,
+    Session: Union[scoped_session, Session],
+    prop_name: Optional[str] = None,
+):
+    """Add experiment property values. Will add CSSTProperty if it is not present
+
+    Args:
+        experiment_id: CSSTExperiment id in database
+        prop: Property values to add
+        Session: session connected to the database
+        prop_name: Optional name to use instead of prop.name. Default None
+    """
+    if not isinstance(prop, PropertyValues):
+        msg = f"Only PropertyValues can be added, not type {type(prop)}"
+        logger.warning(msg)
+        raise ValueError(msg)
+    prop_data = {"name": prop.name, "unit": prop.unit}
+    if prop_name is not None:
+        prop_data["name"] = prop_name
+    add_property(prop_data, Session)
+    with Session() as session:
+        query = session.query(CSSTProperty).filter_by(**prop_data)
+        getter.raise_lookup_error_if_query_count_is_not_one(query, "prop", prop_data)
+        db_prop = query.first()
+        data = {
+            "csst_property_id": db_prop.id,
+            "csst_experiment_id": experiment_id,
+        }
+        query = session.query(CSSTExperimentPropertyValues).filter_by(**data)
+        if query.count() != 0:
+            msg = f"PropertyValues for {data} already added"
+            logger.warning(msg)
+            raise LookupError(msg)
+        values = prop.values
+        if isinstance(values, np.ndarray):
+            values = values.astype(np.float64)
+        for i in range(len(values)):
+            data["array_index"] = i
+            data["value"] = values[i]
+            session.add(CSSTExperimentPropertyValues(**data))
+        session.commit()
+
+
+def add_experiment_property_value(
+    experiment_id: int,
+    prop: PropertyValue,
+    Session: Union[scoped_session, Session],
+    prop_name: Optional[str] = None,
+):
+    """Add experiment property values. Will add CSSTProperty if it is not present
+
+    Args:
+        experiment_id: CSSTExperiment id in database
+        prop: Property to add
+        Session: session connected to the database
+        prop_name: Optional name to use instead of prop.name
+    """
+    if not isinstance(prop, PropertyValue):
+        msg = f"Only PropertyValue can be added, not type {type(prop)}"
+        logger.warning(msg)
+        raise ValueError(msg)
+    prop_data = {"name": prop.name, "unit": prop.unit}
+    if prop_name is not None:
+        prop_data["name"] = prop_name
+    add_property(prop_data, Session)
+    with Session() as session:
+        query = session.query(CSSTProperty).filter_by(**prop_data)
+        getter.raise_lookup_error_if_query_count_is_not_one(query, "prop", prop_data)
+        db_prop = query.first()
+        data = {
+            "csst_property_id": db_prop.id,
+            "csst_experiment_id": experiment_id,
+            "value": prop.value,
+        }
+        query = session.query(CSSTExperimentPropertyValue).filter_by(**data)
+        if query.count() == 0:
+            session.add(CSSTExperimentPropertyValue(**data))
+            session.commit()
+        else:
+            msg = f"PropertyValue {data} already added"
+            logger.warning(msg)
+            raise LookupError(msg)
 
 
 def add_temperature_program(
@@ -82,8 +182,8 @@ def add_experiment_reactors(
         Session: session connected to the database
     """
     # get temperature program and experiment ids
-    experiment_id = getter.get_experiment(experiment, Session).id
-    temperature_program_id = getter.get_temperature_program(
+    experiment_id = getter.get_csst_experiment(experiment, Session).id
+    temperature_program_id = getter.get_csst_temperature_program(
         experiment.temperature_program, Session
     ).id
     # add reactors
@@ -132,58 +232,7 @@ def add_reactor(
         session.add(db_reactor)
         session.commit()
         session.refresh(db_reactor)
-    add_reactor_property_value(db_reactor.id, reactor.bottom_stir_rate, Session)
     add_reactor_property_values(db_reactor.id, reactor.transmission, Session)
-    add_reactor_property_values(db_reactor.id, reactor.actual_temperature, Session)
-    # use optional name since actual temperature will clash with set temperature
-    add_reactor_property_values(
-        db_reactor.id, reactor.set_temperature, Session, "set_temperature"
-    )
-    add_reactor_property_values(
-        db_reactor.id, reactor.time_since_experiment_start, Session
-    )
-    add_reactor_property_values(db_reactor.id, reactor.stir_rates, Session)
-
-
-def add_reactor_property_value(
-    reactor_id: int,
-    prop: PropertyValue,
-    Session: Union[scoped_session, Session],
-    prop_name: Optional[str] = None,
-):
-    """Add reactor property values. Will add CSSTProperty if it is not present
-
-    Args:
-        reactor_id: CSSTReactor id in database
-        prop: Property to add
-        Session: session connected to the database
-        prop_name: Optional name to use instead of prop.name
-    """
-    if not isinstance(prop, PropertyValue):
-        msg = f"Only PropertyValue can be added, not type {type(prop)}"
-        logger.warning(msg)
-        raise ValueError(msg)
-    prop_data = {"name": prop.name, "unit": prop.unit}
-    if prop_name is not None:
-        prop_data["name"] = prop_name
-    add_property(prop_data, Session)
-    with Session() as session:
-        query = session.query(CSSTProperty).filter_by(**prop_data)
-        getter.raise_lookup_error_if_query_count_is_not_one(query, "prop", prop_data)
-        db_prop = query.first()
-        data = {
-            "csst_property_id": db_prop.id,
-            "csst_reactor_id": reactor_id,
-            "value": prop.value,
-        }
-        query = session.query(CSSTReactorPropertyValue).filter_by(**data)
-        if query.count() == 0:
-            session.add(CSSTReactorPropertyValue(**data))
-            session.commit()
-        else:
-            msg = f"PropertyValue {data} already added"
-            logger.warning(msg)
-            raise LookupError(msg)
 
 
 def add_reactor_property_values(

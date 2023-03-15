@@ -24,3 +24,7 @@ def json_dumps(data: Dict) -> str:
         indent=None,
         separators=(",", ":"),
     )
+
+
+def remove_keys_with_null_values_in_dict(data: Dict) -> Dict:
+    return {key: value for key, value in data.items() if value is not None}

@@ -1,12 +1,13 @@
 from pathlib import Path
+from datetime import datetime
 import os
 
 import pytest
 
 try:
-    from csst.experiment import _db
+    from csst import db
     from sqlalchemy_utils import database_exists, create_database, drop_database
-except ImportError:
+except ImportError as e:
     _db_option = False
 else:
     _db_option = True
@@ -25,8 +26,18 @@ if _db_option:
         CSSTExperiment,
         CSSTTemperatureProgram,
         CSSTReactor,
+        CSSTProperty,
+        CSSTExperimentPropertyValue,
+        CSSTReactorPropertyValues,
+        CSSTExperimentPropertyValues,
     )
     from pinrex.db import Base
+    from csst.experiment.models import (
+        PropertyNameEnum,
+        TemperatureSettingEnum,
+        TemperatureChange,
+        PropertyValue,
+    )
 
 if _db_option:
 
@@ -91,7 +102,12 @@ if _db_option:
         session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=connection)
         )
-        seed_database(session)
+        try:
+            seed_database(session)
+        except Exception as e:
+            print(e)
+            transaction.rollback()
+            return
         yield session
         transaction.rollback()
 
@@ -205,19 +221,48 @@ if _db_option:
         session.commit()
 
         experiments = [
-            {"id": 10000, "version": "test"}  # make id large so clash doesn't occur
+            {
+                "id": 10000,  # make id large so clash doesn't occur
+                "version": "test",
+                "file_name": "test1.csv",
+                "experiment_details": "test",
+                "experiment_number": "test",
+                "experimenter": "test",
+                "project": "test",
+                "lab_journal": "test",
+                "description": "test",
+                "start_of_experiment": datetime(year=1996, month=5, day=11),
+            },
+            {
+                "id": 10001,  # make id large so clash doesn't occur
+                "version": "test",
+                "file_name": "test2.csv",
+                "experiment_details": None,
+                "experiment_number": None,
+                "experimenter": "Joe",
+                "project": "test",
+                "lab_journal": "test",
+                "description": "test",
+                "start_of_experiment": datetime(year=1996, month=5, day=12),
+            },
         ]
         for exp in experiments:
             session.add(CSSTExperiment(**exp))
         session.commit()
 
+        default_step = TemperatureChange(
+            setting=TemperatureSettingEnum.HEAT,
+            to=PropertyValue(name="temperature", value=20, unit="°C"),
+            rate=PropertyValue(name="temperature_change_rate", value=20, unit="°C/min"),
+        )
+
         temp_programs = [
             {
                 "id": 10000,  # make id large so clash doesn't occur
                 "block": "test",
-                "solvent_tune": [{}],
-                "sample_load": [{}],
-                "experiment": [{}],
+                "solvent_tune": [default_step.dict()],
+                "sample_load": [default_step.dict()],
+                "experiment": [default_step.dict()],
                 "hash": "test",
             }
         ]
@@ -232,10 +277,100 @@ if _db_option:
                 "bret_pol_id": 1,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
-                "conc": 0,
+                "conc": 5,
                 "conc_unit": "test",
-            }
+            },
+            {
+                "id": 10001,  # set to large number so clash doesn't occur
+                "bret_sol_id": 1,
+                "bret_pol_id": 1,
+                "csst_temperature_program_id": 10000,
+                "csst_experiment_id": 10000,
+                "conc": 10,
+                "conc_unit": "test",
+            },
+            {
+                "id": 10002,  # set to large number so clash doesn't occur
+                "bret_sol_id": 1,
+                "bret_pol_id": 2,
+                "csst_temperature_program_id": 10000,
+                "csst_experiment_id": 10000,
+                "conc": 15,
+                "conc_unit": "test",
+            },
+            {
+                "id": 10003,  # set to large number so clash doesn't occur
+                "bret_sol_id": 1,
+                "bret_pol_id": 1,
+                "csst_temperature_program_id": 10000,
+                "csst_experiment_id": 10001,
+                "conc": 5,
+                "conc_unit": "test",
+            },
         ]
         for reactor in reactors:
             session.add(CSSTReactor(**reactor))
+        session.commit()
+        multi_reactor_properties = [
+            {"name": PropertyNameEnum.TRANS, "unit": "test"},
+        ]
+        for prop in multi_reactor_properties:
+            session.add(CSSTProperty(**prop))
+        session.commit()
+
+        # add fake data for every reactor
+        for i in range(10000, 10004):
+            # add 10 datapoints for each offset by 10 for each reactor based on reactor id
+            for prop in multi_reactor_properties:
+                prop_id = session.query(CSSTProperty).filter_by(**prop).first().id
+                ind = 0
+                for j in range(i * 10, i * 10 + 10):
+                    session.add(
+                        CSSTReactorPropertyValues(
+                            csst_reactor_id=i,
+                            csst_property_id=prop_id,
+                            value=j,
+                            array_index=ind,
+                        )
+                    )
+                    ind += 1
+
+        single_experiment_properties = [
+            {"name": PropertyNameEnum.BOTTOM_STIR_RATE, "unit": "test"},
+        ]
+        multi_experiment_properties = [
+            {"name": PropertyNameEnum.TEMP, "unit": "test"},
+            {"name": PropertyNameEnum.STIR_RATE, "unit": "test"},
+            {"name": PropertyNameEnum.TIME, "unit": "test"},
+            {"name": "set_temperature", "unit": "test"},
+        ]
+        for prop in single_experiment_properties:
+            session.add(CSSTProperty(**prop))
+        for prop in multi_experiment_properties:
+            session.add(CSSTProperty(**prop))
+        session.commit()
+
+        # add fake data for every experiment
+        for i in range(10000, 10002):
+            for prop in single_experiment_properties:
+                prop_id = session.query(CSSTProperty).filter_by(**prop).first().id
+                session.add(
+                    CSSTExperimentPropertyValue(
+                        csst_experiment_id=i, csst_property_id=prop_id, value=i
+                    )
+                )
+            for prop in multi_experiment_properties:
+                prop_id = session.query(CSSTProperty).filter_by(**prop).first().id
+                ind = 0
+                for j in range(i * 10, i * 10 + 10):
+                    session.add(
+                        CSSTExperimentPropertyValues(
+                            csst_experiment_id=i,
+                            csst_property_id=prop_id,
+                            value=j,
+                            array_index=ind,
+                        )
+                    )
+                    ind += 1
+
         session.commit()

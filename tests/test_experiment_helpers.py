@@ -1,7 +1,11 @@
 import pytest
 from datetime import datetime
 
-from csst.experiment.helpers import try_parsing_date, json_dumps
+from csst.experiment.helpers import (
+    try_parsing_date,
+    json_dumps,
+    remove_keys_with_null_values_in_dict,
+)
 
 
 def test_try_parsing_dates():
@@ -29,3 +33,12 @@ def test_json_dumps():
     dump = json_dumps(data)
     assert isinstance(dump, str)
     assert dump == '{"atest2":"data","test":"data"}'
+
+
+def test_remove_keys_with_null_values_in_dict():
+    data = {"test": None, "test2": 2, "test3": None, "test5": 6}
+    clean_data = remove_keys_with_null_values_in_dict(data)
+    assert "test" not in clean_data
+    assert "test3" not in clean_data
+    assert data["test2"] == clean_data["test2"]
+    assert data["test5"] == clean_data["test5"]

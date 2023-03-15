@@ -5,13 +5,6 @@ from typing import TextIO
 
 import pandas as pd
 
-try:
-    import csst.experiment._db as db
-except ImportError:
-    _db_option = False
-else:
-    _db_option = True
-
 
 from csst.experiment.helpers import try_parsing_date
 from csst.experiment.models import (
@@ -74,9 +67,9 @@ class Experiment:
         self.lab_journal = None
         self.description = None
         self.start_of_experiment = None
-        self.temperature_program = None
 
         # data details
+        self.temperature_program = None
         self.bottom_stir_rate = None
         self.set_temperature = None
         self.actual_temperature = None
@@ -86,17 +79,21 @@ class Experiment:
 
     def dict(self) -> Dict[str, str]:
         """Returns dictionary of experiment information, but no reactor,
-        temperature program or file_name information"""
-        return {
+        temperature program or file_name information
+        """
+        data = {
             "version": self.version,
             "experiment_details": self.experiment_details,
             "experiment_number": self.experiment_number,
             "experimenter": self.experimenter,
             "project": self.project,
             "lab_journal": self.lab_journal,
-            "description": "\n".join(self.description),
+            "description": self.description,
             "start_of_experiment": self.start_of_experiment,
         }
+        if isinstance(data["description"], list):
+            data["description"] = "\n".join(data["description"])
+        return data
 
     @classmethod
     def load_from_file(cls, data_path: str) -> "Experiment":
@@ -324,9 +321,3 @@ class Experiment:
                     bottom_stir_rate=self.bottom_stir_rate,
                 )
             )
-
-    if _db_option:
-
-        @classmethod
-        def load_from_db(cls, data_path: str) -> "Experiment":
-            pass
