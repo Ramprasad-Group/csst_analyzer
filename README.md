@@ -176,6 +176,56 @@ Resulting in the following image:
 ## Install
 `poetry add git+ssh://git@github.com/jdkern11/csst\_analyzer.git#v1.4.0`
 
+### With database extra
+`poetry add git+ssh://git@github.com/jdkern11/csst\_analyzer.git#v1.4.0 --extras db`
+
+To connect to the database, you must configure a .env file with the following parameters
+```
+# equal the appropriate values
+CSST_DB_USER=
+CSST_DB_PASSWORD=
+CSST_DB_HOST=
+CSST_DB_PORT=
+CSST_DB_NAME=
+SSH_TUNNEL_HOST=
+SSH_TUNNEL_PORT=
+SSH_USERNAME=
+SSH_PASSWORD=
+SSH_PRIVATE_KEY_PASSWORD=
+```
+
+To connect, then use something like the below code
+```Python
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+from sshtunnel import SSHTunnelForwarder
+
+dotenv_path = 'path/to/.env'
+load_dotenv(str(dotenv_path))
+server = SSHTunnelForwarder(
+    (os.environ.get("SSH_TUNNEL_HOST"), int(os.environ.get("SSH_TUNNEL_PORT"))),
+    ssh_username=os.environ.get("SSH_USERNAME"),
+    ssh_password=os.environ.get("SSH_PASSWORD"),
+    remote_bind_address=(
+        os.environ.get("CSST_DB_HOST"),
+        int(os.environ.get("CSST_DB_PORT")),
+    ),
+)
+server.start()
+db_connection = "postgresql+psycopg2://{}:{}@{}:{}/{}_test".format(
+    os.environ.get("CSST_DB_USER"),
+    os.environ.get("CSST_DB_PASSWORD"),
+    os.environ.get("CSST_DB_HOST"),
+    server.local_bind_port,
+    os.environ.get("CSST_DB_NAME"),
+)
+engine = create_engine(db_connection)
+Session = sessionmaker(engine)
+...
+server.stop()
+```
 
 ## Developer TODOs
 - [x] Load descriptions from CSST files
