@@ -173,6 +173,10 @@ Resulting in the following image:
 ![experiment one processed and plotted](images/experiment_one_processed.png)
 
 
+## Install
+`poetry add git+ssh://git@github.com/jdkern11/csst\_analyzer.git#v1.4.0`
+
+
 ## Developer TODOs
 - [x] Load descriptions from CSST files
 - [ ] Parse descriptions from CSST files
