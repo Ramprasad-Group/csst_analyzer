@@ -69,6 +69,7 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
     for i in range(len(csste_1014.reactors)):
         reactor = csste_1014.reactors[i]
         assert len(reactor.transmission.values) == datablock_size
+        assert reactor.reactor_number == i + 1
         assert reactor.solvent == "MeOH"
         if i == 0:
             assert reactor.polymer == "PEG"

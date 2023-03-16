@@ -145,6 +145,7 @@ class Reactor(BaseModel):
         solvent: name of the solvent
         polymer: name of the polymer
         conc: concentration of the polymer in the solvent
+        reactor_number: the reactor number the sample was in
         temperature_program: Program used to tune and define the crystal 16 run
         transmission: list of transmission values.
         time_since_experiment_start: Time unit and list of values for the experiment.
@@ -160,6 +161,7 @@ class Reactor(BaseModel):
     solvent: str
     polymer: str
     conc: PropertyValue
+    reactor_number: int
     # referenced properties
     temperature_program: TemperatureProgram
     transmission: PropertyValues

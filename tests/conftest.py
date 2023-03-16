@@ -279,6 +279,7 @@ if _db_option:
                 "csst_experiment_id": 10000,
                 "conc": 5,
                 "conc_unit": "test",
+                "reactor_number": 1
             },
             {
                 "id": 10001,  # set to large number so clash doesn't occur
@@ -288,6 +289,7 @@ if _db_option:
                 "csst_experiment_id": 10000,
                 "conc": 10,
                 "conc_unit": "test",
+                "reactor_number": 1
             },
             {
                 "id": 10002,  # set to large number so clash doesn't occur
@@ -297,6 +299,7 @@ if _db_option:
                 "csst_experiment_id": 10000,
                 "conc": 15,
                 "conc_unit": "test",
+                "reactor_number": 1
             },
             {
                 "id": 10003,  # set to large number so clash doesn't occur
@@ -306,6 +309,7 @@ if _db_option:
                 "csst_experiment_id": 10001,
                 "conc": 5,
                 "conc_unit": "test",
+                "reactor_number": 1
             },
         ]
         for reactor in reactors:

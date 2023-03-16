@@ -223,6 +223,7 @@ def add_reactor(
         "conc_unit": reactor.conc.unit,
         "bret_pol_id": getter.get_lab_polymer_by_name(reactor.polymer, Session).id,
         "bret_sol_id": getter.get_lab_solvent_by_name(reactor.solvent, Session).id,
+        "reactor_number": reactor.reactor_number
     }
     with Session() as session:
         if session.query(CSSTReactor).filter_by(**data).count() > 0:

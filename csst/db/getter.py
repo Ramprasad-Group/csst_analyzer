@@ -83,6 +83,7 @@ def get_experiments(
             Reactor(
                 solvent=get_lab_solvent_by_id(reactor.bret_sol_id, Session).name,
                 polymer=get_lab_polymer_by_id(reactor.bret_pol_id, Session).name,
+                reactor_number=reactor.reactor_number,
                 conc=PropertyValue(
                     name=PropertyNameEnum.CONC,
                     unit=reactor.conc_unit,

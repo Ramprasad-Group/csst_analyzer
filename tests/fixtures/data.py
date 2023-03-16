@@ -179,6 +179,7 @@ def reactor():
     return Reactor.construct(
         solvent="MeOH",
         polymer="PEG",
+        reactor_number=1,
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
         temperature_program=temperature_program,
         set_temperature=actual_temperature,

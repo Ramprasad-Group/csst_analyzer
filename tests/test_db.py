@@ -163,7 +163,7 @@ def test_load_from_db(session, csste_1014):
     )
     assert len(exps) == 0
     db.add_experiment(csste_1014, session)
-    exps = Experiment.load_from_db(
+    exps = db.load_from_db(
         Session=session, start_of_experiment=csste_1014.start_of_experiment
     )
     exp = exps[0]

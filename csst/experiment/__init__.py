@@ -171,6 +171,7 @@ class Experiment:
                                 ),
                                 "polymer": reactor_data[2].strip(),
                                 "solvent": reactor_data[4].strip(),
+                                "reactor_number": int(line[0].strip()[-1])
                             }
                         except KeyError:
                             logger.info(f"{line} missing polymer or solvent")
@@ -308,6 +309,7 @@ class Experiment:
                     solvent=parameters["solvent"],
                     polymer=parameters["polymer"],
                     conc=parameters["conc"],
+                    reactor_number=parameters["reactor_number"],
                     transmission=PropertyValues(
                         name="transmission",
                         unit=reactor_col.split("[")[1].strip("]").strip(),

@@ -329,7 +329,7 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "fonttools"
-version = "4.39.1"
+version = "4.39.0"
 description = "Tools to manipulate font files"
 category = "main"
 optional = false
@@ -613,7 +613,7 @@ tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "pa
 
 [[package]]
 name = "pinrex-db-models"
-version = "3.0.0"
+version = "3.1.0"
 description = ""
 category = "main"
 optional = true
@@ -628,8 +628,8 @@ SQLAlchemy = "^1.4.44"
 [package.source]
 type = "git"
 url = "ssh://git@github.com/jdkern11/pinrex_db_models"
-reference = "v3.0.0"
-resolved_reference = "00e8bcf39b4376cc2be2ec6bb0612ac619639002"
+reference = "v3.1.0"
+resolved_reference = "efdf0b9f5d7830adf0a1ceb8d32de60ed3b2ba75"
 
 [[package]]
 name = "platformdirs"
@@ -1267,7 +1267,7 @@ db = ["pinrex-db-models", "sshtunnel", "python-dotenv"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ba2b0e7687af3d1e67af0ba010f5be5a08accd1a53a3e6d2e3c10a1dd92857e2"
+content-hash = "52985173cc552975365b8234ca38923cdf58277064abb51d9285956b4006b32c"
 
 [metadata.files]
 alabaster = [
@@ -1622,8 +1622,8 @@ exceptiongroup = [
     {file = "exceptiongroup-1.1.1.tar.gz", hash = "sha256:d484c3090ba2889ae2928419117447a14daf3c1231d5e30d0aae34f354f01785"},
 ]
 fonttools = [
-    {file = "fonttools-4.39.1-py3-none-any.whl", hash = "sha256:54c871c0587c1f3ad3a71b390e503edbb4638d90ad14f905f2fa5938a72fc76b"},
-    {file = "fonttools-4.39.1.zip", hash = "sha256:51c72f26a5b79fc77d59f22e9d146350fbd1d107430ddda7b7665b1be38b16ad"},
+    {file = "fonttools-4.39.0-py3-none-any.whl", hash = "sha256:f5e764e1fd6ad54dfc201ff32af0ba111bcfbe0d05b24540af74c63db4ed6390"},
+    {file = "fonttools-4.39.0.zip", hash = "sha256:909c104558835eac27faeb56be5a4c32694192dca123d073bf746ce9254054af"},
 ]
 greenlet = [
     {file = "greenlet-2.0.2-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:bdfea8c661e80d3c1c99ad7c3ff74e6e87184895bbaca6ee8cc61209f8b9b85d"},

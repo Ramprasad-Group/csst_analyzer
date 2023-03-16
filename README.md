@@ -235,5 +235,5 @@ server.stop()
 - [x] Add ability to load raw data from a database
 - [ ] Add ability to upload processed data to a database
 - [ ] Add ability to load processed data from a database
-- [ ] Add reactor number as reactor attribute and database reactor table column
+- [x] Add reactor number as reactor attribute and database reactor table column
 - [x] Add prettier printing for temperature program and property value(s)

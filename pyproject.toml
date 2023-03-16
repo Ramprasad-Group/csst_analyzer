@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "csst.analyzer"
-version = "1.5.0"
+version = "1.6.0"
 description = ""
 authors = ["Joe Kern <jkern34@gatech.edu>", "Mona Amrihesari <mamrihesari3@gatech.edu>"]
 readme = "README.md"
@@ -14,7 +14,7 @@ seaborn = "^0.12.0"
 matplotlib = "^3.5.3"
 pydantic = "^1.10.2"
 
-pinrex-db-models = {git = "ssh://git@github.com/jdkern11/pinrex_db_models", rev = "v3.0.0", optional = true }
+pinrex-db-models = {git = "ssh://git@github.com/jdkern11/pinrex_db_models", rev = "v3.1.0", optional = true }
 sshtunnel = { version = "^0.4.0", optional = true }
 python-dotenv = { version = "^1.0.0", optional = true }
 
