@@ -115,6 +115,7 @@ To plot one experiment's transmission and temperature vs time, the following cod
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 from csst.experiment import Experiment
 from csst.analyzer.plotter import plot_experiment
 
