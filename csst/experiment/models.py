@@ -173,4 +173,4 @@ class Reactor(BaseModel):
 
     def __str__(self):
         """String representation is the polymer in the solvent at the specific concentration"""
-        return f"{self.conc.value} {self.conc.unit} {self.polymer} in {self.solvent}"
+        return f"Reactor {reactor.reactor_number}: {self.conc.value} {self.conc.unit} {self.polymer} in {self.solvent}"
