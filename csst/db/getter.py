@@ -272,8 +272,16 @@ def get_lab_polymer_by_name(
             .filter(BrettmannLabPolymer.pol_id.in_(pol_ids))
             .all()
         )
+        # TODO add better method to extract the exact brettmann polymer from the 
+        # database.
+        lab_pol_names = {pol.name: pol for pol in lab_pols}
+        if len(lab_pol_names) == len(lab_pols) and name in lab_pol_names:
+            return lab_pol_names[name]
+
+        # TODO original method to extract brettmann polymer. Works if there aren't
+        # any duplicate polymers
         raise_lookup_error_if_list_count_is_not_one(
-            list(lab_pols), "lab polymer", list(lab_pols)
+            list(lab_pols), "lab polymer", {name: [pol.name for pol in lab_pols]}
         )
     return lab_pols[0]
 
@@ -294,7 +302,7 @@ def get_lab_solvent_by_name(
             .all()
         )
         raise_lookup_error_if_list_count_is_not_one(
-            list(lab_sols), "lab solvent", list(lab_sols)
+            list(lab_sols), "lab solvent", {name: [sol.name for sol in lab_sols]}
         )
     return lab_sols[0]
 

@@ -28,7 +28,8 @@ def plot_experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     ax1 = fig.add_subplot(111)
     # Make ax2
     ax2 = ax1.twinx()
-    ax2.set_ylabel(str(experiment.actual_temperature).capitalize(), color=tempc)
+    ylabel = f"{experiment.actual_temperature.name} ({experiment.actual_temperature.unit})"
+    ax2.set_ylabel(ylabel.capitalize(), color=tempc)
     ax2.tick_params(axis="y", labelcolor=tempc)
     ax2.plot(
         experiment.time_since_experiment_start.values,
@@ -39,8 +40,10 @@ def plot_experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     )
 
     # plot ax1
-    ax1.set_xlabel(str(experiment.time_since_experiment_start).capitalize())
-    ax1.set_ylabel(str(experiment.reactors[0].transmission).capitalize())
+    xlabel = f"{experiment.time_since_experiment_start.name} ({experiment.time_since_experiment_start.unit})"
+    ylabel = f"{experiment.reactors[0].transmission.name} ({experiment.reactors[0].transmission.unit})"
+    ax1.set_xlabel(xlabel.capitalize())
+    ax1.set_ylabel(ylabel.capitalize())
 
     ax1.set_xlim([0, max(experiment.time_since_experiment_start.values)])
     ax1.tick_params(axis="y", labelcolor="black")
