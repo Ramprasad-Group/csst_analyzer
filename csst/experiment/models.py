@@ -162,9 +162,9 @@ class Reactor(BaseModel):
     polymer: str
     conc: PropertyValue
     reactor_number: int
+    transmission: PropertyValues
     # referenced properties
     temperature_program: TemperatureProgram
-    transmission: PropertyValues
     actual_temperature: PropertyValues
     set_temperature: PropertyValues
     time_since_experiment_start: PropertyValues
