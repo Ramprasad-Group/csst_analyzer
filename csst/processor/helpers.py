@@ -17,8 +17,8 @@ def find_index_after_sample_tune_and_load(
         Index to start at after skipping tune and load
     """
     for stage in [
-        reactor.temperature_program.solvent_tune,
-        reactor.temperature_program.sample_load,
+        reactor.experiment.temperature_program.solvent_tune,
+        reactor.experiment.temperature_program.sample_load,
     ]:
         for step in stage:
             if isinstance(step, TemperatureHold):
@@ -31,5 +31,5 @@ def find_index_after_sample_tune_and_load(
                     )
     # find new start if the time is skipped
     return bisect_right(
-        reactor.time_since_experiment_start.values, time_to_skip_in_hours
+        reactor.experiment.time_since_experiment_start.values, time_to_skip_in_hours
     )

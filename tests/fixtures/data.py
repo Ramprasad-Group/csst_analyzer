@@ -176,16 +176,20 @@ def reactor():
         block="A", solvent_tune=tuning, sample_load=sample_load, experiment=[]
     )
 
-    return Reactor.construct(
+    exp = Experiment()
+    exp.temperature_program = temperature_program
+    exp.set_temperature = actual_temperature
+    exp.stir_rates = stirs
+    exp.bottom_stir_rate = PropertyValue(name="bottom_stir_rate", value=900, unit="rpm")
+    exp.actual_temperature = actual_temperature
+    exp.time_since_experiment_start = time
+
+    reactor = Reactor.construct(
         solvent="MeOH",
         polymer="PEG",
         reactor_number=1,
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
-        temperature_program=temperature_program,
-        set_temperature=actual_temperature,
-        stir_rates=stirs,
-        bottom_stir_rate=PropertyValue(name="bottom_stir_rate", value=900, unit="rpm"),
         transmission=transmission,
-        actual_temperature=actual_temperature,
-        time_since_experiment_start=time,
+        experiment=exp,
     )
+    return reactor

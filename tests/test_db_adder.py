@@ -31,9 +31,12 @@ from pinrex.db.models.csst import (
     CSSTReactorPropertyValues,
     CSSTExperimentPropertyValue,
     CSSTReactor,
+    CSSTReactorProcessedTemperature,
 )
 
+from csst.experiment import Experiment
 from csst.experiment.models import PropertyNameEnum, PropertyValue, PropertyValues
+from csst.analyzer import Analyzer
 from .fixtures.data import csste_1014, manual_1014, reactor
 
 
@@ -294,3 +297,60 @@ def test_add_experiment_reactors(session, csste_1014):
         == 3
     )
     assert session.query(CSSTProperty).count() == 6 + old_num_props
+
+
+def test_add_processed_reactor(session):
+    """Will fail if get experiments fails or analyzer fails"""
+    old_db_count = session.query(CSSTReactorProcessedTemperature).count()
+    exps = db.getter.get_experiments(Experiment(), session)
+    exp = exps[0]
+    analyzer = Analyzer()
+    analyzer.add_experiment_reactors(exp)
+    # test error is thrown if type isn't ProcessedReactor
+    with pytest.raises(ValueError):
+        db.adder.add_processed_reactor(analyzer, session)
+    # should be added
+    for reactor in analyzer.processed_reactors:
+        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+    # shouldn't be added
+    for reactor in analyzer.processed_reactors:
+        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+    db_count = session.query(CSSTReactorProcessedTemperature).count() - old_db_count
+    assert (
+        len(analyzer.processed_reactors[0].temperatures)
+        * len(analyzer.processed_reactors)
+        == db_count
+    )
+
+
+def test_bad_add_processed_reactor(session):
+    """Tests if reactor is added when experiment or reactor not added already"""
+    old_db_count = session.query(CSSTReactorProcessedTemperature).count()
+    exps = db.getter.get_experiments(Experiment(), session)
+    exp = exps[0]
+    exp.reactors = [exp.reactors[0]]
+    old_lab_journal = exp.lab_journal
+    exp.lab_journal = "changed to make query fail to find experiment"
+    old_unit = exp.reactors[0].conc.unit
+    exp.reactors[0].conc.unit = "changed to make query fail to find reactor"
+
+    analyzer = Analyzer()
+    analyzer.add_experiment_reactors(exp)
+    # should fail becuase experiment can't be found
+    for reactor in analyzer.processed_reactors:
+        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+    assert session.query(CSSTReactorProcessedTemperature).count() - old_db_count == 0
+
+    exp.lab_journal = old_lab_journal
+    # should fail becuase reactor can't be found
+    for reactor in analyzer.processed_reactors:
+        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+    assert session.query(CSSTReactorProcessedTemperature).count() - old_db_count == 0
+
+    exp.reactors[0].conc.unit = old_unit
+    # should now pass since reactor and experiment query fixed
+    for reactor in analyzer.processed_reactors:
+        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+    assert session.query(CSSTReactorProcessedTemperature).count() - old_db_count == len(
+        analyzer.processed_reactors[0].temperatures
+    )

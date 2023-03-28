@@ -87,8 +87,10 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
                 name="concentration", value=5.10, unit="mg/ml"
             )
 
-    csste_1014.reactors[0].actual_temperature.values[0] = 10000
-    assert csste_1014.reactors[1].actual_temperature.values[0] == 10000
+    csste_1014.reactors[0].experiment.actual_temperature.values[0] = 10000
+    assert csste_1014.reactors[1].experiment.actual_temperature.values[0] == 10000
+    csste_1014.reactors[0].experiment.actual_temperature.values[0] = 1
+    assert csste_1014.reactors[1].experiment.actual_temperature.values[0] == 1
 
 
 def test_temperature_program_hash(manual_1014):

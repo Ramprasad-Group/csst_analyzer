@@ -1,4 +1,5 @@
 from typing import List
+from csst.experiment import Experiment
 from csst.experiment.models import Reactor
 
 from pydantic import BaseModel

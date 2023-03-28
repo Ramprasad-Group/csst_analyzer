@@ -78,7 +78,7 @@ class Analyzer:
             "solvent": reactor.unprocessed_reactor.solvent,
             "concentration": reactor.unprocessed_reactor.conc.value,
             "concentration_unit": reactor.unprocessed_reactor.conc.unit,
-            "temperature_unit": reactor.unprocessed_reactor.actual_temperature.unit,
+            "temperature_unit": reactor.unprocessed_reactor.experiment.actual_temperature.unit,
             "transmission_unit": reactor.unprocessed_reactor.transmission.unit,
             "reactor": str(reactor.unprocessed_reactor),
         }
@@ -96,26 +96,32 @@ class Analyzer:
             "solvent": reactor.unprocessed_reactor.solvent,
             "concentration": reactor.unprocessed_reactor.conc.value,
             "concentration_unit": reactor.unprocessed_reactor.conc.unit,
-            "temperature_unit": reactor.unprocessed_reactor.actual_temperature.unit,
-            "time_unit": reactor.unprocessed_reactor.time_since_experiment_start.unit,
+            "temperature_unit": reactor.unprocessed_reactor.experiment.actual_temperature.unit,
+            "time_unit": reactor.unprocessed_reactor.experiment.time_since_experiment_start.unit,
             "reactor": str(reactor.unprocessed_reactor),
-            "bottom_stir_rate": reactor.unprocessed_reactor.bottom_stir_rate.value,
-            "bottom_stir_rate_unit": reactor.unprocessed_reactor.bottom_stir_rate.unit,
-            "stir_rate_unit": reactor.unprocessed_reactor.stir_rates.unit,
+            "bottom_stir_rate": reactor.unprocessed_reactor.experiment.bottom_stir_rate.value,
+            "bottom_stir_rate_unit": reactor.unprocessed_reactor.experiment.bottom_stir_rate.unit,
+            "stir_rate_unit": reactor.unprocessed_reactor.experiment.stir_rates.unit,
             "transmission_unit": reactor.unprocessed_reactor.transmission.unit,
         }
-        for i in range(len(reactor.unprocessed_reactor.actual_temperature.values)):
-            row["temperature"] = reactor.unprocessed_reactor.actual_temperature.values[
-                i
-            ]
+        for i in range(
+            len(reactor.unprocessed_reactor.experiment.actual_temperature.values)
+        ):
+            row[
+                "temperature"
+            ] = reactor.unprocessed_reactor.experiment.actual_temperature.values[i]
             row["transmission"] = reactor.unprocessed_reactor.transmission.values[i]
             row[
                 "time"
-            ] = reactor.unprocessed_reactor.time_since_experiment_start.values[i]
-            row["set_temperature"] = reactor.unprocessed_reactor.set_temperature.values[
+            ] = reactor.unprocessed_reactor.experiment.time_since_experiment_start.values[
                 i
             ]
-            row["stir_rate"] = reactor.unprocessed_reactor.stir_rates.values[i]
+            row[
+                "set_temperature"
+            ] = reactor.unprocessed_reactor.experiment.set_temperature.values[i]
+            row["stir_rate"] = reactor.unprocessed_reactor.experiment.stir_rates.values[
+                i
+            ]
             rows.append(row.copy())
         df = pd.DataFrame(rows)
         self.unprocessed_df = pd.concat([self.unprocessed_df, df])

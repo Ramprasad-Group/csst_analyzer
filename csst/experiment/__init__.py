@@ -171,7 +171,7 @@ class Experiment:
                                 ),
                                 "polymer": reactor_data[2].strip(),
                                 "solvent": reactor_data[4].strip(),
-                                "reactor_number": int(line[0].strip()[-1])
+                                "reactor_number": int(line[0].strip()[-1]),
                             }
                         except KeyError:
                             logger.info(f"{line} missing polymer or solvent")
@@ -315,11 +315,6 @@ class Experiment:
                         unit=reactor_col.split("[")[1].strip("]").strip(),
                         values=df[reactor_col].to_numpy(),
                     ),
-                    temperature_program=self.temperature_program,
-                    actual_temperature=self.actual_temperature,
-                    set_temperature=self.set_temperature,
-                    time_since_experiment_start=self.time_since_experiment_start,
-                    stir_rates=self.stir_rates,
-                    bottom_stir_rate=self.bottom_stir_rate,
+                    experiment=self,
                 )
             )

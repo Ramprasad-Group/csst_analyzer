@@ -13,6 +13,7 @@ from pinrex.db.models.csst import (
     CSSTExperimentPropertyValue,
     CSSTExperimentPropertyValues,
     CSSTReactorPropertyValues,
+    CSSTReactorProcessedTemperature,
 )
 
 from csst.experiment import Experiment
@@ -22,6 +23,7 @@ from csst.experiment.models import (
     PropertyValues,
     TemperatureProgram,
 )
+from csst.processor.models import ProcessedTemperature, ProcessedReactor
 from csst.db import getter
 
 logger = logging.getLogger(__name__)
@@ -223,7 +225,7 @@ def add_reactor(
         "conc_unit": reactor.conc.unit,
         "bret_pol_id": getter.get_lab_polymer_by_name(reactor.polymer, Session).id,
         "bret_sol_id": getter.get_lab_solvent_by_name(reactor.solvent, Session).id,
-        "reactor_number": reactor.reactor_number
+        "reactor_number": reactor.reactor_number,
     }
     with Session() as session:
         if session.query(CSSTReactor).filter_by(**data).count() > 0:
@@ -294,3 +296,51 @@ def add_property(
             session.commit()
         else:
             logger.info(f"Property {prop} already added")
+
+
+def add_processed_reactor(
+    reactor: ProcessedReactor,
+    Session: Union[scoped_session, Session],
+):
+    if not isinstance(reactor, ProcessedReactor):
+        msg = f"Only ProcessedReactor can be added, not type {type(reactor)}"
+        logger.warning(msg)
+        raise ValueError(msg)
+    data = reactor.unprocessed_reactor.experiment.dict()
+    with Session() as session:
+        exp = session.query(CSSTExperiment).filter_by(**data).first()
+        if exp is None:
+            msg = f"The unprocessed reactor experiment has not been added to the database yet."
+            logger.warning(msg)
+            return
+        data = {
+            "csst_experiment_id": exp.id,
+            "conc": reactor.unprocessed_reactor.conc.value,
+            "conc_unit": reactor.unprocessed_reactor.conc.unit,
+            "bret_pol_id": getter.get_lab_polymer_by_name(
+                reactor.unprocessed_reactor.polymer, Session
+            ).id,
+            "bret_sol_id": getter.get_lab_solvent_by_name(
+                reactor.unprocessed_reactor.solvent, Session
+            ).id,
+            "reactor_number": reactor.unprocessed_reactor.reactor_number,
+        }
+        unprocessed_reactor = session.query(CSSTReactor).filter_by(**data).first()
+        if unprocessed_reactor is None:
+            logger.info(
+                f"The unprocessed reactor has not been added to the database yet."
+            )
+            return
+        if (
+            session.query(CSSTReactorProcessedTemperature)
+            .filter_by(csst_reactor_id=unprocessed_reactor.id)
+            .count()
+            > 0
+        ):
+            logger.info(f"Processed data has already been added for this reactor.")
+            return
+        for temp in reactor.temperatures:
+            data = temp.dict()
+            data["csst_reactor_id"] = unprocessed_reactor.id
+            session.add(CSSTReactorProcessedTemperature(**data))
+        session.commit()

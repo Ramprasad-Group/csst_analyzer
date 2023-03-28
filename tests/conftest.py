@@ -30,6 +30,7 @@ if _db_option:
         CSSTExperimentPropertyValue,
         CSSTReactorPropertyValues,
         CSSTExperimentPropertyValues,
+        CSSTReactorProcessedTemperature,
     )
     from pinrex.db import Base
     from csst.experiment.models import (
@@ -279,7 +280,7 @@ if _db_option:
                 "csst_experiment_id": 10000,
                 "conc": 5,
                 "conc_unit": "test",
-                "reactor_number": 1
+                "reactor_number": 1,
             },
             {
                 "id": 10001,  # set to large number so clash doesn't occur
@@ -289,7 +290,7 @@ if _db_option:
                 "csst_experiment_id": 10000,
                 "conc": 10,
                 "conc_unit": "test",
-                "reactor_number": 1
+                "reactor_number": 1,
             },
             {
                 "id": 10002,  # set to large number so clash doesn't occur
@@ -299,7 +300,7 @@ if _db_option:
                 "csst_experiment_id": 10000,
                 "conc": 15,
                 "conc_unit": "test",
-                "reactor_number": 1
+                "reactor_number": 1,
             },
             {
                 "id": 10003,  # set to large number so clash doesn't occur
@@ -309,7 +310,7 @@ if _db_option:
                 "csst_experiment_id": 10001,
                 "conc": 5,
                 "conc_unit": "test",
-                "reactor_number": 1
+                "reactor_number": 1,
             },
         ]
         for reactor in reactors:
@@ -376,5 +377,20 @@ if _db_option:
                         )
                     )
                     ind += 1
+        session.commit()
 
+        # add fake processed data for every reactor that isn't linked to experiment
+        # 10000 since that experiment is used to test adding the processed reactors
+        for i in range(10003, 10004):
+            for j in range(10):
+                session.add(
+                    CSSTReactorProcessedTemperature(
+                        csst_reactor_id=i,
+                        average_temperature=j,
+                        temperature_range=1,
+                        average_transmission=(100 - j * 2),
+                        median_transmission=(100 - j),
+                        transmission_std=(j / 2),
+                    )
+                )
         session.commit()

@@ -28,7 +28,9 @@ def plot_experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     ax1 = fig.add_subplot(111)
     # Make ax2
     ax2 = ax1.twinx()
-    ylabel = f"{experiment.actual_temperature.name} ({experiment.actual_temperature.unit})"
+    ylabel = (
+        f"{experiment.actual_temperature.name} ({experiment.actual_temperature.unit})"
+    )
     ax2.set_ylabel(ylabel.capitalize(), color=tempc)
     ax2.tick_params(axis="y", labelcolor=tempc)
     ax2.plot(
@@ -50,7 +52,7 @@ def plot_experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
     curr = 0
     for reactor in experiment.reactors:
         ax1.plot(
-            reactor.time_since_experiment_start.values,
+            reactor.experiment.time_since_experiment_start.values,
             reactor.transmission.values,
             color=cmap[curr],
             linewidth=2.5,

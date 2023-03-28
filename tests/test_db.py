@@ -152,8 +152,10 @@ def test_get_experiment(session, csste_1014):
                 name="concentration", value=5.10, unit="mg/ml"
             )
 
-    exp.reactors[0].actual_temperature.values[0] = 10000
-    assert exp.reactors[1].actual_temperature.values[0] == 10000
+    exp.reactors[0].experiment.actual_temperature.values[0] = 10000
+    assert exp.reactors[1].experiment.actual_temperature.values[0] == 10000
+    exp.reactors[0].experiment.actual_temperature.values[0] = 1
+    assert exp.reactors[1].experiment.actual_temperature.values[0] == 1
 
 
 @pytest.mark.slow
@@ -251,5 +253,7 @@ def test_load_from_db(session, csste_1014):
                 name="concentration", value=5.10, unit="mg/ml"
             )
 
-    exp.reactors[0].actual_temperature.values[0] = 10000
-    assert exp.reactors[1].actual_temperature.values[0] == 10000
+    exp.reactors[0].experiment.actual_temperature.values[0] = 10000
+    assert exp.reactors[1].experiment.actual_temperature.values[0] == 10000
+    exp.reactors[0].experiment.actual_temperature.values[0] = 1
+    assert exp.reactors[1].experiment.actual_temperature.values[0] == 1

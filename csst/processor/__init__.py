@@ -23,8 +23,8 @@ def process_reactor(reactor: Reactor) -> ProcessedReactor:
     Args:
         reactor: reactor to process
     """
-    min_temp = floor(min(reactor.actual_temperature.values))
-    max_temp = ceil(max(reactor.actual_temperature.values))
+    min_temp = floor(min(reactor.experiment.actual_temperature.values))
+    max_temp = ceil(max(reactor.experiment.actual_temperature.values))
     temps = list(range(min_temp, max_temp + 1))
     return ProcessedReactor(
         unprocessed_reactor=reactor,
@@ -79,12 +79,12 @@ def process_reactor_transmission_at_temp(
     # where returns a tuple but since this is a 1d array, the tuple has one element
     # that is the list of indices.
     if temp_range == 0:
-        temp_indices = np.where(reactor.actual_temperature.values == temp)[0]
+        temp_indices = np.where(reactor.experiment.actual_temperature.values == temp)[0]
     else:
         temp_indices = np.where(
             (
-                (reactor.actual_temperature.values < temp + half_range)
-                & (reactor.actual_temperature.values >= temp - half_range)
+                (reactor.experiment.actual_temperature.values < temp + half_range)
+                & (reactor.experiment.actual_temperature.values >= temp - half_range)
             )
         )[0]
     start_ind = find_index_after_sample_tune_and_load(reactor)

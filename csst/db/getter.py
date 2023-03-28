@@ -3,6 +3,7 @@ from typing import Union, List, Dict
 import logging
 
 import numpy as np
+import pandas as pd
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
@@ -79,7 +80,7 @@ def get_experiments(
             PropertyNameEnum.TIME
         ]
         experiment.stir_rates = exp_values_properties[PropertyNameEnum.STIR_RATE]
-        experiment.reactors = [
+        exp_reactors = [
             Reactor(
                 solvent=get_lab_solvent_by_id(reactor.bret_sol_id, Session).name,
                 polymer=get_lab_polymer_by_id(reactor.bret_pol_id, Session).name,
@@ -90,15 +91,11 @@ def get_experiments(
                     value=reactor.conc,
                 ),
                 transmission=reactor_prop[PropertyNameEnum.TRANS],
-                temperature_program=experiment.temperature_program,
-                actual_temperature=experiment.actual_temperature,
-                set_temperature=experiment.set_temperature,
-                time_since_experiment_start=experiment.time_since_experiment_start,
-                stir_rates=experiment.stir_rates,
-                bottom_stir_rate=experiment.bottom_stir_rate,
+                experiment=experiment,
             )
             for reactor, reactor_prop in reactors
         ]
+        experiment.reactors = exp_reactors
         experiments.append(experiment)
     return experiments
 
@@ -272,7 +269,7 @@ def get_lab_polymer_by_name(
             .filter(BrettmannLabPolymer.pol_id.in_(pol_ids))
             .all()
         )
-        # TODO add better method to extract the exact brettmann polymer from the 
+        # TODO add better method to extract the exact brettmann polymer from the
         # database.
         lab_pol_names = {pol.name: pol for pol in lab_pols}
         if len(lab_pol_names) == len(lab_pols) and name in lab_pol_names:
@@ -354,3 +351,13 @@ def raise_lookup_error_if_list_count_is_not_one(l: List, item: str, data: str):
         msg = f"No {item} associated with {data}. " + f"Add the {item} first."
         logger.warning(msg)
         raise LookupError(msg)
+
+
+def get_processed_data(Session: Union[scoped_session, Session]) -> pd.DataFrame:
+    """Returns all processed data in a pandas dataframe"""
+    with Session() as session:
+        reactor_ids = (
+            session.query(CSSTReactorProcessedTemperature.csst_reactor_id)
+            .distinct()
+            .all()
+        )

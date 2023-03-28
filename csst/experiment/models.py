@@ -1,6 +1,6 @@
 from enum import Enum
 import hashlib
-from typing import List, Union
+from typing import List, Union, Any
 
 import numpy as np
 from pydantic import BaseModel
@@ -146,16 +146,8 @@ class Reactor(BaseModel):
         polymer: name of the polymer
         conc: concentration of the polymer in the solvent
         reactor_number: the reactor number the sample was in
-        temperature_program: Program used to tune and define the crystal 16 run
         transmission: list of transmission values.
-        time_since_experiment_start: Time unit and list of values for the experiment.
-        actual_temperature: Temperature unit and list of values for the experiment's
-            true temperatures
-        set_temperature: Temperature unit and list of values for the experiment's
-            set temperatures
-        stir_rate: Stirring rate unit and list of values for the experiment. Unknown
-            why this is different than bottom stir_rate
-        bottom_stir_rate: Stiring rate of the bottom stirer
+        experiment: experiment the reactor comes from
     """
 
     solvent: str
@@ -164,12 +156,10 @@ class Reactor(BaseModel):
     reactor_number: int
     transmission: PropertyValues
     # referenced properties
-    temperature_program: TemperatureProgram
-    actual_temperature: PropertyValues
-    set_temperature: PropertyValues
-    time_since_experiment_start: PropertyValues
-    stir_rates: PropertyValues
-    bottom_stir_rate: PropertyValue
+    # any type to avoid circular import from importing experiment.
+    # This is just supposed to be a reference to the experiment for easier access,
+    # so I'm hoping this doesn't cause any issues
+    experiment: Any
 
     def __str__(self):
         """String representation is the polymer in the solvent at the specific concentration"""
