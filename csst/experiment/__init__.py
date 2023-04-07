@@ -1,5 +1,6 @@
-from typing import Dict
+from typing import Dict, List
 from pathlib import Path
+import glob
 from datetime import datetime
 from typing import TextIO
 
@@ -318,3 +319,24 @@ class Experiment:
                     experiment=self,
                 )
             )
+
+def load_experiments_from_folder(folder: str, recursive: bool = False) -> List[Experiment]:
+    """Loads all csst experiments in a folder
+
+    Args:
+        folder: folder to search experiments for
+        recursive: if the folder should be searched recursively. Default False
+    Returns:
+        List of experiments
+    """
+    folder = Path(folder)
+    if recursive:
+        files = list(folder.glob('**/*.csv'))
+    else:
+        files = list(folder.glob('*.csv'))
+    experiments = []
+    for file in files:
+        with open(file, 'r') as fin:
+            if 'Crystal16 Data Report File' in fin.readline():
+                experiments.append(Experiment.load_from_file(file))
+    return experiments

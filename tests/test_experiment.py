@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import pytest
 import numpy as np
 
 from csst.experiment.models import PropertyValue
+from csst.experiment import load_experiments_from_folder
 from .fixtures.data import csste_1014, manual_1014
 
 
@@ -96,3 +99,8 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
 def test_temperature_program_hash(manual_1014):
     """This test will fail if the manual_1014 temperature program is changed at all"""
     assert manual_1014.temperature_program.hash() == "baa4a0e932fb273023e33317e51a5cc8"
+
+def test_load_experiments_from_folder():
+    folder = str(Path(__file__).parent.absolute() / 'test_data')
+    assert len(load_experiments_from_folder(folder)) == 1
+    assert len(load_experiments_from_folder(folder, recursive=True)) == 2
