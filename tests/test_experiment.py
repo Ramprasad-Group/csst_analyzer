@@ -100,7 +100,8 @@ def test_temperature_program_hash(manual_1014):
     """This test will fail if the manual_1014 temperature program is changed at all"""
     assert manual_1014.temperature_program.hash() == "baa4a0e932fb273023e33317e51a5cc8"
 
+
 def test_load_experiments_from_folder():
-    folder = str(Path(__file__).parent.absolute() / 'test_data')
+    folder = str(Path(__file__).parent.absolute() / "test_data")
     assert len(load_experiments_from_folder(folder)) == 1
     assert len(load_experiments_from_folder(folder, recursive=True)) == 2

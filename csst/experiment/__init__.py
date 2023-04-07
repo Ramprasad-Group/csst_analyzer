@@ -320,7 +320,10 @@ class Experiment:
                 )
             )
 
-def load_experiments_from_folder(folder: str, recursive: bool = False) -> List[Experiment]:
+
+def load_experiments_from_folder(
+    folder: str, recursive: bool = False
+) -> List[Experiment]:
     """Loads all csst experiments in a folder
 
     Args:
@@ -331,12 +334,12 @@ def load_experiments_from_folder(folder: str, recursive: bool = False) -> List[E
     """
     folder = Path(folder)
     if recursive:
-        files = list(folder.glob('**/*.csv'))
+        files = list(folder.glob("**/*.csv"))
     else:
-        files = list(folder.glob('*.csv'))
+        files = list(folder.glob("*.csv"))
     experiments = []
     for file in files:
-        with open(file, 'r') as fin:
-            if 'Crystal16 Data Report File' in fin.readline():
+        with open(file, "r") as fin:
+            if "Crystal16 Data Report File" in fin.readline():
                 experiments.append(Experiment.load_from_file(file))
     return experiments
