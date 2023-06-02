@@ -43,6 +43,8 @@ def manual_1014():
     csste.lab_journal = None
     csste.description = [
         "test",
+        "polymer_ids,PEG:34,PEO:46,PVP:41",
+        "solvent_ids,1,2dichlorobenzene:37,Ethyl Acetate:19,MeOH:3",
         "CAS: ###-##-#",
         "density:0.##",
         "Different concentratin of # - ## - ### mg/ mL  is being tested along with temprature going from 10-60 C",

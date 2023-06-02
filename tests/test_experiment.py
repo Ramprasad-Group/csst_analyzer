@@ -73,22 +73,24 @@ def test_experiment_init_from_file_version_1014(csste_1014, manual_1014):
         reactor = csste_1014.reactors[i]
         assert len(reactor.transmission.values) == datablock_size
         assert reactor.reactor_number == i + 1
-        assert reactor.solvent == "MeOH"
         if i == 0:
             assert reactor.polymer == "PEG"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.11, unit="mg/ml"
             )
+            assert reactor.solvent == "1,2dichlorobenzene"
         if i == 1:
             assert reactor.polymer == "PEO"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.19, unit="mg/ml"
             )
+            assert reactor.solvent == "Ethyl Acetate"
         if i == 2:
             assert reactor.polymer == "PVP"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.10, unit="mg/ml"
             )
+            assert reactor.solvent == "MeOH"
 
     csste_1014.reactors[0].experiment.actual_temperature.values[0] = 10000
     assert csste_1014.reactors[1].experiment.actual_temperature.values[0] == 10000

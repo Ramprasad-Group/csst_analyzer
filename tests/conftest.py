@@ -144,6 +144,8 @@ if _db_option:
 
         solvents = [
             {"id": 1, "smiles": "CO", "fingerprint": {"temp": 1}},
+            {"id": 2, "smiles": "O=C(OCC)C", "fingerprint": {"temp": 2}},
+            {"id": 3, "smiles": "c1ccc(c(c1)Cl)Cl", "fingerprint": {"temp": 3}},
         ]
         for solvent in solvents:
             session.add(Solvent(**solvent))
@@ -186,13 +188,27 @@ if _db_option:
                 "search_name": make_name_searchable("methanol"),
                 "naming_convention": "standard",
             },
+            {
+                "sol_id": 2,
+                "name": "Ethyl Acetate",
+                "search_name": make_name_searchable("Ethyl Acetate"),
+                "naming_convention": "standard",
+            },
+            {
+                "sol_id": 3,
+                "name": "1,2dichlorobenzene",
+                "search_name": make_name_searchable("1,2dichlorobenzene"),
+                "naming_convention": "standard",
+            },
         ]
         for solvent in solvent_names:
             session.add(SolventName(**solvent))
         session.commit()
 
         lab_solvents = [
-            {"id": 1, "sol_id": 1, "name": "methanol", "percent_purity": 99}
+            {"id": 3, "sol_id": 1, "name": "methanol", "percent_purity": 99},
+            {"id": 19, "sol_id": 2, "name": "Ethyl Acetate", "percent_purity": 98},
+            {"id": 37, "sol_id": 3, "name": "1,2dichlorobenzene", "percent_purity": 99}
         ]
 
         for solvent in lab_solvents:
@@ -201,7 +217,7 @@ if _db_option:
 
         lab_polymers = [
             {
-                "id": 1,
+                "id": 34,
                 "pol_id": 1,
                 "name": "PEG",
                 "number_average_mw_min": 9000,
@@ -209,7 +225,15 @@ if _db_option:
                 "supplier": "thermofischer",
             },
             {
-                "id": 2,
+                "id": 46,
+                "pol_id": 1,
+                "name": "PEO",
+                "number_average_mw_min": 1000000,
+                "number_average_mw_max": 1000000,
+                "supplier": "Alfa Aesar",
+            },
+            {
+                "id": 41,
                 "pol_id": 2,
                 "name": "PVP",
                 "number_average_mw_min": 11000,
@@ -274,8 +298,8 @@ if _db_option:
         reactors = [
             {
                 "id": 10000,  # set to large number so clash doesn't occur
-                "bret_sol_id": 1,
-                "bret_pol_id": 1,
+                "bret_sol_id": 19,
+                "bret_pol_id": 34,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
                 "conc": 5,
@@ -284,8 +308,8 @@ if _db_option:
             },
             {
                 "id": 10001,  # set to large number so clash doesn't occur
-                "bret_sol_id": 1,
-                "bret_pol_id": 1,
+                "bret_sol_id": 37,
+                "bret_pol_id": 46,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
                 "conc": 10,
@@ -294,8 +318,8 @@ if _db_option:
             },
             {
                 "id": 10002,  # set to large number so clash doesn't occur
-                "bret_sol_id": 1,
-                "bret_pol_id": 2,
+                "bret_sol_id": 37,
+                "bret_pol_id": 46,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
                 "conc": 15,
@@ -304,8 +328,8 @@ if _db_option:
             },
             {
                 "id": 10003,  # set to large number so clash doesn't occur
-                "bret_sol_id": 1,
-                "bret_pol_id": 1,
+                "bret_sol_id": 3,
+                "bret_pol_id": 41,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10001,
                 "conc": 5,

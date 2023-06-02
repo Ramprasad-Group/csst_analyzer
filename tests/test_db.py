@@ -135,22 +135,24 @@ def test_get_experiment(session, csste_1014):
         assert np.array_equal(
             reactor.transmission.values, csste_1014.reactors[i].transmission.values
         )
-        assert reactor.solvent == "methanol"
         if i == 0:
             assert reactor.polymer == "PEG"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.11, unit="mg/ml"
             )
+            assert reactor.solvent == "1,2dichlorobenzene"
         if i == 1:
-            assert reactor.polymer == "PEG"
+            assert reactor.polymer == "PEO"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.19, unit="mg/ml"
             )
+            assert reactor.solvent == "Ethyl Acetate"
         if i == 2:
             assert reactor.polymer == "PVP"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.10, unit="mg/ml"
             )
+            assert reactor.solvent == "methanol"
 
     exp.reactors[0].experiment.actual_temperature.values[0] = 10000
     assert exp.reactors[1].experiment.actual_temperature.values[0] == 10000
@@ -236,22 +238,24 @@ def test_load_from_db(session, csste_1014):
         assert np.array_equal(
             reactor.transmission.values, csste_1014.reactors[i].transmission.values
         )
-        assert reactor.solvent == "methanol"
         if i == 0:
             assert reactor.polymer == "PEG"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.11, unit="mg/ml"
             )
+            assert reactor.solvent == "1,2dichlorobenzene"
         if i == 1:
-            assert reactor.polymer == "PEG"
+            assert reactor.polymer == "PEO"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.19, unit="mg/ml"
             )
+            assert reactor.solvent == "Ethyl Acetate"
         if i == 2:
             assert reactor.polymer == "PVP"
             assert reactor.conc == PropertyValue(
                 name="concentration", value=5.10, unit="mg/ml"
             )
+            assert reactor.solvent == "methanol"
 
     exp.reactors[0].experiment.actual_temperature.values[0] = 10000
     assert exp.reactors[1].experiment.actual_temperature.values[0] == 10000

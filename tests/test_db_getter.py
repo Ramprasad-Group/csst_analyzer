@@ -85,8 +85,8 @@ def test_get_csst_temperature_program(session, manual_1014):
 def test_get_lab_polymer_by_name(session):
     """Will likely fail if raise_lookup_error_if_list_count_is_not_one fails"""
     pol = db.getter.get_lab_polymer_by_name("PEO", session)
-    assert pol.supplier == "thermofischer"
-    assert pol.name == "PEG"
+    assert pol.supplier == "Alfa Aesar"
+    assert pol.name == "PEO"
 
 
 def test_get_lab_solvent_by_name(session):

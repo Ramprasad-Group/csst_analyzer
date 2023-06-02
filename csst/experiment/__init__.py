@@ -160,18 +160,22 @@ class Experiment:
                         self.start_of_experiment = try_parsing_date(line[1])
                 elif "Reactor" in line[0]:
                     # e.g., Reactor1,5 mg/ml PEG in TOL
-                    reactor_data = line[1].split()
+                    # rejoin if there are any commas in polymer or solvent names
+                    reactor_data = ",".join(line[1:])
+                    # get conc, unit, polymer in solvent
+                    conc, unit, pol_sol = reactor_data.split(" ", 2)
+                    pol, sol = pol_sol.split("in")
                     # Ignore reactors that are empty
                     if float(reactor_data[0]) != 0:
                         try:
                             reactors[line[0].strip()] = {
                                 "conc": PropertyValue(
                                     name="concentration",
-                                    value=float(reactor_data[0]),
-                                    unit=reactor_data[1].strip(),
+                                    value=float(conc),
+                                    unit=unit.strip(),
                                 ),
-                                "polymer": reactor_data[2].strip(),
-                                "solvent": reactor_data[4].strip(),
+                                "polymer": pol.strip(),
+                                "solvent": sol.strip(),
                                 "reactor_number": int(line[0].strip()[-1]),
                             }
                         except KeyError:
