@@ -230,7 +230,7 @@ server.stop()
 
 ## Developer TODOs
 - [x] Load descriptions from CSST files
-- [ ] Parse descriptions from CSST files
+- [x] Parse polymer and solvent ids from CSST descriptions
 - [x] Skip tuning sections of data collection prior to processing
 - [x] Add ability to upload raw data to a database
 - [x] Add ability to load raw data from a database

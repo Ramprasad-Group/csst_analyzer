@@ -218,6 +218,12 @@ def add_reactor(
         logger.warning(msg)
         raise ValueError(msg)
     # get lab polymer and solvent ids
+    bret_pol_id = reactor.polymer_id
+    if bret_pol_id is None:
+        bret_pol_id = getter.get_lab_polymer_by_name(reactor.polymer, Session).id
+    bret_sol_id = reactor.solvent_id
+    if bret_sol_id is None:
+        bret_sol_id = getter.get_lab_solvent_by_name(reactor.solvent, Session).id
     data = {
         "csst_experiment_id": experiment_id,
         "csst_temperature_program_id": temperature_program_id,

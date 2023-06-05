@@ -208,7 +208,7 @@ if _db_option:
         lab_solvents = [
             {"id": 3, "sol_id": 1, "name": "methanol", "percent_purity": 99},
             {"id": 19, "sol_id": 2, "name": "Ethyl Acetate", "percent_purity": 98},
-            {"id": 37, "sol_id": 3, "name": "1,2dichlorobenzene", "percent_purity": 99}
+            {"id": 37, "sol_id": 3, "name": "1,2dichlorobenzene", "percent_purity": 99},
         ]
 
         for solvent in lab_solvents:

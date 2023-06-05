@@ -34,6 +34,12 @@ class Experiment:
             description appended to a list
         start_of_experiment (datetime.datetime):
             date the experiment started
+        polymer_ids (Optioanl[dict]): Optional dictionary with key being polymer name,
+            value being polymer id in our database. This is self created and dependent
+            on the id in the brettmann polymer database.
+        solvent_ids (Optioanl[dict]): Optional dictionary with key being solvent name,
+            value being solvent id in our database. This is self created and dependent
+            on the id in the brettmann solvent database.
         temperature_program (TemperatureProgram):
             Program used to tune solvent, load polymers and change the
             experiment temperature conditions.
@@ -70,6 +76,8 @@ class Experiment:
         self.start_of_experiment = None
 
         # data details
+        self.polymer_ids = {}
+        self.solvent_ids = {}
         self.temperature_program = None
         self.bottom_stir_rate = None
         self.set_temperature = None
@@ -131,7 +139,32 @@ class Experiment:
             # description saved between description keyword and start of experiment
             # keyword
             elif description and "Start of Experiment" not in line:
-                description_text.append(line.strip())
+                line = line.strip()
+                description_text.append(line)
+                # e.g., polymer_ids,PEG:34,PEO:46,PVP:41,
+                # or solvent_ids,1,2dichlorobenzene:37,Ethyl Acetate:19,MeOH:3,
+                if "polymer_ids" in line or "solvent_ids" in line:
+                    # pairings = 1,2dichlorobenzene:37,Ethyl Acetate:19,MeOH:3
+                    _, pairings = line.split(",", 1)
+                    # pairings = ["1,2dichlorobenzene","37,Ethyl Acetate","19,MeOH","3"]
+                    pairings = pairings.split(":")
+                    # pairings = ["1,2dichlorobenzene","37","Ethyl Acetate","19","MeOH","3"]
+                    pairings = (
+                        [pairings[0]]
+                        + [y for x in pairings[1:-1] for y in x.split(",", maxsplit=1)]
+                        + [pairings[-1]]
+                    )
+                    if "polymer" in line:
+                        self.polymer_ids = {
+                            pairings[i].strip(): int(pairings[i + 1])
+                            for i in range(0, len(pairings), 2)
+                        }
+                    if "solvent" in line:
+                        self.solvent_ids = {
+                            pairings[i].strip(): int(pairings[i + 1])
+                            for i in range(0, len(pairings), 2)
+                        }
+
             else:
                 line = line.split(",")
                 if line[0] == "Experiment details":
@@ -309,10 +342,17 @@ class Experiment:
         # configure reactors
         for reactor, parameters in reactors.items():
             reactor_col = [col for col in df.columns if reactor in col][0]
+            solvent_id, polymer_id = None, None
+            if parameters["solvent"] in self.solvent_ids:
+                solvent_id = self.solvent_ids[parameters["solvent"]]
+            if parameters["polymer"] in self.polymer_ids:
+                polymer_id = self.polymer_ids[parameters["polymer"]]
             self.reactors.append(
                 Reactor(
                     solvent=parameters["solvent"],
                     polymer=parameters["polymer"],
+                    solvent_id=solvent_id,
+                    polymer_id=polymer_id,
                     conc=parameters["conc"],
                     reactor_number=parameters["reactor_number"],
                     transmission=PropertyValues(

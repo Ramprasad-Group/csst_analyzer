@@ -1,6 +1,6 @@
 from enum import Enum
 import hashlib
-from typing import List, Union, Any
+from typing import List, Union, Any, Optional
 
 import numpy as np
 from pydantic import BaseModel
@@ -144,6 +144,10 @@ class Reactor(BaseModel):
     Args:
         solvent: name of the solvent
         polymer: name of the polymer
+        solvent_id: id of the solvent in the database, optionally labelled in the
+            description. This id is predetermined from the database
+        polymer_id: id of the polymer in the database, optionally labelled in the
+            description. This id is predetermined from the database
         conc: concentration of the polymer in the solvent
         reactor_number: the reactor number the sample was in
         transmission: list of transmission values.
@@ -152,6 +156,8 @@ class Reactor(BaseModel):
 
     solvent: str
     polymer: str
+    solvent_id: Optional[int]
+    polymer_id: Optional[int]
     conc: PropertyValue
     reactor_number: int
     transmission: PropertyValues

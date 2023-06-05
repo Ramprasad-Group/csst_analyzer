@@ -44,5 +44,9 @@ def test_analyzer_add_experiment_reactors(csste_1014):
     analyzer.add_experiment_reactors(csste_1014)
     assert len(analyzer.processed_reactors) == 3
     assert list(analyzer.df.polymer.unique()) == ["PEG", "PEO", "PVP"]
-    assert list(analyzer.df.solvent.unique()) == ["1,2dichlorobenzene", "Ethyl Acetate", "MeOH"]
+    assert list(analyzer.df.solvent.unique()) == [
+        "1,2dichlorobenzene",
+        "Ethyl Acetate",
+        "MeOH",
+    ]
     assert list(analyzer.df.concentration_unit.unique()) == ["mg/ml"]
