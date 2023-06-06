@@ -91,7 +91,7 @@ def test_get_lab_polymer_by_name(session):
 
 def test_get_lab_solvent_by_name(session):
     """Will likely fail if raise_lookup_error_if_list_count_is_not_one fails"""
-    sol = db.getter.get_lab_solvent_by_name("MeOH", session)
+    sol = db.getter.get_lab_solvent_by_name("MethANol", session)
     assert sol.name == "methanol"
     assert sol.percent_purity == 99
 

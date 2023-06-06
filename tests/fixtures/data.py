@@ -189,6 +189,7 @@ def reactor():
     reactor = Reactor.construct(
         solvent="MeOH",
         polymer="PEG",
+        solvent_id=3,
         reactor_number=1,
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
         transmission=transmission,

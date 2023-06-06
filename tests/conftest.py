@@ -178,12 +178,6 @@ if _db_option:
         solvent_names = [
             {
                 "sol_id": 1,
-                "name": "MeOH",
-                "search_name": make_name_searchable("MeOH"),
-                "naming_convention": "abbreviation",
-            },
-            {
-                "sol_id": 1,
                 "name": "methanol",
                 "search_name": make_name_searchable("methanol"),
                 "naming_convention": "standard",

@@ -229,8 +229,8 @@ def add_reactor(
         "csst_temperature_program_id": temperature_program_id,
         "conc": reactor.conc.value,
         "conc_unit": reactor.conc.unit,
-        "bret_pol_id": getter.get_lab_polymer_by_name(reactor.polymer, Session).id,
-        "bret_sol_id": getter.get_lab_solvent_by_name(reactor.solvent, Session).id,
+        "bret_pol_id": bret_pol_id,
+        "bret_sol_id": bret_sol_id,
         "reactor_number": reactor.reactor_number,
     }
     with Session() as session:
