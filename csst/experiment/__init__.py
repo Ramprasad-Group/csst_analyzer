@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List
 from pathlib import Path
 import glob
@@ -18,6 +19,7 @@ from csst.experiment.models import (
     TemperatureSettingEnum,
 )
 
+logger = logging.getLogger(__name__)
 
 class Experiment:
     """Loads Crystal 16 Dissolition/Solubility Test Experiments
@@ -192,15 +194,15 @@ class Experiment:
                     if len(line) > 1:
                         self.start_of_experiment = try_parsing_date(line[1])
                 elif "Reactor" in line[0]:
-                    # e.g., Reactor1,5 mg/ml PEG in TOL
                     # rejoin if there are any commas in polymer or solvent names
                     reactor_data = ",".join(line[1:])
                     # get conc, unit, polymer in solvent
                     conc, unit, pol_sol = reactor_data.split(" ", 2)
-                    pol, sol = pol_sol.split("in")
+                    # e.g., Reactor1,5 mg/ml PEG in TOL
                     # Ignore reactors that are empty
-                    if float(reactor_data[0]) != 0:
+                    if float(conc) != 0:
                         try:
+                            pol, sol = pol_sol.split(" in ")
                             reactors[line[0].strip()] = {
                                 "conc": PropertyValue(
                                     name="concentration",
@@ -383,6 +385,7 @@ def load_experiments_from_folder(
         files = list(folder.glob("*.csv"))
     experiments = []
     for file in files:
+        logger.info(f"Loading {file}")
         with open(file, "r") as fin:
             if "Crystal16 Data Report File" in fin.readline():
                 experiments.append(Experiment.load_from_file(file))

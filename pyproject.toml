@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "csst.analyzer"
-version = "2.3.0"
+version = "2.3.1"
 description = ""
 authors = ["Joe Kern <jkern34@gatech.edu>", "Mona Amrihesari <mamrihesari3@gatech.edu>"]
 readme = "README.md"
