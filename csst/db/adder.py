@@ -319,16 +319,22 @@ def add_processed_reactor(
             msg = f"The unprocessed reactor experiment has not been added to the database yet."
             logger.warning(msg)
             return
+        bret_pol_id = reactor.unprocessed_reactor.polymer_id
+        bret_sol_id = reactor.unprocessed_reactor.solvent_id
+        if bret_pol_id is None:
+            bret_pol_id = getter.get_lab_polymer_by_name(
+                reactor.unprocessed_reactor.polymer, Session
+            ).id
+        if bret_sol_id is None:
+            bret_sol_id = getter.get_lab_solvent_by_name(
+                reactor.unprocessed_reactor.solvent, Session
+            ).id
         data = {
             "csst_experiment_id": exp.id,
             "conc": reactor.unprocessed_reactor.conc.value,
             "conc_unit": reactor.unprocessed_reactor.conc.unit,
-            "bret_pol_id": getter.get_lab_polymer_by_name(
-                reactor.unprocessed_reactor.polymer, Session
-            ).id,
-            "bret_sol_id": getter.get_lab_solvent_by_name(
-                reactor.unprocessed_reactor.solvent, Session
-            ).id,
+            "bret_pol_id": bret_pol_id,
+            "bret_sol_id": bret_sol_id,
             "reactor_number": reactor.unprocessed_reactor.reactor_number,
         }
         unprocessed_reactor = session.query(CSSTReactor).filter_by(**data).first()
