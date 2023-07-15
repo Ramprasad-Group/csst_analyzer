@@ -40,40 +40,47 @@ if _db_option:
         PropertyValue,
     )
 
+    dotenv_path = Path(__file__).parent.absolute() / ".." / ".env"
+    if not dotenv_path.exists():
+        raise FileNotFoundError(
+            ".env file must be created in the source folder with CSST_DB_USER, "
+            + "CSST_DB_PASSWORD, CSST_DB_HOST, CSST_DB_PORT, CSST_DB_NAME, "
+            + "and CSST_DB_IS_REMOTE set, and "
+            + "SSH_TUNNEL_HOST, SSH_TUNNEL_PORT, SSH_USERNAME, and SSH_PASSWORD "
+            + "set if CSST_DB_IS_REMOTE is set to true."
+        )
+    load_dotenv(str(dotenv_path))
+    _remote_access = os.environ.get("CSST_DB_IS_REMOTE") == "true"
+
+
 if _db_option:
 
     @pytest.fixture(scope="module")
-    def server():
+    def db_port():
         """SSH server to connect to the database through"""
-        dotenv_path = Path(__file__).parent.absolute() / ".." / ".env"
-        if not dotenv_path.exists():
-            raise FileNotFoundError(
-                ".env file must be created in the source folder with CSST_DB_USER, "
-                + "CSST_DB_PASSWORD, CSST_DB_HOST, CSST_DB_PORT, CSST_DB_NAME, "
-                + "SSH_TUNNEL_HOST, SSH_TUNNEL_PORT, SSH_USERNAME, and SSH_PASSWORD "
-                + "set."
+        if _remote_access:
+            server = SSHTunnelForwarder(
+                (os.environ.get("SSH_TUNNEL_HOST"), int(os.environ.get("SSH_TUNNEL_PORT"))),
+                ssh_username=os.environ.get("SSH_USERNAME"),
+                ssh_password=os.environ.get("SSH_PASSWORD"),
+                remote_bind_address=(
+                    os.environ.get("CSST_DB_HOST"),
+                    int(os.environ.get("CSST_DB_PORT")),
+                ),
             )
-        load_dotenv(str(dotenv_path))
-        server = SSHTunnelForwarder(
-            (os.environ.get("SSH_TUNNEL_HOST"), int(os.environ.get("SSH_TUNNEL_PORT"))),
-            ssh_username=os.environ.get("SSH_USERNAME"),
-            ssh_password=os.environ.get("SSH_PASSWORD"),
-            remote_bind_address=(
-                os.environ.get("CSST_DB_HOST"),
-                int(os.environ.get("CSST_DB_PORT")),
-            ),
-        )
-        server.start()
-        yield server
-        server.stop()
+            server.start()
+            yield server.local_bind_port
+            server.stop()
+        else:
+            yield os.environ.get("CSST_DB_PORT")
 
     @pytest.fixture(scope="module")
-    def engine(server):
+    def engine(db_port):
         db_server = "postgresql+psycopg2://{}:{}@{}:{}/{}_test".format(
             os.environ.get("CSST_DB_USER"),
             os.environ.get("CSST_DB_PASSWORD"),
             os.environ.get("CSST_DB_HOST"),
-            server.local_bind_port,
+            db_port,
             os.environ.get("CSST_DB_NAME"),
         )
         engine = create_engine(db_server)
@@ -82,7 +89,6 @@ if _db_option:
         else:
             raise FileExistsError(
                 "Database already exists. Since the database is "
-                + "dropped at the end of testing, stopping the test."
             )
         yield engine
 

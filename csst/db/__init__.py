@@ -23,22 +23,27 @@ from csst.experiment import Experiment
 from csst.db import adder, getter
 
 
-def add_experiment(experiment: Experiment, Session: Union[scoped_session, Session]):
+def add_experiment(experiment: Experiment, session: Union[scoped_session, Session]):
     """Adds experiment data, temperature_program, and reactor data to database
 
     Args:
         experiment: experiment to add to table
-        Session: session connected to the database
+        session: instantiated session connected to the database
     """
-    adder.add_experiment(experiment=experiment, Session=Session)
-    adder.add_temperature_program(
-        temperature_program=experiment.temperature_program, Session=Session
+    exp_id = adder.add_experiment_and_or_get_id(
+        experiment=experiment, session=session
     )
-    adder.add_experiment_reactors(experiment=experiment, Session=Session)
-
+    temp_program_id = adder.add_temperature_program_and_or_get_program_id(
+        temperature_program=experiment.temperature_program, session=session
+    )
+    adder.add_experiment_reactors(experiment=experiment, 
+                                  experiment_id=exp_id, 
+        temperature_program_id=temp_program_id, 
+        session=session
+    )
 
 def load_from_db(
-    Session: Union[Session, scoped_session],
+    session: Union[Session, scoped_session],
     file_name: Optional[str] = None,
     version: Optional[str] = None,
     experiment_details: Optional[str] = None,
@@ -53,7 +58,7 @@ def load_from_db(
     that contain them.
 
     Args:
-        Session: connected to the database.
+        session: instantiated connected to the database.
         file_name (str): name of the original data file
         version (str): version of the data file
         experiment_details (str):
@@ -82,17 +87,17 @@ def load_from_db(
     obj.lab_journal = lab_journal
     obj.description = description
     obj.start_of_experiment = start_of_experiment
-    return get_experiments_from_experiment_details(obj, Session)
+    return get_experiments_from_experiment_details(obj, session)
 
 
 def get_experiments_from_experiment_details(
-    experiment: Experiment, Session: Union[scoped_session, Session]
+    experiment: Experiment, session: Union[scoped_session, Session]
 ) -> List[Experiment]:
     """Gets a list of experiments that match the experiment metadata passed
 
     Args:
         experiment: experiment object that has any experiment details
         (values returned by experiment.dict()) filled out
-        Session: session connected to the database
+        session: instantiated session connected to the database
     """
-    return getter.get_experiments(experiment, Session)
+    return getter.get_experiments(experiment, session)

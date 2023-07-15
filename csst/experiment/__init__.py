@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List
+from typing import Dict, List, Set
 from pathlib import Path
 import glob
 from datetime import datetime
@@ -197,7 +197,11 @@ class Experiment:
                     # rejoin if there are any commas in polymer or solvent names
                     reactor_data = ",".join(line[1:])
                     # get conc, unit, polymer in solvent
-                    conc, unit, pol_sol = reactor_data.split(" ", 2)
+                    try:
+                        conc, unit, pol_sol = reactor_data.split(" ", 2)
+                    except ValueError as e:
+                        logger.warning(e)
+                        conc, unit = reactor_data.split(" ", 1)
                     # e.g., Reactor1,5 mg/ml PEG in TOL
                     # Ignore reactors that are empty
                     if float(conc) != 0:
@@ -368,7 +372,7 @@ class Experiment:
 
 
 def load_experiments_from_folder(
-    folder: str, recursive: bool = False
+    folder: str, recursive: bool = False, files_to_ignore: Set[str] = {}
 ) -> List[Experiment]:
     """Loads all csst experiments in a folder
 
@@ -385,6 +389,8 @@ def load_experiments_from_folder(
         files = list(folder.glob("*.csv"))
     experiments = []
     for file in files:
+        if file.name in files_to_ignore:
+            continue
         logger.info(f"Loading {file}")
         with open(file, "r") as fin:
             if "Crystal16 Data Report File" in fin.readline():

@@ -36,26 +36,26 @@ logger = logging.getLogger(__name__)
 
 
 def get_experiments(
-    experiment: Experiment, Session: Union[scoped_session, Session]
+    experiment: Experiment, session: Union[scoped_session, Session]
 ) -> List[Experiment]:
     """Gets all experiments associated with the experiment dict data"""
     experiments = []
-    exps = get_csst_experiments(experiment, Session)
+    exps = get_csst_experiments(experiment, session)
     if len(exps) == 0:
         return experiments
     for exp in exps:
-        reactors = get_csst_reactors_by_experiment_id(exp.id, Session)
+        reactors = get_csst_reactors_by_experiment_id(exp.id, session)
         temp_program = get_temperature_program_by_id(
-            reactors[0].csst_temperature_program_id, Session
+            reactors[0].csst_temperature_program_id, session
         )
         exp_value_properties = get_experiment_property_value_by_experiment_id(
-            exp.id, Session
+            exp.id, session
         )
         exp_values_properties = get_experiment_property_values_by_experiment_id(
-            exp.id, Session
+            exp.id, session
         )
         reactors = [
-            (reactor, get_reactor_property_values_by_reactor_id(reactor.id, Session))
+            (reactor, get_reactor_property_values_by_reactor_id(reactor.id, session))
             for reactor in reactors
         ]
         experiment = Experiment()
@@ -82,8 +82,8 @@ def get_experiments(
         experiment.stir_rates = exp_values_properties[PropertyNameEnum.STIR_RATE]
         exp_reactors = [
             Reactor(
-                solvent=get_lab_solvent_by_id(reactor.bret_sol_id, Session).name,
-                polymer=get_lab_polymer_by_id(reactor.bret_pol_id, Session).name,
+                solvent=get_lab_solvent_by_id(reactor.bret_sol_id, session).name,
+                polymer=get_lab_polymer_by_id(reactor.bret_pol_id, session).name,
                 polymer_id=reactor.bret_pol_id,
                 solvent_id=reactor.bret_sol_id,
                 reactor_number=reactor.reactor_number,
@@ -103,30 +103,27 @@ def get_experiments(
 
 
 def get_csst_experiments(
-    experiment: Experiment, Session: Union[scoped_session, Session]
+    experiment: Experiment, session: Union[scoped_session, Session]
 ) -> List[CSSTExperiment]:
-    with Session() as session:
-        return (
-            session.query(CSSTExperiment)
-            .filter_by(**remove_keys_with_null_values_in_dict(experiment.dict()))
-            .all()
-        )
+    return (
+        session.query(CSSTExperiment)
+        .filter_by(**remove_keys_with_null_values_in_dict(experiment.dict()))
+        .all()
+    )
 
 
 def get_csst_reactors_by_experiment_id(
-    experiment_id: int, Session: Union[scoped_session, Session]
+    experiment_id: int, session: Union[scoped_session, Session]
 ) -> List[CSSTReactor]:
-    with Session() as session:
-        return (
-            session.query(CSSTReactor).filter_by(csst_experiment_id=experiment_id).all()
-        )
+    return (
+        session.query(CSSTReactor).filter_by(csst_experiment_id=experiment_id).all()
+    )
 
 
 def get_temperature_program_by_id(
-    id_: int, Session: Union[scoped_session, Session]
+    id_: int, session: Union[scoped_session, Session]
 ) -> TemperatureProgram:
-    with Session() as session:
-        temp_program = session.query(CSSTTemperatureProgram).filter_by(id=id_).first()
+    temp_program = session.query(CSSTTemperatureProgram).filter_by(id=id_).first()
     return TemperatureProgram(
         block=temp_program.block,
         solvent_tune=temp_program.solvent_tune,
@@ -136,173 +133,164 @@ def get_temperature_program_by_id(
 
 
 def get_lab_polymer_by_id(
-    id_: int, Session: Union[scoped_session, Session]
+    id_: int, session: Union[scoped_session, Session]
 ) -> BrettmannLabPolymer:
-    with Session() as session:
-        return session.query(BrettmannLabPolymer).filter_by(id=id_).first()
+    return session.query(BrettmannLabPolymer).filter_by(id=id_).first()
 
 
 def get_lab_solvent_by_id(
-    id_: int, Session: Union[scoped_session, Session]
+    id_: int, session: Union[scoped_session, Session]
 ) -> BrettmannLabSolvent:
-    with Session() as session:
-        return session.query(BrettmannLabSolvent).filter_by(id=id_).first()
+    return session.query(BrettmannLabSolvent).filter_by(id=id_).first()
 
 
 def get_experiment_property_value_by_experiment_id(
-    experiment_id: int, Session: Union[scoped_session, Session]
+    experiment_id: int, session: Union[scoped_session, Session]
 ) -> Dict[str, PropertyValue]:
     properties = {}
-    with Session() as session:
-        for prop_id in (
-            session.query(CSSTExperimentPropertyValue.csst_property_id)
-            .filter_by(csst_experiment_id=experiment_id)
-            .distinct()
-        ):
-            prop = session.query(CSSTProperty).filter_by(id=prop_id[0]).first()
-            value = (
-                session.query(CSSTExperimentPropertyValue)
-                .filter_by(csst_experiment_id=experiment_id, csst_property_id=prop.id)
-                .first()
-            )
-            properties[prop.name] = PropertyValue(
-                name=prop.name, unit=prop.unit, value=value.value
-            )
+    for prop_id in (
+        session.query(CSSTExperimentPropertyValue.csst_property_id)
+        .filter_by(csst_experiment_id=experiment_id)
+        .distinct()
+    ):
+        prop = session.query(CSSTProperty).filter_by(id=prop_id[0]).first()
+        value = (
+            session.query(CSSTExperimentPropertyValue)
+            .filter_by(csst_experiment_id=experiment_id, csst_property_id=prop.id)
+            .first()
+        )
+        properties[prop.name] = PropertyValue(
+            name=prop.name, unit=prop.unit, value=value.value
+        )
     return properties
 
 
 def get_experiment_property_values_by_experiment_id(
-    experiment_id: int, Session: Union[scoped_session, Session]
+    experiment_id: int, session: Union[scoped_session, Session]
 ) -> Dict[str, PropertyValues]:
     properties = {}
-    with Session() as session:
-        for prop_id in (
-            session.query(CSSTExperimentPropertyValues.csst_property_id)
-            .filter_by(csst_experiment_id=experiment_id)
-            .distinct()
-        ):
-            prop = session.query(CSSTProperty).filter_by(id=prop_id[0]).first()
-            values = (
-                session.query(CSSTExperimentPropertyValues)
-                .filter_by(csst_experiment_id=experiment_id, csst_property_id=prop.id)
-                .all()
+    for prop_id in (
+        session.query(CSSTExperimentPropertyValues.csst_property_id)
+        .filter_by(csst_experiment_id=experiment_id)
+        .distinct()
+    ):
+        prop = session.query(CSSTProperty).filter_by(id=prop_id[0]).first()
+        values = (
+            session.query(CSSTExperimentPropertyValues)
+            .filter_by(csst_experiment_id=experiment_id, csst_property_id=prop.id)
+            .all()
+        )
+        values = {value.array_index: value.value for value in values}
+        arr = []
+        for i in range(len(values)):
+            arr.append(values[i])
+        if prop.name != "set_temperature":
+            properties[prop.name] = PropertyValues(
+                name=prop.name, unit=prop.unit, values=np.array(arr)
             )
-            values = {value.array_index: value.value for value in values}
-            arr = []
-            for i in range(len(values)):
-                arr.append(values[i])
-            if prop.name != "set_temperature":
-                properties[prop.name] = PropertyValues(
-                    name=prop.name, unit=prop.unit, values=np.array(arr)
-                )
-            else:
-                properties[prop.name] = PropertyValues(
-                    name="temperature", unit=prop.unit, values=np.array(arr)
-                )
+        else:
+            properties[prop.name] = PropertyValues(
+                name="temperature", unit=prop.unit, values=np.array(arr)
+            )
     return properties
 
 
 def get_reactor_property_values_by_reactor_id(
-    reactor_id: int, Session: Union[scoped_session, Session]
+    reactor_id: int, session: Union[scoped_session, Session]
 ) -> Dict[str, PropertyValues]:
     properties = {}
-    with Session() as session:
-        for prop_id in (
-            session.query(CSSTReactorPropertyValues.csst_property_id)
-            .filter_by(csst_reactor_id=reactor_id)
-            .distinct()
-        ):
-            prop = session.query(CSSTProperty).filter_by(id=prop_id[0]).first()
-            values = (
-                session.query(CSSTReactorPropertyValues)
-                .filter_by(csst_reactor_id=reactor_id, csst_property_id=prop.id)
-                .all()
-            )
-            values = {value.array_index: value.value for value in values}
-            arr = []
-            for i in range(len(values)):
-                arr.append(values[i])
-            properties[prop.name] = PropertyValues(
-                name=prop.name, unit=prop.unit, values=np.array(arr)
-            )
+    for prop_id in (
+        session.query(CSSTReactorPropertyValues.csst_property_id)
+        .filter_by(csst_reactor_id=reactor_id)
+        .distinct()
+    ):
+        prop = session.query(CSSTProperty).filter_by(id=prop_id[0]).first()
+        values = (
+            session.query(CSSTReactorPropertyValues)
+            .filter_by(csst_reactor_id=reactor_id, csst_property_id=prop.id)
+            .all()
+        )
+        values = {value.array_index: value.value for value in values}
+        arr = []
+        for i in range(len(values)):
+            arr.append(values[i])
+        properties[prop.name] = PropertyValues(
+            name=prop.name, unit=prop.unit, values=np.array(arr)
+        )
     return properties
 
 
 def get_csst_experiment(
-    experiment: Experiment, Session: Union[scoped_session, Session]
+    experiment: Experiment, session: Union[scoped_session, Session]
 ) -> CSSTExperiment:
-    with Session() as session:
-        query = session.query(CSSTExperiment).filter_by(
-            **remove_keys_with_null_values_in_dict(experiment.dict())
-        )
-        raise_lookup_error_if_query_count_is_not_one(
-            query, "experiment", experiment.dict()
-        )
-        exp = query.first()
+    query = session.query(CSSTExperiment).filter_by(
+        **remove_keys_with_null_values_in_dict(experiment.dict())
+    )
+    raise_lookup_error_if_query_count_is_not_one(
+        query, "experiment", experiment.dict()
+    )
+    exp = query.first()
     return exp
 
 
 def get_csst_temperature_program(
-    temperature_program: TemperatureProgram, Session: Union[scoped_session, Session]
+    temperature_program: TemperatureProgram, session: Union[scoped_session, Session]
 ) -> CSSTTemperatureProgram:
-    with Session() as session:
-        query = session.query(CSSTTemperatureProgram).filter(
-            CSSTTemperatureProgram.hash == temperature_program.hash()
-        )
-        raise_lookup_error_if_query_count_is_not_one(
-            query, "temperature program", temperature_program.hash()
-        )
-        temp_program = query.first()
+    query = session.query(CSSTTemperatureProgram).filter(
+        CSSTTemperatureProgram.hash == temperature_program.hash()
+    )
+    raise_lookup_error_if_query_count_is_not_one(
+        query, "temperature program", temperature_program.hash()
+    )
+    temp_program = query.first()
     return temp_program
 
 
 def get_lab_polymer_by_name(
-    name: str, Session: Union[scoped_session, Session]
+    name: str, session: Union[scoped_session, Session]
 ) -> BrettmannLabPolymer:
-    with Session() as session:
-        pols = (
-            session.query(PolymerName.pol_id)
-            .filter(PolymerName.search_name == make_name_searchable(name))
-            .distinct()
-        )
-        pol_ids = [pol.pol_id for pol in pols]
-        lab_pols = (
-            session.query(BrettmannLabPolymer)
-            .filter(BrettmannLabPolymer.pol_id.in_(pol_ids))
-            .all()
-        )
-        # TODO add better method to extract the exact brettmann polymer from the
-        # database.
-        lab_pol_names = {pol.name: pol for pol in lab_pols}
-        if len(lab_pol_names) == len(lab_pols) and name in lab_pol_names:
-            return lab_pol_names[name]
+    pols = (
+        session.query(PolymerName.pol_id)
+        .filter(PolymerName.search_name == make_name_searchable(name))
+        .distinct()
+    )
+    pol_ids = [pol.pol_id for pol in pols]
+    lab_pols = (
+        session.query(BrettmannLabPolymer)
+        .filter(BrettmannLabPolymer.pol_id.in_(pol_ids))
+        .all()
+    )
+    # TODO add better method to extract the exact brettmann polymer from the
+    # database.
+    lab_pol_names = {pol.name: pol for pol in lab_pols}
+    if len(lab_pol_names) == len(lab_pols) and name in lab_pol_names:
+        return lab_pol_names[name]
 
-        # TODO original method to extract brettmann polymer. Works if there aren't
-        # any duplicate polymers
-        raise_lookup_error_if_list_count_is_not_one(
-            list(lab_pols), "lab polymer", {name: [pol.name for pol in lab_pols]}
-        )
+    # TODO original method to extract brettmann polymer. Works if there aren't
+    # any duplicate polymers
+    raise_lookup_error_if_list_count_is_not_one(
+        list(lab_pols), "lab polymer", {name: [pol.name for pol in lab_pols]}
+    )
     return lab_pols[0]
 
 
 def get_lab_solvent_by_name(
-    name: str, Session: Union[scoped_session, Session]
+    name: str, session: Union[scoped_session, Session]
 ) -> BrettmannLabSolvent:
-    with Session() as session:
-        sols = (
-            session.query(SolventName.sol_id)
-            .filter(SolventName.search_name == make_name_searchable(name))
-            .distinct()
-        )
-        sol_ids = [sol.sol_id for sol in sols]
-        lab_sols = (
-            session.query(BrettmannLabSolvent)
-            .filter(BrettmannLabSolvent.sol_id.in_(sol_ids))
-            .all()
-        )
-        raise_lookup_error_if_list_count_is_not_one(
-            list(lab_sols), "lab solvent", {name: [sol.name for sol in lab_sols]}
-        )
+    sols = (
+        session.query(SolventName.sol_id)
+        .filter(SolventName.search_name == make_name_searchable(name))
+        .distinct()
+    )
+    sol_ids = [sol.sol_id for sol in sols]
+    lab_sols = (
+        session.query(BrettmannLabSolvent)
+        .filter(BrettmannLabSolvent.sol_id.in_(sol_ids))
+        .all()
+    )
+    raise_lookup_error_if_list_count_is_not_one(
+        list(lab_sols), "lab solvent", {name: [sol.name for sol in lab_sols]}
+    )
     return lab_sols[0]
 
 
@@ -355,11 +343,13 @@ def raise_lookup_error_if_list_count_is_not_one(l: List, item: str, data: str):
         raise LookupError(msg)
 
 
-def get_processed_data(Session: Union[scoped_session, Session]) -> pd.DataFrame:
+def get_processed_data(session: Union[scoped_session, Session]) -> pd.DataFrame:
     """Returns all processed data in a pandas dataframe"""
-    with Session() as session:
-        reactor_ids = (
-            session.query(CSSTReactorProcessedTemperature.csst_reactor_id)
-            .distinct()
-            .all()
-        )
+    reactor_ids = (
+        session.query(CSSTReactorProcessedTemperature.csst_reactor_id)
+        .distinct()
+        .all()
+    )
+
+def get_property_id(prop_data, session: Union[scoped_session, Session]) -> int:
+    return session.query(CSSTProperty).filter_by(**prop_data).first().id

@@ -42,7 +42,13 @@ from .fixtures.data import csste_1014, manual_1014, reactor
 
 @pytest.mark.slow
 def test_add_experiment(session, csste_1014):
-    db.adder.add_experiment(csste_1014, session)
+    exp_id = db.adder.add_experiment_and_or_get_id(csste_1014, session)
+    session.commit()
+    assert (
+        session.query(CSSTExperiment)
+        .filter_by(start_of_experiment=csste_1014.start_of_experiment)
+        .count()
+    ) == 1
     experiment = (
         session.query(CSSTExperiment)
         .filter_by(start_of_experiment=csste_1014.start_of_experiment)
@@ -56,7 +62,8 @@ def test_add_experiment(session, csste_1014):
     assert experiment.lab_journal == csste_1014.lab_journal
     assert experiment.description == "\n".join(csste_1014.description)
     assert experiment.start_of_experiment == csste_1014.start_of_experiment
-    db.adder.add_experiment(csste_1014, session)
+    db.adder.add_experiment_and_or_get_id(csste_1014, session)
+    session.commit()
     assert (
         session.query(CSSTExperiment)
         .filter_by(start_of_experiment=csste_1014.start_of_experiment)
@@ -145,8 +152,9 @@ def test_add_experiment(session, csste_1014):
         assert val.value == csste_1014.set_temperature.values[val.array_index]
 
 
-def test_add_temperature_program(session, manual_1014):
-    db.adder.add_temperature_program(manual_1014.temperature_program, session)
+def test_add_temperature_program_and_or_get_program_id(session, manual_1014):
+    db.adder.add_temperature_program_and_or_get_program_id(manual_1014.temperature_program, session)
+    session.commit()
     temp_program = (
         session.query(CSSTTemperatureProgram)
         .filter(CSSTTemperatureProgram.hash == manual_1014.temperature_program.hash())
@@ -162,7 +170,8 @@ def test_add_temperature_program(session, manual_1014):
     assert temp_program.experiment == [
         step.dict() for step in manual_1014.temperature_program.experiment
     ]
-    db.adder.add_temperature_program(manual_1014.temperature_program, session)
+    db.adder.add_temperature_program_and_or_get_program_id(manual_1014.temperature_program, session)
+    session.commit()
     assert (
         session.query(CSSTTemperatureProgram)
         .filter(CSSTTemperatureProgram.hash == manual_1014.temperature_program.hash())
@@ -183,10 +192,15 @@ def test_add_property(session):
 def test_add_reactor_property_values(session, manual_1014):
     reactor_id = 10000  # from database seed function in conftest
     prop = PropertyValue(name="bottom_stir_rate", unit="rpm", value=5)
+    prop_data = {"name": prop.name, "unit": prop.unit}
+    db.adder.add_property(prop_data, session)
     with pytest.raises(ValueError):
-        db.adder.add_reactor_property_values(reactor_id, prop, session)
+        db.adder.add_reactor_property_values(reactor_id, prop_data, session)
     prop = PropertyValues(name="temperature", unit="K", values=np.array([0, 1, 2, 3]))
+    prop_data = {"name": prop.name, "unit": prop.unit}
+    db.adder.add_property(prop_data, session)
     db.adder.add_reactor_property_values(reactor_id, prop, session)
+    session.commit()
     prop_query = session.query(CSSTProperty).filter_by(
         name=PropertyNameEnum.TEMP, unit="K"
     )
@@ -216,7 +230,9 @@ def test_add_experiment_property_value(session, manual_1014):
     with pytest.raises(ValueError):
         db.adder.add_experiment_property_value(experiment_id, prop, session)
     prop = PropertyValue(name="bottom_stir_rate", unit="rpm", value=20)
+    db.adder.add_property({"name": prop.name, "unit": prop.unit}, session)
     db.adder.add_experiment_property_value(experiment_id, prop, session)
+    session.commit()
     prop_query = session.query(CSSTProperty).filter_by(name=prop.name, unit=prop.unit)
     assert prop_query.count() == 1
     db_prop = prop_query.first()
@@ -233,40 +249,30 @@ def test_add_experiment_property_value(session, manual_1014):
         db.adder.add_experiment_property_value(experiment_id, prop, session)
     assert prop_query.count() == 1
     assert query.count() == 1
-    # test that an error isn't thrown if we change the prop name
-    db.adder.add_experiment_property_value(
-        experiment_id, prop, session, prop_name="test"
-    )
-    prop_query = session.query(CSSTProperty).filter_by(name="test", unit=prop.unit)
-    assert prop_query.count() == 1
-    query = session.query(CSSTExperimentPropertyValue).filter(
-        CSSTExperimentPropertyValue.csst_experiment_id == experiment_id,
-        CSSTExperimentPropertyValue.csst_property_id == prop_query.first().id,
-    )
-    assert query.count() == 1
 
 
 def test_add_reactor(session, reactor):
-    old_num_props = session.query(CSSTProperty).count()
+    db.adder.add_property(
+        {"name": reactor.transmission.name, "unit": reactor.transmission.unit},
+        session
+    )
     experiment_id = 10000
     temperature_program_id = 10000
     with pytest.raises(ValueError):
         db.adder.add_reactor({}, session, experiment_id, temperature_program_id)
     db.adder.add_reactor(reactor, session, experiment_id, temperature_program_id)
-    # should have 1 property added + any added prior to the test
-    assert session.query(CSSTProperty).count() == 1 + old_num_props
+    session.commit()
     query = session.query(CSSTReactor).filter_by(
         conc=reactor.conc.value, conc_unit=reactor.conc.unit
     )
     assert query.count() == 1
     db_reactor = query.first()
-    # test multivalue properties
     prop = (
         session.query(CSSTProperty)
         .filter_by(name=reactor.transmission.name, unit=reactor.transmission.unit)
         .first()
     )
-    assert prop.unit == reactor.transmission.unit
+    # test multivalue properties
     vals = (
         session.query(CSSTReactorPropertyValues)
         .filter_by(csst_property_id=prop.id)
@@ -278,16 +284,13 @@ def test_add_reactor(session, reactor):
 
 @pytest.mark.slow
 def test_add_experiment_reactors(session, csste_1014):
-    """Needs both add_experiment and add_temperature_program test to pass"""
+    """Needs both add_experiment and add_temperature_program_and_or_get_program_id test to pass"""
     # must add both experiment and temperature program first or lookup error will be raised
     old_num_props = session.query(CSSTProperty).count()
-    with pytest.raises(LookupError):
-        db.adder.add_experiment_reactors(csste_1014, session)
-    db.adder.add_experiment(csste_1014, session)
-    with pytest.raises(LookupError):
-        db.adder.add_experiment_reactors(csste_1014, session)
-    db.adder.add_temperature_program(csste_1014.temperature_program, session)
-    db.adder.add_experiment_reactors(csste_1014, session)
+    exp_id = db.adder.add_experiment_and_or_get_id(csste_1014, session)
+    temp_program_id = db.adder.add_temperature_program_and_or_get_program_id(csste_1014.temperature_program, session)
+    db.adder.add_experiment_reactors(csste_1014, exp_id, temp_program_id, session)
+    session.commit()
     # there should be 3 reactors added. Won't test if values added are correct as
     # that should have been accurately assessed by adding the single reactor test
     assert (
@@ -311,10 +314,12 @@ def test_add_processed_reactor(session):
         db.adder.add_processed_reactor(analyzer, session)
     # should be added
     for reactor in analyzer.processed_reactors:
-        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+        db.adder.add_processed_reactor(session=session, reactor=reactor)
+        session.commit()
     # shouldn't be added
     for reactor in analyzer.processed_reactors:
-        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+        db.adder.add_processed_reactor(session=session, reactor=reactor)
+        session.commit()
     db_count = session.query(CSSTReactorProcessedTemperature).count() - old_db_count
     assert (
         len(analyzer.processed_reactors[0].temperatures)
@@ -338,19 +343,22 @@ def test_bad_add_processed_reactor(session):
     analyzer.add_experiment_reactors(exp)
     # should fail becuase experiment can't be found
     for reactor in analyzer.processed_reactors:
-        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+        db.adder.add_processed_reactor(session=session, reactor=reactor)
+        session.commit()
     assert session.query(CSSTReactorProcessedTemperature).count() - old_db_count == 0
 
     exp.lab_journal = old_lab_journal
     # should fail becuase reactor can't be found
     for reactor in analyzer.processed_reactors:
-        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+        db.adder.add_processed_reactor(session=session, reactor=reactor)
+        session.commit()
     assert session.query(CSSTReactorProcessedTemperature).count() - old_db_count == 0
 
     exp.reactors[0].conc.unit = old_unit
     # should now pass since reactor and experiment query fixed
     for reactor in analyzer.processed_reactors:
-        db.adder.add_processed_reactor(Session=session, reactor=reactor)
+        db.adder.add_processed_reactor(session=session, reactor=reactor)
+        session.commit()
     assert session.query(CSSTReactorProcessedTemperature).count() - old_db_count == len(
         analyzer.processed_reactors[0].temperatures
     )

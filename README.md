@@ -188,6 +188,8 @@ CSST_DB_PASSWORD=
 CSST_DB_HOST=
 CSST_DB_PORT=
 CSST_DB_NAME=
+# if set to false, a local db is used and ssh details are irrelavent
+CSST_DB_IS_REMOTE=
 SSH_TUNNEL_HOST=
 SSH_TUNNEL_PORT=
 SSH_USERNAME=

@@ -66,6 +66,7 @@ def test_add_experiment(session, csste_1014):
 @pytest.mark.slow
 def test_get_experiment(session, csste_1014):
     db.add_experiment(csste_1014, session)
+    session.commit()
     exps = db.get_experiments_from_experiment_details(csste_1014, session)
     exp = exps[0]
     assert csste_1014.file_name == exp.file_name
@@ -163,12 +164,13 @@ def test_get_experiment(session, csste_1014):
 @pytest.mark.slow
 def test_load_from_db(session, csste_1014):
     exps = db.load_from_db(
-        Session=session, start_of_experiment=csste_1014.start_of_experiment
+        session=session, start_of_experiment=csste_1014.start_of_experiment
     )
     assert len(exps) == 0
     db.add_experiment(csste_1014, session)
+    session.commit()
     exps = db.load_from_db(
-        Session=session, start_of_experiment=csste_1014.start_of_experiment
+        session=session, start_of_experiment=csste_1014.start_of_experiment
     )
     exp = exps[0]
     assert csste_1014.file_name == exp.file_name
