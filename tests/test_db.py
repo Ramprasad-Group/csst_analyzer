@@ -1,7 +1,16 @@
-import os
-
 import pytest
 import numpy as np
+
+from pinrex.db.models.polymer import Polymer
+from pinrex.db.models.csst import (
+    CSSTReactor,
+    CSSTProperty,
+    CSSTExperiment,
+    CSSTTemperatureProgram,
+)
+
+from csst.experiment.models import PropertyValue
+from .fixtures.data import csste_1014  # noqa: F401
 
 # test if db and db_dev dependencies installed
 # db dependency
@@ -23,25 +32,13 @@ pytest.importorskip(
     ),
 )
 
-from pinrex.db.models.polymer import Polymer
-from pinrex.db.models.csst import (
-    CSSTReactor,
-    CSSTProperty,
-    CSSTExperiment,
-    CSSTTemperatureProgram,
-)
-
-from csst.experiment import Experiment
-from csst.experiment.models import PropertyValue
-from .fixtures.data import csste_1014
-
 
 def test_connection(session):
     assert session.query(Polymer).first().smiles == "[*]CCO[*]"
 
 
 @pytest.mark.slow
-def test_add_experiment(session, csste_1014):
+def test_add_experiment(session, csste_1014):  # noqa: F811
     old_num_props = session.query(CSSTProperty).count()
     db.add_experiment(csste_1014, session)
     assert (
@@ -50,7 +47,7 @@ def test_add_experiment(session, csste_1014):
         .count()
         == 3
     )
-    assert session.query(CSSTProperty).count() == 6 + old_num_props
+    assert session.query(CSSTProperty).count() == 7 + old_num_props
     assert (
         session.query(CSSTExperiment)
         .filter_by(start_of_experiment=csste_1014.start_of_experiment)
@@ -64,7 +61,7 @@ def test_add_experiment(session, csste_1014):
 
 
 @pytest.mark.slow
-def test_get_experiment(session, csste_1014):
+def test_get_experiment(session, csste_1014):  # noqa: F811
     db.add_experiment(csste_1014, session)
     session.commit()
     exps = db.get_experiments_from_experiment_details(csste_1014, session)
@@ -162,7 +159,7 @@ def test_get_experiment(session, csste_1014):
 
 
 @pytest.mark.slow
-def test_load_from_db(session, csste_1014):
+def test_load_from_db(session, csste_1014):  # noqa: F811
     exps = db.load_from_db(
         session=session, start_of_experiment=csste_1014.start_of_experiment
     )

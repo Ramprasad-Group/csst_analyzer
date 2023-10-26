@@ -1,11 +1,9 @@
-import pytest
-
 from csst.analyzer import Analyzer
 
-from .fixtures.data import csste_1014, reactor
+from .fixtures.data import csste_1014, reactor  # noqa: F401
 
 
-def test_analyzer_add_reactor(reactor):
+def test_analyzer_add_reactor(reactor):  # noqa: F811
     analyzer = Analyzer()
     assert len(analyzer.processed_reactors) == 0
     analyzer.add_reactor(reactor)
@@ -38,7 +36,7 @@ def test_analyzer_add_reactor(reactor):
     assert len(analyzer.processed_reactors) == 1
 
 
-def test_analyzer_add_experiment_reactors(csste_1014):
+def test_analyzer_add_experiment_reactors(csste_1014):  # noqa: F811
     analyzer = Analyzer()
     assert len(analyzer.processed_reactors) == 0
     analyzer.add_experiment_reactors(csste_1014)

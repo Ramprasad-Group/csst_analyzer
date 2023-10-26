@@ -6,7 +6,7 @@ import numpy as np
 
 from csst.processor.models import ProcessedTemperature, ProcessedReactor
 from csst.processor.helpers import find_index_after_sample_tune_and_load
-from csst.experiment.models import Reactor, TemperatureHold
+from csst.experiment.models import Reactor
 
 logger = logging.getLogger(__name__)
 

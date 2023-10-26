@@ -12,6 +12,7 @@ class PropertyNameEnum(str, Enum):
     TEMP = "temperature"
     TRANS = "transmission"
     BOTTOM_STIR_RATE = "bottom_stir_rate"
+    TOP_STIR_RATE = "top_stir_rate"
     STIR_RATE = "stir_rate"
     CONC = "concentration"
     TIME = "time"

@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 from csst.processor import process_reactor
-from csst.processor.models import ProcessedTemperature, ProcessedReactor
+from csst.processor.models import ProcessedTemperature
 from csst.experiment.models import Reactor
 from csst.experiment import Experiment
 
@@ -20,7 +20,7 @@ class Analyzer:
             'concentration', 'concentration_unit', 'set_temperature', 'temperature',
             'temperature_unit', 'transmission', 'transmission_unit', 'time',
             'time_unit', 'stir_rate', 'stir_rate_unit', 'bottom_stir_rate',
-            and 'bottom_stir_rate_unit'
+            'bottom_stir_rate_unit', 'top_stir_rate', and 'top_stir_rate_unit'
         df (pd.DataFrame): Processed reactor dataframe. Columns are 'reactor', 'polymer',
             'solvent', 'concentration', 'concentration_unit', 'temperature_unit', and
             all attributes in csst.processor.models.ProcessedTemperature.
@@ -46,6 +46,8 @@ class Analyzer:
             "stir_rate_unit",
             "bottom_stir_rate",
             "bottom_stir_rate_unit",
+            "top_stir_rate",
+            "top_stir_rate_unit",
         ]
         self.unprocessed_df = pd.DataFrame(columns=columns + unproc_columns)
         proc_columns = list(ProcessedTemperature.__fields__.keys())
@@ -99,11 +101,22 @@ class Analyzer:
             "temperature_unit": reactor.unprocessed_reactor.experiment.actual_temperature.unit,
             "time_unit": reactor.unprocessed_reactor.experiment.time_since_experiment_start.unit,
             "reactor": str(reactor.unprocessed_reactor),
-            "bottom_stir_rate": reactor.unprocessed_reactor.experiment.bottom_stir_rate.value,
-            "bottom_stir_rate_unit": reactor.unprocessed_reactor.experiment.bottom_stir_rate.unit,
             "stir_rate_unit": reactor.unprocessed_reactor.experiment.stir_rates.unit,
             "transmission_unit": reactor.unprocessed_reactor.transmission.unit,
         }
+        if reactor.unprocessed_reactor.experiment.bottom_stir_rate is not None:
+            row[
+                "bottom_stir_rate"
+            ] = reactor.unprocessed_reactor.experiment.bottom_stir_rate
+            row[
+                "bottom_stir_rate_unit"
+            ] = reactor.unprocessed_reactor.experiment.bottom_stir_rate.unit
+        if reactor.unprocessed_reactor.experiment.top_stir_rate is not None:
+            row["top_stir_rate"] = reactor.unprocessed_reactor.experiment.top_stir_rate
+            row[
+                "top_stir_rate_unit"
+            ] = reactor.unprocessed_reactor.experiment.top_stir_rate.unit
+
         for i in range(
             len(reactor.unprocessed_reactor.experiment.actual_temperature.values)
         ):

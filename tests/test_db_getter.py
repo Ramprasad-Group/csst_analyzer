@@ -1,7 +1,11 @@
-import os
-
 import pytest
 import numpy as np
+
+from pinrex.db.models.csst import CSSTExperiment, CSSTTemperatureProgram
+
+from csst.experiment import Experiment
+from csst.experiment.models import PropertyNameEnum, TemperatureSettingEnum
+from .fixtures.data import csste_1014, manual_1014  # noqa: F401
 
 # test if db and db_dev dependencies installed
 # db dependency
@@ -23,14 +27,10 @@ pytest.importorskip(
     ),
 )
 
-from pinrex.db.models.csst import CSSTExperiment, CSSTTemperatureProgram
 
-from csst.experiment import Experiment
-from csst.experiment.models import PropertyNameEnum, TemperatureSettingEnum
-from .fixtures.data import csste_1014, manual_1014
-
-
-def test_raise_lookup_error_if_query_count_is_not_one(session, manual_1014):
+def test_raise_lookup_error_if_query_count_is_not_one(
+    session, manual_1014
+):  # noqa: F811
     with session() as sess:
         query = sess.query(CSSTExperiment).filter_by(**manual_1014.dict())
         with pytest.raises(LookupError, match=r"No experiment associated with"):
@@ -58,7 +58,7 @@ def test_raise_lookup_error_if_list_count_is_not_one():
         db.getter.raise_lookup_error_if_list_count_is_not_one([1, 2], "test", "test")
 
 
-def test_get_csst_experiment(session, manual_1014):
+def test_get_csst_experiment(session, manual_1014):  # noqa: F811
     """Will likely fail if raise_lookup_error_if_query_count_is_not_one fails"""
     session.add(CSSTExperiment(**manual_1014.dict()))
     session.commit()
@@ -67,7 +67,7 @@ def test_get_csst_experiment(session, manual_1014):
     assert exp.start_of_experiment == manual_1014.start_of_experiment
 
 
-def test_get_csst_temperature_program(session, manual_1014):
+def test_get_csst_temperature_program(session, manual_1014):  # noqa: F811
     """Will likely fail if raise_lookup_error_if_query_count_is_not_one fails"""
     data = manual_1014.temperature_program.dict()
     data["hash"] = manual_1014.temperature_program.hash()

@@ -5,9 +5,8 @@ import os
 import pytest
 
 try:
-    from csst import db
     from sqlalchemy_utils import database_exists, create_database, drop_database
-except ImportError as e:
+except ImportError:
     _db_option = False
 else:
     _db_option = True
@@ -60,7 +59,10 @@ if _db_option:
         """SSH server to connect to the database through"""
         if _remote_access:
             server = SSHTunnelForwarder(
-                (os.environ.get("SSH_TUNNEL_HOST"), int(os.environ.get("SSH_TUNNEL_PORT"))),
+                (
+                    os.environ.get("SSH_TUNNEL_HOST"),
+                    int(os.environ.get("SSH_TUNNEL_PORT")),
+                ),
                 ssh_username=os.environ.get("SSH_USERNAME"),
                 ssh_password=os.environ.get("SSH_PASSWORD"),
                 remote_bind_address=(
@@ -87,9 +89,7 @@ if _db_option:
         if not database_exists(engine.url):
             create_database(engine.url)
         else:
-            raise FileExistsError(
-                "Database already exists. Since the database is "
-            )
+            raise FileExistsError("Database already exists. Since the database is ")
         yield engine
 
         drop_database(engine.url)

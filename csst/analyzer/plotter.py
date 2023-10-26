@@ -1,14 +1,8 @@
-from typing import List, Tuple
-
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-from matplotlib.axes import Axes
-import seaborn as sns
 
 from csst.experiment import Experiment
-from csst.experiment.models import Reactor
-from csst.analyzer import Analyzer
 
 __version__ = "0.1.0"
 

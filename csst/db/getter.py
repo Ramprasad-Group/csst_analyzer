@@ -3,13 +3,12 @@ from typing import Union, List, Dict
 import logging
 
 import numpy as np
-import pandas as pd
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
 from pinrex.db.helpers import make_name_searchable
-from pinrex.db.models.polymer import Polymer, PolymerName
-from pinrex.db.models.solvent import Solvent, SolventName
+from pinrex.db.models.polymer import PolymerName
+from pinrex.db.models.solvent import SolventName
 from pinrex.db.models.lab import BrettmannLabPolymer, BrettmannLabSolvent
 from pinrex.db.models.csst import (
     CSSTTemperatureProgram,
@@ -30,7 +29,6 @@ from csst.experiment.models import (
     PropertyValues,
 )
 from csst.experiment.helpers import remove_keys_with_null_values_in_dict
-from csst.experiment.models import TemperatureProgram, PropertyValue, PropertyValues
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +69,16 @@ def get_experiments(
 
         # data details
         experiment.temperature_program = temp_program
-        experiment.bottom_stir_rate = exp_value_properties[
-            PropertyNameEnum.BOTTOM_STIR_RATE
-        ]
+        experiment.bottom_stir_rate = None
+        experiment.top_stir_rate = None
+        if PropertyNameEnum.BOTTOM_STIR_RATE in exp_value_properties:
+            experiment.bottom_stir_rate = exp_value_properties[
+                PropertyNameEnum.BOTTOM_STIR_RATE
+            ]
+        if PropertyNameEnum.TOP_STIR_RATE in exp_value_properties:
+            experiment.top_stir_rate = exp_value_properties[
+                PropertyNameEnum.TOP_STIR_RATE
+            ]
         experiment.set_temperature = exp_values_properties["set_temperature"]
         experiment.actual_temperature = exp_values_properties[PropertyNameEnum.TEMP]
         experiment.time_since_experiment_start = exp_values_properties[
@@ -115,9 +120,7 @@ def get_csst_experiments(
 def get_csst_reactors_by_experiment_id(
     experiment_id: int, session: Union[scoped_session, Session]
 ) -> List[CSSTReactor]:
-    return (
-        session.query(CSSTReactor).filter_by(csst_experiment_id=experiment_id).all()
-    )
+    return session.query(CSSTReactor).filter_by(csst_experiment_id=experiment_id).all()
 
 
 def get_temperature_program_by_id(
@@ -226,9 +229,7 @@ def get_csst_experiment(
     query = session.query(CSSTExperiment).filter_by(
         **remove_keys_with_null_values_in_dict(experiment.dict())
     )
-    raise_lookup_error_if_query_count_is_not_one(
-        query, "experiment", experiment.dict()
-    )
+    raise_lookup_error_if_query_count_is_not_one(query, "experiment", experiment.dict())
     exp = query.first()
     return exp
 
@@ -312,7 +313,7 @@ def raise_lookup_error_if_query_count_is_not_one(query: Query, item: str, data: 
     if query.count() > 1:
         msg = (
             f"Multiple {item}s associated with {data}. "
-            + f"Make sure the database is correct."
+            + "Make sure the database is correct."
         )
         logger.warning(msg)
         raise LookupError(msg)
@@ -322,34 +323,26 @@ def raise_lookup_error_if_query_count_is_not_one(query: Query, item: str, data: 
         raise LookupError(msg)
 
 
-def raise_lookup_error_if_list_count_is_not_one(l: List, item: str, data: str):
+def raise_lookup_error_if_list_count_is_not_one(li: List, item: str, data: str):
     """Raises LookupError if list is not size one
 
     Args:
-        l: List to check
+        li: List to check
         item: item being queried
         data: data used to query the item
     """
-    if len(l) > 1:
+    if len(li) > 1:
         msg = (
             f"Multiple {item}s associated with {data}. "
-            + f"Make sure the database is correct."
+            + "Make sure the database is correct."
         )
         logger.warning(msg)
         raise LookupError(msg)
-    if len(l) < 1:
-        msg = f"No {item} associated with {data}. " + f"Add the {item} first."
+    if len(li) < 1:
+        msg = f"No {item} associated with {data}. Add the {item} first."
         logger.warning(msg)
         raise LookupError(msg)
 
-
-def get_processed_data(session: Union[scoped_session, Session]) -> pd.DataFrame:
-    """Returns all processed data in a pandas dataframe"""
-    reactor_ids = (
-        session.query(CSSTReactorProcessedTemperature.csst_reactor_id)
-        .distinct()
-        .all()
-    )
 
 def get_property_id(prop_data, session: Union[scoped_session, Session]) -> int:
     return session.query(CSSTProperty).filter_by(**prop_data).first().id

@@ -1,15 +1,12 @@
-import pytest
-
 from csst.processor import (
     process_reactor_transmission_at_temp,
     process_reactor_transmission_at_temps,
     process_reactor,
 )
-from csst.experiment.models import PropertyValues, PropertyValue
-from .fixtures.data import reactor
+from .fixtures.data import reactor  # noqa: F401
 
 
-def test_process_reactor_transmission_at_temp(reactor):
+def test_process_reactor_transmission_at_temp(reactor):  # noqa: F811
     """Tests processing of transmission. See reactor fixture for data"""
     ptrans = process_reactor_transmission_at_temp(reactor, temp=5)
     assert ptrans.average_transmission == 4.5
@@ -34,7 +31,7 @@ def test_process_reactor_transmission_at_temp(reactor):
     assert process_reactor_transmission_at_temp(reactor, temp=0) is None
 
 
-def test_process_reactor_transmission_at_temps(reactor):
+def test_process_reactor_transmission_at_temps(reactor):  # noqa: F811
     ptransmissions = process_reactor_transmission_at_temps(reactor, [5, 10, 15, 20])
     averages = [ptrans.average_transmission for ptrans in ptransmissions]
     temps = [ptrans.average_temperature for ptrans in ptransmissions]
@@ -54,7 +51,7 @@ def test_process_reactor_transmission_at_temps(reactor):
     assert temps == [6, 11, 16, 21]
 
 
-def test_process_ractor_data(reactor):
+def test_process_ractor_data(reactor):  # noqa: F811
     preactor = process_reactor(reactor)
     assert preactor.unprocessed_reactor == reactor
     expected_averages = [4.5, 21, 47.5, 78.75]

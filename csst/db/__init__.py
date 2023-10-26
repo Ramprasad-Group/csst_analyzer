@@ -3,6 +3,9 @@ from typing import Union, List, Optional
 import logging
 from datetime import datetime
 
+from csst.experiment import Experiment
+from csst.db import adder, getter
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -10,17 +13,13 @@ try:
     from sqlalchemy.orm.session import Session
 except ModuleNotFoundError:
     msg = (
-        f"This subpackage can only be used if the optional database dependencies "
+        "This subpackage can only be used if the optional database dependencies "
         + "are installed and the database connection set up. Use "
         + "`poetry install --with db` to install the dependencies and see the GitHub"
         + " page for information on the database connection"
     )
     logger.warning(msg)
     raise ModuleNotFoundError(msg)
-
-
-from csst.experiment import Experiment
-from csst.db import adder, getter
 
 
 def add_experiment(experiment: Experiment, session: Union[scoped_session, Session]):
@@ -30,17 +29,17 @@ def add_experiment(experiment: Experiment, session: Union[scoped_session, Sessio
         experiment: experiment to add to table
         session: instantiated session connected to the database
     """
-    exp_id = adder.add_experiment_and_or_get_id(
-        experiment=experiment, session=session
-    )
+    exp_id = adder.add_experiment_and_or_get_id(experiment=experiment, session=session)
     temp_program_id = adder.add_temperature_program_and_or_get_program_id(
         temperature_program=experiment.temperature_program, session=session
     )
-    adder.add_experiment_reactors(experiment=experiment, 
-                                  experiment_id=exp_id, 
-        temperature_program_id=temp_program_id, 
-        session=session
+    adder.add_experiment_reactors(
+        experiment=experiment,
+        experiment_id=exp_id,
+        temperature_program_id=temp_program_id,
+        session=session,
     )
+
 
 def load_from_db(
     session: Union[Session, scoped_session],

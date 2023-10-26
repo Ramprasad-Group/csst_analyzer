@@ -1,7 +1,6 @@
 import logging
 from typing import Dict, List, Set
 from pathlib import Path
-import glob
 from datetime import datetime
 from typing import TextIO
 
@@ -20,6 +19,7 @@ from csst.experiment.models import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class Experiment:
     """Loads Crystal 16 Dissolition/Solubility Test Experiments
@@ -47,6 +47,9 @@ class Experiment:
             experiment temperature conditions.
         bottom_stir_rate (PropertyValue):
             Rate spinner is spinning at the bottom of the sample during the course
+            of the experiment.
+        top_stir_rate (PropertyValue):
+            Rate spinner is spinning at the top of the sample during the course
             of the experiment.
         set_temperature (PropertyValues):
             List of set temperatures the experiment is supposed to be at during each
@@ -82,6 +85,7 @@ class Experiment:
         self.solvent_ids = {}
         self.temperature_program = None
         self.bottom_stir_rate = None
+        self.top_stir_rate = None
         self.set_temperature = None
         self.actual_temperature = None
         self.time_since_experiment_start = None
@@ -148,6 +152,7 @@ class Experiment:
                 if "polymer_ids" in line or "solvent_ids" in line:
                     # pairings = 1,2dichlorobenzene:37,Ethyl Acetate:19,MeOH:3
                     _, pairings = line.split(",", 1)
+                    pairings = pairings.replace('"', "")
                     # pairings = ["1,2dichlorobenzene","37,Ethyl Acetate","19,MeOH","3"]
                     pairings = pairings.split(":")
                     # pairings = ["1,2dichlorobenzene","37","Ethyl Acetate","19","MeOH","3"]
@@ -247,6 +252,12 @@ class Experiment:
             elif "Stir (Bottom)" in line[0]:
                 self.bottom_stir_rate = PropertyValue(
                     name="bottom_stir_rate", unit=line[2].strip(), value=float(line[1])
+                )
+                loading_samples = False
+                running_experiment = True
+            elif "Stir (Top)" in line[0]:
+                self.top_stir_rate = PropertyValue(
+                    name="top_stir_rate", unit=line[2].strip(), value=float(line[1])
                 )
                 loading_samples = False
                 running_experiment = True

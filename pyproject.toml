@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "csst.analyzer"
-version = "2.3.3"
+version = "2.4.0"
 description = ""
 authors = ["Joe Kern <jkern34@gatech.edu>", "Mona Amrihesari <mamrihesari3@gatech.edu>"]
 readme = "README.md"
@@ -33,6 +33,7 @@ sphinx-rtd-theme = "^1.2.0"
 enum-tools = "^0.9.0.post1"
 sphinx-jinja2-compat = "^0.2.0"
 sphinx-toolbox = "^3.4.0"
+ruff = "^0.1.2"
 
 [tool.poetry.extras]
 db = ["pinrex-db-models", "sshtunnel", "python-dotenv"]

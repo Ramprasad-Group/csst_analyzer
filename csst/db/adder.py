@@ -23,7 +23,7 @@ from csst.experiment.models import (
     PropertyValues,
     TemperatureProgram,
 )
-from csst.processor.models import ProcessedTemperature, ProcessedReactor
+from csst.processor.models import ProcessedReactor
 from csst.db import getter
 
 logger = logging.getLogger(__name__)
@@ -39,9 +39,11 @@ def add_experiment_and_or_get_id(
         session: instantiated session connected to the database
     """
     data = experiment.dict()
-    search_data = {key: value for key, value in data.items() if key not in [
-        'description', 'lab_journal'
-    ]}
+    search_data = {
+        key: value
+        for key, value in data.items()
+        if key not in ["description", "lab_journal"]
+    }
     logger.info(f"Searching for {data} in CSSTExperiment Table")
     query = session.query(CSSTExperiment).filter_by(**search_data)
     if query.count() > 0:
@@ -50,17 +52,27 @@ def add_experiment_and_or_get_id(
     else:
         # we want to add all properties first as we don't care about this being an
         # atomic input
-        for index, prop in enumerate([
-            experiment.bottom_stir_rate, experiment.actual_temperature,
-            experiment.set_temperature, experiment.time_since_experiment_start,
-            experiment.stir_rates
-        ]):
+        for index, prop in enumerate(
+            [
+                experiment.bottom_stir_rate,
+                experiment.actual_temperature,
+                experiment.set_temperature,
+                experiment.time_since_experiment_start,
+                experiment.stir_rates,
+                experiment.top_stir_rate,
+            ]
+        ):
+            if prop is None:
+                continue
             prop_data = {"name": prop.name, "unit": prop.unit}
             if index == 2:
                 prop_data["name"] = "set_temperature"
             add_property(prop_data, session)
         for reactor in experiment.reactors:
-            prop_data = {"name": reactor.transmission.name, "unit": reactor.transmission.unit}
+            prop_data = {
+                "name": reactor.transmission.name,
+                "unit": reactor.transmission.unit,
+            }
             add_property(prop_data, session)
 
         data["file_name"] = experiment.file_name
@@ -69,7 +81,10 @@ def add_experiment_and_or_get_id(
         session.add(exp)
         session.flush()
         session.refresh(exp)
-    add_experiment_property_value(exp.id, experiment.bottom_stir_rate, session)
+    if experiment.bottom_stir_rate is not None:
+        add_experiment_property_value(exp.id, experiment.bottom_stir_rate, session)
+    if experiment.top_stir_rate is not None:
+        add_experiment_property_value(exp.id, experiment.top_stir_rate, session)
     add_experiment_property_values(exp.id, experiment.actual_temperature, session)
     # use optional name since actual temperature will clash with set temperature
     add_experiment_property_values(
@@ -80,6 +95,7 @@ def add_experiment_and_or_get_id(
     )
     add_experiment_property_values(exp.id, experiment.stir_rates, session)
     return exp.id
+
 
 def add_experiment_property_values(
     experiment_id: int,
@@ -188,9 +204,9 @@ def add_temperature_program_and_or_get_program_id(
 
 def add_experiment_reactors(
     experiment: Experiment,
-    experiment_id: int, 
+    experiment_id: int,
     temperature_program_id: int,
-    session: Union[scoped_session, Session]
+    session: Union[scoped_session, Session],
 ):
     """Adds reactors from experiment to the reactor table.
 
@@ -319,13 +335,16 @@ def add_processed_reactor(
         msg = f"Only ProcessedReactor can be added, not type {type(reactor)}"
         logger.warning(msg)
         raise ValueError(msg)
-    search_data = {key: value for key, value in 
-        reactor.unprocessed_reactor.experiment.dict().items() if key not in [
-            'description', 'lab_journal'
-    ]}
+    search_data = {
+        key: value
+        for key, value in reactor.unprocessed_reactor.experiment.dict().items()
+        if key not in ["description", "lab_journal"]
+    }
     exp = session.query(CSSTExperiment).filter_by(**search_data).first()
     if exp is None:
-        msg = f"The unprocessed reactor experiment has not been added to the database yet."
+        msg = (
+            "The unprocessed reactor experiment has not been added to the database yet."
+        )
         logger.warning(msg)
         return
     bret_pol_id = reactor.unprocessed_reactor.polymer_id
@@ -348,9 +367,7 @@ def add_processed_reactor(
     }
     unprocessed_reactor = session.query(CSSTReactor).filter_by(**data).first()
     if unprocessed_reactor is None:
-        logger.info(
-            f"The unprocessed reactor has not been added to the database yet."
-        )
+        logger.info("The unprocessed reactor has not been added to the database yet.")
         return
     if (
         session.query(CSSTReactorProcessedTemperature)
@@ -358,7 +375,7 @@ def add_processed_reactor(
         .count()
         > 0
     ):
-        logger.info(f"Processed data has already been added for this reactor.")
+        logger.info("Processed data has already been added for this reactor.")
         return
     for temp in reactor.temperatures:
         data = temp.dict()
