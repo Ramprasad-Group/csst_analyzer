@@ -136,9 +136,10 @@ class Experiment:
         description = False
         description_text = []
         for line in f:
-            # remove newline characters and csv commas
+            # remove newline characters, csv commas, and quations
             line = line.strip("\n")
             line = line.strip(",")
+            line = line.replace('"', "")
             # found temperature program start
             if "Temperature Program" in line:
                 break
@@ -401,9 +402,29 @@ def load_experiments_from_folder(
     experiments = []
     for file in files:
         if file.name in files_to_ignore:
+            logger.debug(f"IGNORING: {file}")
             continue
         logger.info(f"Loading {file}")
         with open(file, "r") as fin:
             if "Crystal16 Data Report File" in fin.readline():
-                experiments.append(Experiment.load_from_file(file))
+                try:
+                    exp = Experiment.load_from_file(file)
+                    missing_polymers_ids = set()
+                    missing_solvents_ids = set()
+                    for reactor in exp.reactors:
+                        if reactor.polymer_id is None:
+                            missing_polymers_ids.add(reactor.polymer)
+                        if reactor.solvent_id is None:
+                            missing_solvents_ids.add(reactor.solvent)
+                    if len(missing_polymers_ids) + len(missing_solvents_ids) != 0:
+                        msg = (
+                            f"Polymers {missing_polymers_ids} and solvents "
+                            + f"{missing_solvents_ids} are missing their ids."
+                        )
+                        raise ValueError(msg)
+                    experiments.append(exp)
+                except Exception as e:
+                    logger.error(e)
+                    continue
+    logger.info(f"Loaded {len(experiments)} experiments.")
     return experiments

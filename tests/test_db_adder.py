@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from pinrex.db.models.csst import (
+from csst.db.orm.csst import (
     CSSTExperiment,
     CSSTTemperatureProgram,
     CSSTProperty,

@@ -1,16 +1,15 @@
 """Functions for getting data from the database"""
-from typing import Union, List, Dict
+from datetime import datetime
+from typing import Union, List, Dict, Optional
 import logging
 
 import numpy as np
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
-from pinrex.db.helpers import make_name_searchable
-from pinrex.db.models.polymer import PolymerName
-from pinrex.db.models.solvent import SolventName
-from pinrex.db.models.lab import BrettmannLabPolymer, BrettmannLabSolvent
-from pinrex.db.models.csst import (
+from csst.db.orm.polymer import LabPolymer
+from csst.db.orm.solvent import LabSolvent
+from csst.db.orm.csst import (
     CSSTTemperatureProgram,
     CSSTExperiment,
     CSSTReactor,
@@ -31,6 +30,67 @@ from csst.experiment.models import (
 from csst.experiment.helpers import remove_keys_with_null_values_in_dict
 
 logger = logging.getLogger(__name__)
+
+
+def load_from_db(
+    session: Union[Session, scoped_session],
+    file_name: Optional[str] = None,
+    version: Optional[str] = None,
+    experiment_details: Optional[str] = None,
+    experiment_number: Optional[str] = None,
+    experimenter: Optional[str] = None,
+    project: Optional[str] = None,
+    lab_journal: Optional[str] = None,
+    description: Optional[List[str]] = None,
+    start_of_experiment: Optional[datetime] = None,
+) -> List[Experiment]:
+    """Pass any relavent experiment details to return a list of experiments
+    that contain them.
+
+    Args:
+        session: instantiated connected to the database.
+        file_name (str): name of the original data file
+        version (str): version of the data file
+        experiment_details (str):
+        experiment_number (str):
+        experimenter (str):
+        project (str):
+        lab_journal (str):
+        description (List[str]): Description information with each new line of the
+            description appended to a list
+        start_of_experiment (datetime):
+            date the experiment started
+
+    Returns:
+        List of experiments returned that match all of the
+        passed experiment details. If no details passed, all experiments are
+        returned.
+
+    """
+    obj = Experiment()
+    obj.file_name = file_name
+    obj.version = version
+    obj.experiment_details = experiment_details
+    obj.experiment_number = experiment_number
+    obj.experimenter = experimenter
+    obj.project = project
+    obj.lab_journal = lab_journal
+    obj.description = description
+    obj.start_of_experiment = start_of_experiment
+    return get_experiments_from_experiment_details(obj, session)
+
+
+def get_experiments_from_experiment_details(
+    experiment: Experiment, session: Union[scoped_session, Session]
+) -> List[Experiment]:
+    """Gets a list of experiments that match the experiment metadata passed
+
+    Args:
+        experiment: experiment object that has any experiment details
+        (values returned by experiment.dict()) filled out
+        session: instantiated session connected to the database
+    """
+    return get_experiments(experiment, session)
 
 
 def get_experiments(
@@ -87,10 +147,10 @@ def get_experiments(
         experiment.stir_rates = exp_values_properties[PropertyNameEnum.STIR_RATE]
         exp_reactors = [
             Reactor(
-                solvent=get_lab_solvent_by_id(reactor.bret_sol_id, session).name,
-                polymer=get_lab_polymer_by_id(reactor.bret_pol_id, session).name,
-                polymer_id=reactor.bret_pol_id,
-                solvent_id=reactor.bret_sol_id,
+                solvent=get_lab_solvent_by_id(reactor.lab_sol_id, session).name,
+                polymer=get_lab_polymer_by_id(reactor.lab_pol_id, session).name,
+                polymer_id=reactor.lab_pol_id,
+                solvent_id=reactor.lab_sol_id,
                 reactor_number=reactor.reactor_number,
                 conc=PropertyValue(
                     name=PropertyNameEnum.CONC,
@@ -137,14 +197,14 @@ def get_temperature_program_by_id(
 
 def get_lab_polymer_by_id(
     id_: int, session: Union[scoped_session, Session]
-) -> BrettmannLabPolymer:
-    return session.query(BrettmannLabPolymer).filter_by(id=id_).first()
+) -> LabPolymer:
+    return session.query(LabPolymer).filter_by(id=id_).first()
 
 
 def get_lab_solvent_by_id(
     id_: int, session: Union[scoped_session, Session]
-) -> BrettmannLabSolvent:
-    return session.query(BrettmannLabSolvent).filter_by(id=id_).first()
+) -> LabSolvent:
+    return session.query(LabSolvent).filter_by(id=id_).first()
 
 
 def get_experiment_property_value_by_experiment_id(
@@ -249,20 +309,8 @@ def get_csst_temperature_program(
 
 def get_lab_polymer_by_name(
     name: str, session: Union[scoped_session, Session]
-) -> BrettmannLabPolymer:
-    pols = (
-        session.query(PolymerName.pol_id)
-        .filter(PolymerName.search_name == make_name_searchable(name))
-        .distinct()
-    )
-    pol_ids = [pol.pol_id for pol in pols]
-    lab_pols = (
-        session.query(BrettmannLabPolymer)
-        .filter(BrettmannLabPolymer.pol_id.in_(pol_ids))
-        .all()
-    )
-    # TODO add better method to extract the exact brettmann polymer from the
-    # database.
+) -> LabPolymer:
+    lab_pols = session.query(LabPolymer).filter(LabPolymer.name == name).all()
     lab_pol_names = {pol.name: pol for pol in lab_pols}
     if len(lab_pol_names) == len(lab_pols) and name in lab_pol_names:
         return lab_pol_names[name]
@@ -277,18 +325,8 @@ def get_lab_polymer_by_name(
 
 def get_lab_solvent_by_name(
     name: str, session: Union[scoped_session, Session]
-) -> BrettmannLabSolvent:
-    sols = (
-        session.query(SolventName.sol_id)
-        .filter(SolventName.search_name == make_name_searchable(name))
-        .distinct()
-    )
-    sol_ids = [sol.sol_id for sol in sols]
-    lab_sols = (
-        session.query(BrettmannLabSolvent)
-        .filter(BrettmannLabSolvent.sol_id.in_(sol_ids))
-        .all()
-    )
+) -> LabSolvent:
+    lab_sols = session.query(LabSolvent).filter(LabSolvent.name == name).all()
     raise_lookup_error_if_list_count_is_not_one(
         list(lab_sols), "lab solvent", {name: [sol.name for sol in lab_sols]}
     )

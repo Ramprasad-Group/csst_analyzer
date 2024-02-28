@@ -17,11 +17,9 @@ if _db_option:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker, scoped_session
     from sshtunnel import SSHTunnelForwarder
-    from pinrex.db.helpers import make_name_searchable
-    from pinrex.db.models.polymer import Polymer, PolymerName
-    from pinrex.db.models.solvent import Solvent, SolventName
-    from pinrex.db.models.lab import BrettmannLabPolymer, BrettmannLabSolvent
-    from pinrex.db.models.csst import (
+    from csst.db.orm.polymer import Polymer, LabPolymer
+    from csst.db.orm.solvent import Solvent, LabSolvent
+    from csst.db.orm.csst import (
         CSSTExperiment,
         CSSTTemperatureProgram,
         CSSTReactor,
@@ -31,7 +29,7 @@ if _db_option:
         CSSTExperimentPropertyValues,
         CSSTReactorProcessedTemperature,
     )
-    from pinrex.db import Base
+    from csst.db import Base
     from csst.experiment.models import (
         PropertyNameEnum,
         TemperatureSettingEnum,
@@ -78,7 +76,7 @@ if _db_option:
 
     @pytest.fixture(scope="module")
     def engine(db_port):
-        db_server = "postgresql+psycopg2://{}:{}@{}:{}/{}_test".format(
+        db_server = "postgresql+psycopg://{}:{}@{}:{}/{}_test".format(
             os.environ.get("CSST_DB_USER"),
             os.environ.get("CSST_DB_PASSWORD"),
             os.environ.get("CSST_DB_HOST"),
@@ -133,15 +131,11 @@ if _db_option:
                 "id": 1,
                 "smiles": "[*]CCO[*]",
                 "fingerprint": {"temp": 1},
-                "category": "known",
-                "canonical_smiles": "[*]CCO[*]",
             },
             {
                 "id": 2,
                 "smiles": "[*]CC([*])N1CCCC1=O",
                 "fingerprint": {"temp": 1},
-                "category": "known",
-                "canonical_smiles": "[*]CC([*])N1CCCC1=O",
             },
         ]
         for polymer in polymers:
@@ -157,54 +151,6 @@ if _db_option:
             session.add(Solvent(**solvent))
         session.commit()
 
-        polymer_names = [
-            {
-                "pol_id": 1,
-                "name": "PEG",
-                "search_name": make_name_searchable("PEG"),
-                "naming_convention": "abbreviation",
-            },
-            {
-                "pol_id": 1,
-                "name": "PEO",
-                "search_name": make_name_searchable("PEO"),
-                "naming_convention": "abbreviation",
-            },
-            {
-                "pol_id": 2,
-                "name": "PVP",
-                "search_name": make_name_searchable("PVP"),
-                "naming_convention": "abbreviation",
-            },
-        ]
-        for polymer in polymer_names:
-            session.add(PolymerName(**polymer))
-        session.commit()
-
-        solvent_names = [
-            {
-                "sol_id": 1,
-                "name": "methanol",
-                "search_name": make_name_searchable("methanol"),
-                "naming_convention": "standard",
-            },
-            {
-                "sol_id": 2,
-                "name": "Ethyl Acetate",
-                "search_name": make_name_searchable("Ethyl Acetate"),
-                "naming_convention": "standard",
-            },
-            {
-                "sol_id": 3,
-                "name": "1,2dichlorobenzene",
-                "search_name": make_name_searchable("1,2dichlorobenzene"),
-                "naming_convention": "standard",
-            },
-        ]
-        for solvent in solvent_names:
-            session.add(SolventName(**solvent))
-        session.commit()
-
         lab_solvents = [
             {"id": 3, "sol_id": 1, "name": "methanol", "percent_purity": 99},
             {"id": 19, "sol_id": 2, "name": "Ethyl Acetate", "percent_purity": 98},
@@ -212,7 +158,7 @@ if _db_option:
         ]
 
         for solvent in lab_solvents:
-            session.add(BrettmannLabSolvent(**solvent))
+            session.add(LabSolvent(**solvent))
         session.commit()
 
         lab_polymers = [
@@ -242,7 +188,7 @@ if _db_option:
             },
         ]
         for polymer in lab_polymers:
-            session.add(BrettmannLabPolymer(**polymer))
+            session.add(LabPolymer(**polymer))
         session.commit()
 
         experiments = [
@@ -298,8 +244,8 @@ if _db_option:
         reactors = [
             {
                 "id": 10000,  # set to large number so clash doesn't occur
-                "bret_sol_id": 19,
-                "bret_pol_id": 34,
+                "lab_sol_id": 19,
+                "lab_pol_id": 34,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
                 "conc": 5,
@@ -308,8 +254,8 @@ if _db_option:
             },
             {
                 "id": 10001,  # set to large number so clash doesn't occur
-                "bret_sol_id": 37,
-                "bret_pol_id": 46,
+                "lab_sol_id": 37,
+                "lab_pol_id": 46,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
                 "conc": 10,
@@ -318,8 +264,8 @@ if _db_option:
             },
             {
                 "id": 10002,  # set to large number so clash doesn't occur
-                "bret_sol_id": 37,
-                "bret_pol_id": 46,
+                "lab_sol_id": 37,
+                "lab_pol_id": 46,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10000,
                 "conc": 15,
@@ -328,8 +274,8 @@ if _db_option:
             },
             {
                 "id": 10003,  # set to large number so clash doesn't occur
-                "bret_sol_id": 3,
-                "bret_pol_id": 41,
+                "lab_sol_id": 3,
+                "lab_pol_id": 41,
                 "csst_temperature_program_id": 10000,
                 "csst_experiment_id": 10001,
                 "conc": 5,

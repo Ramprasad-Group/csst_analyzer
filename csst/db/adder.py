@@ -5,7 +5,7 @@ import logging
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
 import numpy as np
-from pinrex.db.models.csst import (
+from csst.db.orm.csst import (
     CSSTExperiment,
     CSSTTemperatureProgram,
     CSSTReactor,
@@ -27,6 +27,25 @@ from csst.processor.models import ProcessedReactor
 from csst.db import getter
 
 logger = logging.getLogger(__name__)
+
+
+def add_experiment(experiment: Experiment, session: Union[scoped_session, Session]):
+    """Adds experiment data, temperature_program, and reactor data to database
+
+    Args:
+        experiment: experiment to add to table
+        session: instantiated session connected to the database
+    """
+    exp_id = add_experiment_and_or_get_id(experiment=experiment, session=session)
+    temp_program_id = add_temperature_program_and_or_get_program_id(
+        temperature_program=experiment.temperature_program, session=session
+    )
+    add_experiment_reactors(
+        experiment=experiment,
+        experiment_id=exp_id,
+        temperature_program_id=temp_program_id,
+        session=session,
+    )
 
 
 def add_experiment_and_or_get_id(
@@ -245,19 +264,19 @@ def add_reactor(
         logger.warning(msg)
         raise ValueError(msg)
     # get lab polymer and solvent ids
-    bret_pol_id = reactor.polymer_id
-    if bret_pol_id is None:
-        bret_pol_id = getter.get_lab_polymer_by_name(reactor.polymer, session).id
-    bret_sol_id = reactor.solvent_id
-    if bret_sol_id is None:
-        bret_sol_id = getter.get_lab_solvent_by_name(reactor.solvent, session).id
+    lab_pol_id = reactor.polymer_id
+    if lab_pol_id is None:
+        lab_pol_id = getter.get_lab_polymer_by_name(reactor.polymer, session).id
+    lab_sol_id = reactor.solvent_id
+    if lab_sol_id is None:
+        lab_sol_id = getter.get_lab_solvent_by_name(reactor.solvent, session).id
     data = {
         "csst_experiment_id": experiment_id,
         "csst_temperature_program_id": temperature_program_id,
         "conc": reactor.conc.value,
         "conc_unit": reactor.conc.unit,
-        "bret_pol_id": bret_pol_id,
-        "bret_sol_id": bret_sol_id,
+        "lab_pol_id": lab_pol_id,
+        "lab_sol_id": lab_sol_id,
         "reactor_number": reactor.reactor_number,
     }
     if session.query(CSSTReactor).filter_by(**data).count() > 0:
@@ -347,22 +366,22 @@ def add_processed_reactor(
         )
         logger.warning(msg)
         return
-    bret_pol_id = reactor.unprocessed_reactor.polymer_id
-    bret_sol_id = reactor.unprocessed_reactor.solvent_id
-    if bret_pol_id is None:
-        bret_pol_id = getter.get_lab_polymer_by_name(
+    lab_pol_id = reactor.unprocessed_reactor.polymer_id
+    lab_sol_id = reactor.unprocessed_reactor.solvent_id
+    if lab_pol_id is None:
+        lab_pol_id = getter.get_lab_polymer_by_name(
             reactor.unprocessed_reactor.polymer, session
         ).id
-    if bret_sol_id is None:
-        bret_sol_id = getter.get_lab_solvent_by_name(
+    if lab_sol_id is None:
+        lab_sol_id = getter.get_lab_solvent_by_name(
             reactor.unprocessed_reactor.solvent, session
         ).id
     data = {
         "csst_experiment_id": exp.id,
         "conc": reactor.unprocessed_reactor.conc.value,
         "conc_unit": reactor.unprocessed_reactor.conc.unit,
-        "bret_pol_id": bret_pol_id,
-        "bret_sol_id": bret_sol_id,
+        "lab_pol_id": lab_pol_id,
+        "lab_sol_id": lab_sol_id,
         "reactor_number": reactor.unprocessed_reactor.reactor_number,
     }
     unprocessed_reactor = session.query(CSSTReactor).filter_by(**data).first()
