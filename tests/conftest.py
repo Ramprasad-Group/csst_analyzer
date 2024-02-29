@@ -361,6 +361,9 @@ if _db_option:
                         average_transmission=(100 - j * 2),
                         median_transmission=(100 - j),
                         transmission_std=(j / 2),
+                        holding=1,
+                        cooling=0,
+                        heating=0,
                     )
                 )
         session.commit()

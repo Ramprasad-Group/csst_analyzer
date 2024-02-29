@@ -195,6 +195,9 @@ class CSSTReactorProcessedTemperature(Base):
             Median transmission at average_temperature +- (temperature_range / 2)
         transmission_std (float):
             standard deviation of transmission at average_temperature +- (temperature_range / 2)
+        heating: 1 if temp was analyzed in the heating state, 0 otherwise
+        cooling: 1 if temp was analyzed in the cooling state, 0 otherwise
+        holding: 1 if temp was analyzed in the holding state, 0 otherwise
     """
 
     __tablename__ = "csst_reactor_processed_temperature_values"
@@ -207,3 +210,6 @@ class CSSTReactorProcessedTemperature(Base):
     average_transmission = Column(Float, nullable=False)
     median_transmission = Column(Float, nullable=False)
     transmission_std = Column(Float, nullable=False)
+    heating = Column(Integer, nullable=False, primary_key=True)
+    cooling = Column(Integer, nullable=False, primary_key=True)
+    holding = Column(Integer, nullable=False, primary_key=True)

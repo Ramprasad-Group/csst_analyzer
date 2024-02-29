@@ -63,7 +63,7 @@ def test_add_experiment(session, csste_1014):  # noqa: F811
 
 @pytest.mark.slow
 def test_get_experiment(session, csste_1014):  # noqa: F811
-    adder.add_experiment(csste_1014, session)
+    adder.add_experiment(csste_1014, session, upload_raw_properties=True)
     session.commit()
     exps = getter.get_experiments_from_experiment_details(csste_1014, session)
     exp = exps[0]
@@ -165,7 +165,7 @@ def test_load_from_db(session, csste_1014):  # noqa: F811
         session=session, start_of_experiment=csste_1014.start_of_experiment
     )
     assert len(exps) == 0
-    adder.add_experiment(csste_1014, session)
+    adder.add_experiment(csste_1014, session, upload_raw_properties=True)
     session.commit()
     exps = getter.load_from_db(
         session=session, start_of_experiment=csste_1014.start_of_experiment

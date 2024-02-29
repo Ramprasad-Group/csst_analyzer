@@ -177,8 +177,20 @@ Resulting in the following image:
 ## Install
 `poetry add git+ssh://git@github.com/jdkern11/csst\_analyzer.git#v1.4.0`
 
+#### How to upgrade after editing the ORM
+
+We use alembic to maintain the database. After making changes, you can run the
+following commands
+
+```bash
+poetry run alembic revision --autogenerate -m "description of changes"
+poetry run alembic upgrade head
+```
+
+Google if you have an issue
+
 ### With database extra
-`poetry add git+ssh://git@github.com/jdkern11/csst\_analyzer.git#v1.4.0 --extras db`
+`poetry add git+ssh://git@github.com/jdkern11/csst_analyzer.git#v1.4.0 --extras db`
 
 To connect to the database, you must configure a .env file with the following parameters
 ```
@@ -237,6 +249,6 @@ server.stop()
 - [x] Add ability to upload raw data to a database
 - [x] Add ability to load raw data from a database
 - [x] Add ability to upload processed data to a database
-- [ ] Add ability to load processed data from a database
+- [x] Add ability to load processed data from a database
 - [x] Add reactor number as reactor attribute and database reactor table column
 - [x] Add prettier printing for temperature program and property value(s)

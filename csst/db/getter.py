@@ -139,11 +139,16 @@ def get_experiments(
             experiment.top_stir_rate = exp_value_properties[
                 PropertyNameEnum.TOP_STIR_RATE
             ]
+
         experiment.set_temperature = exp_values_properties["set_temperature"]
         experiment.actual_temperature = exp_values_properties[PropertyNameEnum.TEMP]
         experiment.time_since_experiment_start = exp_values_properties[
             PropertyNameEnum.TIME
         ]
+        dt = experiment.get_timestep_of_experiment()
+        experiment.ramp_state = experiment.create_ramp_state(
+            experiment.actual_temperature.values, dt
+        )
         experiment.stir_rates = exp_values_properties[PropertyNameEnum.STIR_RATE]
         exp_reactors = [
             Reactor(

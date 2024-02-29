@@ -18,6 +18,7 @@ psycopg = {version = "^3.1.17", extras = ["binary", "pool"]}
 python-dotenv = { version = "^1.0.0", optional = false }
 sshtunnel = { version = "^0.4.0", optional = false }
 jupyterlab = "^4.0.9"
+alembic = "^1.13.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"

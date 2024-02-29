@@ -48,19 +48,20 @@ class Analyzer:
             "bottom_stir_rate_unit",
             "top_stir_rate",
             "top_stir_rate_unit",
+            "ramp_state",
         ]
         self.unprocessed_df = pd.DataFrame(columns=columns + unproc_columns)
         proc_columns = list(ProcessedTemperature.__fields__.keys())
         self.df = pd.DataFrame(columns=columns + proc_columns)
 
-    def add_experiment_reactors(self, experiment: Experiment):
+    def add_experiment_reactors(self, experiment: Experiment, temp_range=1):
         """Adds experiment reactors to Analyzer.reactors list and extends
         Analyzer.df with the new reactor data
         """
         for reactor in experiment.reactors:
-            self.add_reactor(reactor)
+            self.add_reactor(reactor, temp_range)
 
-    def add_reactor(self, reactor: Reactor):
+    def add_reactor(self, reactor: Reactor, temp_range=1):
         """Adds reactor to Analyzer.reactors list and extends
         Analyzer.df with the new reactor data
         """
@@ -71,7 +72,7 @@ class Analyzer:
                 f"Analyzer is not adding the reactor {str(reactor)} because it was previously added"
             )
             return
-        reactor = process_reactor(reactor)
+        reactor = process_reactor(reactor, temp_range)
         self.processed_reactors.append(reactor)
         # add processed data
         rows = []
@@ -103,6 +104,7 @@ class Analyzer:
             "reactor": str(reactor.unprocessed_reactor),
             "stir_rate_unit": reactor.unprocessed_reactor.experiment.stir_rates.unit,
             "transmission_unit": reactor.unprocessed_reactor.transmission.unit,
+            "ramp_state": reactor.unprocessed_reactor.experiment.ramp_state,
         }
         if reactor.unprocessed_reactor.experiment.bottom_stir_rate is not None:
             row[
