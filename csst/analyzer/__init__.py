@@ -104,7 +104,6 @@ class Analyzer:
             "reactor": str(reactor.unprocessed_reactor),
             "stir_rate_unit": reactor.unprocessed_reactor.experiment.stir_rates.unit,
             "transmission_unit": reactor.unprocessed_reactor.transmission.unit,
-            "ramp_state": reactor.unprocessed_reactor.experiment.ramp_state,
         }
         if reactor.unprocessed_reactor.experiment.bottom_stir_rate is not None:
             row[
@@ -137,6 +136,7 @@ class Analyzer:
             row["stir_rate"] = reactor.unprocessed_reactor.experiment.stir_rates.values[
                 i
             ]
+            row["ramp_state"] = reactor.unprocessed_reactor.experiment.ramp_state[i]
             rows.append(row.copy())
         df = pd.DataFrame(rows)
         self.unprocessed_df = pd.concat([self.unprocessed_df, df])

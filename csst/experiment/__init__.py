@@ -263,8 +263,6 @@ class Experiment:
                 self.bottom_stir_rate = PropertyValue(
                     name="bottom_stir_rate", unit=line[2].strip(), value=float(line[1])
                 )
-                loading_samples = False
-                running_experiment = True
             elif "Stir (Top)" in line[0]:
                 self.top_stir_rate = PropertyValue(
                     name="top_stir_rate", unit=line[2].strip(), value=float(line[1])
@@ -318,6 +316,8 @@ class Experiment:
                         solvent_tune.append(step)
                     elif loading_samples:
                         sample_load.append(step)
+                        loading_samples = False
+                        running_experiment = True
                     elif running_experiment:
                         experiment.append(step)
 
@@ -348,7 +348,6 @@ class Experiment:
         )
         # change in time between two indices
         dt = self.get_timestep_of_experiment()
-        print(dt)
 
         set_temp_col = [col for col in df.columns if "Temperature Setpoint" in col][0]
         self.set_temperature = PropertyValues(
