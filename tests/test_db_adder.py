@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from pinrex.db.models.csst import (
+from csst.db.orm.csst import (
     CSSTExperiment,
     CSSTTemperatureProgram,
     CSSTProperty,
@@ -40,7 +40,9 @@ pytest.importorskip(
 
 @pytest.mark.slow
 def test_add_experiment(session, csste_1014):  # noqa: F811
-    db.adder.add_experiment_and_or_get_id(csste_1014, session)
+    db.adder.add_experiment_and_or_get_id(
+        csste_1014, session, upload_raw_properties=True
+    )
     session.commit()
     assert (
         session.query(CSSTExperiment)

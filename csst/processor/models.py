@@ -14,6 +14,9 @@ class ProcessedTemperature(BaseModel):
         average_transmission: the average transmission
         median_transmission: the median transmission
         transmission_std: standard deviation of the transmissions
+        heating: 1 if temperature is being ramped up, else 0
+        cooling: 1 id whether temperature is being ramped down, else 0
+        holding: 1 if whether temperature is at a hold, else 0
     """
 
     average_temperature: float
@@ -21,6 +24,9 @@ class ProcessedTemperature(BaseModel):
     average_transmission: float
     median_transmission: float
     transmission_std: float
+    heating: int
+    cooling: int
+    holding: int
 
 
 class ProcessedReactor(BaseModel):

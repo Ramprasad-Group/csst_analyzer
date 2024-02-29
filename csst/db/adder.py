@@ -5,7 +5,7 @@ import logging
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import Session
 import numpy as np
-from pinrex.db.models.csst import (
+from csst.db.orm.csst import (
     CSSTExperiment,
     CSSTTemperatureProgram,
     CSSTReactor,
@@ -29,8 +29,38 @@ from csst.db import getter
 logger = logging.getLogger(__name__)
 
 
+def add_experiment(
+    experiment: Experiment,
+    session: Union[scoped_session, Session],
+    upload_raw_properties: bool = False,
+):
+    """Adds experiment data, temperature_program, and reactor data to database
+
+    Args:
+        experiment: experiment to add to table
+        session: instantiated session connected to the database
+    """
+    exp_id = add_experiment_and_or_get_id(
+        experiment=experiment,
+        session=session,
+        upload_raw_properties=upload_raw_properties,
+    )
+    temp_program_id = add_temperature_program_and_or_get_program_id(
+        temperature_program=experiment.temperature_program, session=session
+    )
+    add_experiment_reactors(
+        experiment=experiment,
+        experiment_id=exp_id,
+        temperature_program_id=temp_program_id,
+        session=session,
+        upload_raw_properties=upload_raw_properties,
+    )
+
+
 def add_experiment_and_or_get_id(
-    experiment: Experiment, session: Union[scoped_session, Session]
+    experiment: Experiment,
+    session: Union[scoped_session, Session],
+    upload_raw_properties: bool = False,
 ) -> int:
     """Adds experiment data to experiment table
 
@@ -81,19 +111,20 @@ def add_experiment_and_or_get_id(
         session.add(exp)
         session.flush()
         session.refresh(exp)
-    if experiment.bottom_stir_rate is not None:
-        add_experiment_property_value(exp.id, experiment.bottom_stir_rate, session)
-    if experiment.top_stir_rate is not None:
-        add_experiment_property_value(exp.id, experiment.top_stir_rate, session)
-    add_experiment_property_values(exp.id, experiment.actual_temperature, session)
-    # use optional name since actual temperature will clash with set temperature
-    add_experiment_property_values(
-        exp.id, experiment.set_temperature, session, "set_temperature"
-    )
-    add_experiment_property_values(
-        exp.id, experiment.time_since_experiment_start, session
-    )
-    add_experiment_property_values(exp.id, experiment.stir_rates, session)
+    if upload_raw_properties:
+        if experiment.bottom_stir_rate is not None:
+            add_experiment_property_value(exp.id, experiment.bottom_stir_rate, session)
+        if experiment.top_stir_rate is not None:
+            add_experiment_property_value(exp.id, experiment.top_stir_rate, session)
+        add_experiment_property_values(exp.id, experiment.actual_temperature, session)
+        # use optional name since actual temperature will clash with set temperature
+        add_experiment_property_values(
+            exp.id, experiment.set_temperature, session, "set_temperature"
+        )
+        add_experiment_property_values(
+            exp.id, experiment.time_since_experiment_start, session
+        )
+        add_experiment_property_values(exp.id, experiment.stir_rates, session)
     return exp.id
 
 
@@ -207,6 +238,7 @@ def add_experiment_reactors(
     experiment_id: int,
     temperature_program_id: int,
     session: Union[scoped_session, Session],
+    upload_raw_properties: bool = False,
 ):
     """Adds reactors from experiment to the reactor table.
 
@@ -221,7 +253,13 @@ def add_experiment_reactors(
         + f" program {temperature_program_id}"
     )
     for reactor in experiment.reactors:
-        add_reactor(reactor, session, experiment_id, temperature_program_id)
+        add_reactor(
+            reactor,
+            session,
+            experiment_id,
+            temperature_program_id,
+            upload_raw_properties,
+        )
 
 
 def add_reactor(
@@ -229,6 +267,7 @@ def add_reactor(
     session: Union[scoped_session, Session],
     experiment_id: int,
     temperature_program_id: int,
+    upload_raw_properties: bool = False,
 ):
     """Add one reactor from experiment to the reactor table
 
@@ -245,19 +284,19 @@ def add_reactor(
         logger.warning(msg)
         raise ValueError(msg)
     # get lab polymer and solvent ids
-    bret_pol_id = reactor.polymer_id
-    if bret_pol_id is None:
-        bret_pol_id = getter.get_lab_polymer_by_name(reactor.polymer, session).id
-    bret_sol_id = reactor.solvent_id
-    if bret_sol_id is None:
-        bret_sol_id = getter.get_lab_solvent_by_name(reactor.solvent, session).id
+    lab_pol_id = reactor.polymer_id
+    if lab_pol_id is None:
+        lab_pol_id = getter.get_lab_polymer_by_name(reactor.polymer, session).id
+    lab_sol_id = reactor.solvent_id
+    if lab_sol_id is None:
+        lab_sol_id = getter.get_lab_solvent_by_name(reactor.solvent, session).id
     data = {
         "csst_experiment_id": experiment_id,
         "csst_temperature_program_id": temperature_program_id,
         "conc": reactor.conc.value,
         "conc_unit": reactor.conc.unit,
-        "bret_pol_id": bret_pol_id,
-        "bret_sol_id": bret_sol_id,
+        "lab_pol_id": lab_pol_id,
+        "lab_sol_id": lab_sol_id,
         "reactor_number": reactor.reactor_number,
     }
     if session.query(CSSTReactor).filter_by(**data).count() > 0:
@@ -267,7 +306,8 @@ def add_reactor(
     session.add(db_reactor)
     session.flush()
     session.refresh(db_reactor)
-    add_reactor_property_values(db_reactor.id, reactor.transmission, session)
+    if upload_raw_properties:
+        add_reactor_property_values(db_reactor.id, reactor.transmission, session)
 
 
 def add_reactor_property_values(
@@ -342,31 +382,33 @@ def add_processed_reactor(
     }
     exp = session.query(CSSTExperiment).filter_by(**search_data).first()
     if exp is None:
+        logger.warning(search_data)
         msg = (
             "The unprocessed reactor experiment has not been added to the database yet."
         )
         logger.warning(msg)
         return
-    bret_pol_id = reactor.unprocessed_reactor.polymer_id
-    bret_sol_id = reactor.unprocessed_reactor.solvent_id
-    if bret_pol_id is None:
-        bret_pol_id = getter.get_lab_polymer_by_name(
+    lab_pol_id = reactor.unprocessed_reactor.polymer_id
+    lab_sol_id = reactor.unprocessed_reactor.solvent_id
+    if lab_pol_id is None:
+        lab_pol_id = getter.get_lab_polymer_by_name(
             reactor.unprocessed_reactor.polymer, session
         ).id
-    if bret_sol_id is None:
-        bret_sol_id = getter.get_lab_solvent_by_name(
+    if lab_sol_id is None:
+        lab_sol_id = getter.get_lab_solvent_by_name(
             reactor.unprocessed_reactor.solvent, session
         ).id
     data = {
         "csst_experiment_id": exp.id,
         "conc": reactor.unprocessed_reactor.conc.value,
         "conc_unit": reactor.unprocessed_reactor.conc.unit,
-        "bret_pol_id": bret_pol_id,
-        "bret_sol_id": bret_sol_id,
+        "lab_pol_id": lab_pol_id,
+        "lab_sol_id": lab_sol_id,
         "reactor_number": reactor.unprocessed_reactor.reactor_number,
     }
     unprocessed_reactor = session.query(CSSTReactor).filter_by(**data).first()
     if unprocessed_reactor is None:
+        logger.info(f"{data}")
         logger.info("The unprocessed reactor has not been added to the database yet.")
         return
     if (

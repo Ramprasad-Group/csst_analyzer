@@ -184,6 +184,7 @@ def reactor():
     exp.bottom_stir_rate = PropertyValue(name="bottom_stir_rate", value=900, unit="rpm")
     exp.actual_temperature = actual_temperature
     exp.time_since_experiment_start = time
+    exp.ramp_state = ["holding"] * len(trans)
 
     reactor = Reactor.construct(
         solvent="MeOH",

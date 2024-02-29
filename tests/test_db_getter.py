@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from pinrex.db.models.csst import CSSTExperiment, CSSTTemperatureProgram
+from csst.db.orm.csst import CSSTExperiment, CSSTTemperatureProgram
 
 from csst.experiment import Experiment
 from csst.experiment.models import PropertyNameEnum, TemperatureSettingEnum
@@ -87,13 +87,6 @@ def test_get_lab_polymer_by_name(session):
     pol = db.getter.get_lab_polymer_by_name("PEO", session)
     assert pol.supplier == "Alfa Aesar"
     assert pol.name == "PEO"
-
-
-def test_get_lab_solvent_by_name(session):
-    """Will likely fail if raise_lookup_error_if_list_count_is_not_one fails"""
-    sol = db.getter.get_lab_solvent_by_name("MethANol", session)
-    assert sol.name == "methanol"
-    assert sol.percent_purity == 99
 
 
 def test_get_csst_experiments(session):

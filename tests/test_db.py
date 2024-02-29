@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
 
-from pinrex.db.models.polymer import Polymer
-from pinrex.db.models.csst import (
+from csst.db.orm.polymer import Polymer
+from csst.db.orm.csst import (
     CSSTReactor,
     CSSTProperty,
     CSSTExperiment,
@@ -14,8 +14,8 @@ from .fixtures.data import csste_1014  # noqa: F401
 
 # test if db and db_dev dependencies installed
 # db dependency
-db = pytest.importorskip(
-    "csst.db",
+adder = pytest.importorskip(
+    "csst.db.adder",
     reason=(
         "This test is only run if the optional database and database dev "
         + "dependencies are installed. Use `poetry install --with db,db_dev` "
@@ -31,6 +31,7 @@ pytest.importorskip(
         + "to install them."
     ),
 )
+from csst.db import getter
 
 
 def test_connection(session):
@@ -40,7 +41,7 @@ def test_connection(session):
 @pytest.mark.slow
 def test_add_experiment(session, csste_1014):  # noqa: F811
     old_num_props = session.query(CSSTProperty).count()
-    db.add_experiment(csste_1014, session)
+    adder.add_experiment(csste_1014, session)
     assert (
         session.query(CSSTReactor)
         .filter(CSSTReactor.csst_experiment_id < 10000)
@@ -62,9 +63,9 @@ def test_add_experiment(session, csste_1014):  # noqa: F811
 
 @pytest.mark.slow
 def test_get_experiment(session, csste_1014):  # noqa: F811
-    db.add_experiment(csste_1014, session)
+    adder.add_experiment(csste_1014, session, upload_raw_properties=True)
     session.commit()
-    exps = db.get_experiments_from_experiment_details(csste_1014, session)
+    exps = getter.get_experiments_from_experiment_details(csste_1014, session)
     exp = exps[0]
     assert csste_1014.file_name == exp.file_name
     assert csste_1014.experiment_details == exp.experiment_details
@@ -160,13 +161,13 @@ def test_get_experiment(session, csste_1014):  # noqa: F811
 
 @pytest.mark.slow
 def test_load_from_db(session, csste_1014):  # noqa: F811
-    exps = db.load_from_db(
+    exps = getter.load_from_db(
         session=session, start_of_experiment=csste_1014.start_of_experiment
     )
     assert len(exps) == 0
-    db.add_experiment(csste_1014, session)
+    adder.add_experiment(csste_1014, session, upload_raw_properties=True)
     session.commit()
-    exps = db.load_from_db(
+    exps = getter.load_from_db(
         session=session, start_of_experiment=csste_1014.start_of_experiment
     )
     exp = exps[0]

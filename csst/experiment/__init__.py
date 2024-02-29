@@ -5,9 +5,10 @@ from datetime import datetime
 from typing import TextIO
 
 import pandas as pd
+import numpy as np
 
 
-from csst.experiment.helpers import try_parsing_date
+from csst.experiment.helpers import try_parsing_date, make_name_searchable
 from csst.experiment.models import (
     Reactor,
     PropertyValue,
@@ -62,6 +63,13 @@ class Experiment:
         stir_rates (PropertyValues):
             Unknown stir rates measured by machine. Typically 0 and separate from the
             bottom stir rate.
+        ramp_state (List[str]):
+            Either 'heating', 'cooling', or 'holding' depending on what state the
+            temperature change is in. Calculated by taking each temperature point and
+            seeing if the mean of the temperature over the previous/next 30 seconds
+            is greater than, equal to, or less than it. If prior mean was less than
+            and next mean was greater, it is in a heating state, if prior was greater
+            and next was less, cooling, otherwise in a holding state.
         reactors (List[Reactor]):
             List of reactors. Each reactor keeps track of the polymer, solvent,
             concentration and tranmission percentage (see Reactor documentation).
@@ -89,6 +97,7 @@ class Experiment:
         self.set_temperature = None
         self.actual_temperature = None
         self.time_since_experiment_start = None
+        self.ramp_state = None
         self.stir_rates = None
         self.reactors = []
 
@@ -136,9 +145,10 @@ class Experiment:
         description = False
         description_text = []
         for line in f:
-            # remove newline characters and csv commas
+            # remove newline characters, csv commas, and quations
             line = line.strip("\n")
             line = line.strip(",")
+            line = line.replace('"', "")
             # found temperature program start
             if "Temperature Program" in line:
                 break
@@ -163,12 +173,12 @@ class Experiment:
                     )
                     if "polymer" in line:
                         self.polymer_ids = {
-                            pairings[i].strip(): int(pairings[i + 1])
+                            make_name_searchable(pairings[i]): int(pairings[i + 1])
                             for i in range(0, len(pairings), 2)
                         }
                     if "solvent" in line:
                         self.solvent_ids = {
-                            pairings[i].strip(): int(pairings[i + 1])
+                            make_name_searchable(pairings[i]): int(pairings[i + 1])
                             for i in range(0, len(pairings), 2)
                         }
 
@@ -336,6 +346,9 @@ class Experiment:
         self.time_since_experiment_start = PropertyValues(
             name="time", unit="hour", values=time_since_experiment_start
         )
+        # change in time between two indices
+        dt = self.get_timestep_of_experiment()
+        print(dt)
 
         set_temp_col = [col for col in df.columns if "Temperature Setpoint" in col][0]
         self.set_temperature = PropertyValues(
@@ -343,12 +356,15 @@ class Experiment:
             unit=set_temp_col.split("[")[1].strip("]").strip(),
             values=df[set_temp_col].to_numpy(),
         )
+
         actual_temp_col = [col for col in df.columns if "Temperature Actual" in col][0]
         self.actual_temperature = PropertyValues(
             name="temperature",
             unit=actual_temp_col.split("[")[1].strip("]").strip(),
             values=df[actual_temp_col].to_numpy(),
         )
+        self.ramp_state = self.create_ramp_state(self.actual_temperature.values, dt)
+
         stir_col = [col for col in df.columns if "Stirring" in col][0]
         self.stir_rates = PropertyValues(
             name="stir_rate",
@@ -356,14 +372,16 @@ class Experiment:
             values=df[stir_col].to_numpy(),
         )
 
-        # configure reactors
         for reactor, parameters in reactors.items():
             reactor_col = [col for col in df.columns if reactor in col][0]
             solvent_id, polymer_id = None, None
-            if parameters["solvent"] in self.solvent_ids:
-                solvent_id = self.solvent_ids[parameters["solvent"]]
-            if parameters["polymer"] in self.polymer_ids:
-                polymer_id = self.polymer_ids[parameters["polymer"]]
+
+            sol = make_name_searchable(parameters["solvent"])
+            pol = make_name_searchable(parameters["polymer"])
+            if sol in self.solvent_ids:
+                solvent_id = self.solvent_ids[sol]
+            if pol in self.polymer_ids:
+                polymer_id = self.polymer_ids[pol]
             self.reactors.append(
                 Reactor(
                     solvent=parameters["solvent"],
@@ -380,6 +398,37 @@ class Experiment:
                     experiment=self,
                 )
             )
+
+    def get_timestep_of_experiment(self):
+        """Get average time passed between indices inn experiment"""
+        return np.mean(np.diff(self.time_since_experiment_start.values))
+
+    def create_ramp_state(self, temperatures: List[float], dt: float) -> List[str]:
+        """Creates ramp state based on passed in temperatures
+
+        Args:
+            temperatures: list of temperatures ordered by time they appear in the
+                experiment
+            dt: change in time in hours at each index step of experiment
+        """
+        ramp_state = ["holding"] * len(temperatures)
+        # width is number of indices that represents 30 seconds
+        width = int((30 / 3600) / dt)
+        for i in range(1, len(ramp_state) - 1):
+            if i < width:
+                left = np.mean(temperatures[0:i])
+            else:
+                left = np.mean(temperatures[i - width : i])
+            if i > len(ramp_state) - width:
+                right = np.mean(temperatures[i + 1 :])
+            else:
+                right = np.mean(temperatures[i + 1 : i + 1 + width])
+            mid = temperatures[i]
+            if left < mid and mid < right:
+                ramp_state[i] = "heating"
+            elif mid > right and left > mid:
+                ramp_state[i] = "cooling"
+        return ramp_state
 
 
 def load_experiments_from_folder(
@@ -401,9 +450,29 @@ def load_experiments_from_folder(
     experiments = []
     for file in files:
         if file.name in files_to_ignore:
+            logger.debug(f"IGNORING: {file}")
             continue
         logger.info(f"Loading {file}")
         with open(file, "r") as fin:
             if "Crystal16 Data Report File" in fin.readline():
-                experiments.append(Experiment.load_from_file(file))
+                try:
+                    exp = Experiment.load_from_file(file)
+                    missing_polymers_ids = set()
+                    missing_solvents_ids = set()
+                    for reactor in exp.reactors:
+                        if reactor.polymer_id is None:
+                            missing_polymers_ids.add(reactor.polymer)
+                        if reactor.solvent_id is None:
+                            missing_solvents_ids.add(reactor.solvent)
+                    if len(missing_polymers_ids) + len(missing_solvents_ids) != 0:
+                        msg = (
+                            f"Polymers {missing_polymers_ids} and solvents "
+                            + f"{missing_solvents_ids} are missing their ids."
+                        )
+                        raise ValueError(msg)
+                    experiments.append(exp)
+                except Exception as e:
+                    logger.error(e)
+                    continue
+    logger.info(f"Loaded {len(experiments)} experiments.")
     return experiments

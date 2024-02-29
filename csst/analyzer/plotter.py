@@ -53,7 +53,7 @@ def plot_experiment(experiment: Experiment, figsize=(8, 6)) -> Figure:
             label=str(reactor),
         )
         curr += 1
-    fs = 14
+    fs = 8
     if len(experiment.reactors) > 2:
         offset = -0.425
     else:
