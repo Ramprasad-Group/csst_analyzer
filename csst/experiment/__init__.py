@@ -412,7 +412,7 @@ class Experiment:
         """
         ramp_state = ["holding"] * len(temperatures)
         # width is number of indices that represents 30 seconds
-        width = int((30 / 3600) / dt)
+        width = int((60 / 3600) / dt)
         for i in range(1, len(ramp_state) - 1):
             if i < width:
                 left = np.mean(temperatures[0:i])
