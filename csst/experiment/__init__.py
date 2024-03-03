@@ -6,7 +6,7 @@ from typing import TextIO
 
 import pandas as pd
 import numpy as np
-
+from scipy.signal import savgol_filter
 
 from csst.experiment.helpers import try_parsing_date, make_name_searchable
 from csst.experiment.models import (
@@ -17,6 +17,7 @@ from csst.experiment.models import (
     TemperatureHold,
     TemperatureProgram,
     TemperatureSettingEnum,
+    FilteredTransmission,
 )
 
 logger = logging.getLogger(__name__)
@@ -381,6 +382,7 @@ class Experiment:
                 solvent_id = self.solvent_ids[sol]
             if pol in self.polymer_ids:
                 polymer_id = self.polymer_ids[pol]
+
             self.reactors.append(
                 Reactor(
                     solvent=parameters["solvent"],
@@ -394,9 +396,23 @@ class Experiment:
                         unit=reactor_col.split("[")[1].strip("]").strip(),
                         values=df[reactor_col].to_numpy(),
                     ),
+                    filtered_transmission=self.filter_transmission(
+                        df[reactor_col].to_numpy(), dt
+                    ),
                     experiment=self,
                 )
             )
+
+    def filter_transmission(self, transmissions, dt):
+        """Use savgol_filter on the transmission values"""
+        wl = max(int((120 / 3600) / dt), 3)
+        if wl % 2 == 0:
+            wl += 1
+        return FilteredTransmission(
+            window_length=wl,
+            polyorder=1,
+            values=savgol_filter(transmissions, window_length=wl, polyorder=1),
+        )
 
     def get_timestep_of_experiment(self):
         """Get average time passed between indices inn experiment"""

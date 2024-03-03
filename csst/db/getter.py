@@ -163,6 +163,9 @@ def get_experiments(
                     value=reactor.conc,
                 ),
                 transmission=reactor_prop[PropertyNameEnum.TRANS],
+                filtered_transmission=experiment.filter_transmission(
+                    reactor_prop[PropertyNameEnum.TRANS].values, dt
+                ),
                 experiment=experiment,
             )
             for reactor, reactor_prop in reactors

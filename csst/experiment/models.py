@@ -131,6 +131,18 @@ class TemperatureProgram(BaseModel):
         return s
 
 
+class FilteredTransmission(BaseModel):
+    """Transmissions passed through savgol filter"""
+
+    window_length: int
+    polyorder: int
+    values: Union[List[float], np.ndarray]
+
+    class Config:
+        # added to allow np.ndarray type
+        arbitrary_types_allowed = True
+
+
 class Reactor(BaseModel):
     """Reactor reading of transmission data
 
@@ -152,6 +164,7 @@ class Reactor(BaseModel):
         conc: concentration of the polymer in the solvent
         reactor_number: the reactor number the sample was in
         transmission: list of transmission values.
+        filtered_transmission: list of transmissions filtered using savgol_filter
         experiment: experiment the reactor comes from
     """
 
@@ -162,6 +175,7 @@ class Reactor(BaseModel):
     conc: PropertyValue
     reactor_number: int
     transmission: PropertyValues
+    filtered_transmission: FilteredTransmission
     # referenced properties
     # any type to avoid circular import from importing experiment.
     # This is just supposed to be a reference to the experiment for easier access,

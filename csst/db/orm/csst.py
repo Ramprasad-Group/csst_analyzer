@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, DateTime, Text, ForeignKey, JSON
+from sqlalchemy import Column, Integer, Float, DateTime, Text, ForeignKey, JSON, Boolean
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from csst.db._base import Base
@@ -198,6 +198,7 @@ class CSSTReactorProcessedTemperature(Base):
         heating: 1 if temp was analyzed in the heating state, 0 otherwise
         cooling: 1 if temp was analyzed in the cooling state, 0 otherwise
         holding: 1 if temp was analyzed in the holding state, 0 otherwise
+        filtered: if the transmission data was filtered before processing
     """
 
     __tablename__ = "csst_reactor_processed_temperature_values"
@@ -213,3 +214,4 @@ class CSSTReactorProcessedTemperature(Base):
     heating = Column(Integer, nullable=False, primary_key=True)
     cooling = Column(Integer, nullable=False, primary_key=True)
     holding = Column(Integer, nullable=False, primary_key=True)
+    filtered = Column(Boolean, nullable=False, primary_key=True)

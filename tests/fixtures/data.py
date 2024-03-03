@@ -185,6 +185,7 @@ def reactor():
     exp.actual_temperature = actual_temperature
     exp.time_since_experiment_start = time
     exp.ramp_state = ["holding"] * len(trans)
+    dt = exp.get_timestep_of_experiment()
 
     reactor = Reactor.construct(
         solvent="MeOH",
@@ -193,6 +194,7 @@ def reactor():
         reactor_number=1,
         conc=PropertyValue(name="concentration", value=5, unit="test_concentration"),
         transmission=transmission,
+        filtered_transmission=exp.filter_transmission(transmission.values, dt),
         experiment=exp,
     )
     return reactor

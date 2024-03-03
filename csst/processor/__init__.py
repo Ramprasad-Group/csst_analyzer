@@ -100,6 +100,7 @@ def process_reactor_transmission_at_temp(
         if len(indices) == 0:
             continue
         transmission = reactor.transmission.values[indices]
+        filtered_transmission = reactor.filtered_transmission.values[indices]
         temps.append(
             ProcessedTemperature(
                 average_temperature=temp,
@@ -110,6 +111,20 @@ def process_reactor_transmission_at_temp(
                 heating=1 if state == "heating" else 0,
                 cooling=1 if state == "cooling" else 0,
                 holding=1 if state == "holding" else 0,
+                filtered=False,
+            )
+        )
+        temps.append(
+            ProcessedTemperature(
+                average_temperature=temp,
+                temperature_range=temp_range,
+                average_transmission=filtered_transmission.mean(),
+                median_transmission=np.median(filtered_transmission),
+                transmission_std=filtered_transmission.std(),
+                heating=1 if state == "heating" else 0,
+                cooling=1 if state == "cooling" else 0,
+                holding=1 if state == "holding" else 0,
+                filtered=True,
             )
         )
     return temps

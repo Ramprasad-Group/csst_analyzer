@@ -8,11 +8,12 @@ def test_analyzer_add_reactor(reactor):  # noqa: F811
     assert len(analyzer.processed_reactors) == 0
     analyzer.add_reactor(reactor)
     assert len(analyzer.processed_reactors) == 1
+    tdf = analyzer.df.loc[analyzer.df.filtered == False]
     assert list(analyzer.df.polymer.unique()) == ["PEG"]
     assert list(analyzer.df.solvent.unique()) == ["MeOH"]
     assert list(analyzer.df.concentration_unit.unique()) == ["test_concentration"]
-    assert analyzer.df.average_transmission.to_list() == [4.5, 21, 47.5, 78.75]
-    assert analyzer.df.average_temperature.to_list() == [5, 10, 15, 20]
+    assert tdf.average_transmission.to_list() == [4.5, 21, 47.5, 78.75]
+    assert tdf.average_temperature.to_list() == [5, 10, 15, 20]
     temps = analyzer.unprocessed_df.temperature.to_list()
     temps.sort()
     assert temps == [0, 0, 0, 0, 5, 5, 10, 10, 15, 15, 20, 20, 20, 20]

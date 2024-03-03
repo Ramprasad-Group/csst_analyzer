@@ -364,6 +364,7 @@ if _db_option:
                         holding=1,
                         cooling=0,
                         heating=0,
+                        filtered=False,
                     )
                 )
         session.commit()

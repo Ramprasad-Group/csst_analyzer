@@ -33,8 +33,16 @@ def test_process_reactor_transmission_at_temp(reactor):  # noqa: F811
 
 def test_process_reactor_transmission_at_temps(reactor):  # noqa: F811
     ptransmissions = process_reactor_transmission_at_temps(reactor, [5, 10, 15, 20])
-    averages = [ptrans.average_transmission for ptrans in ptransmissions]
-    temps = [ptrans.average_temperature for ptrans in ptransmissions]
+    averages = [
+        ptrans.average_transmission
+        for ptrans in ptransmissions
+        if ptrans.filtered == False
+    ]
+    temps = [
+        ptrans.average_temperature
+        for ptrans in ptransmissions
+        if ptrans.filtered == False
+    ]
     averages.sort()
     expected_averages = [4.5, 21, 47.5, 78.75]
     assert averages == expected_averages
@@ -43,8 +51,16 @@ def test_process_reactor_transmission_at_temps(reactor):  # noqa: F811
     ptransmissions = process_reactor_transmission_at_temps(
         reactor, [6, 11, 16, 19, 21], 2
     )
-    averages = [ptrans.average_transmission for ptrans in ptransmissions]
-    temps = [ptrans.average_temperature for ptrans in ptransmissions]
+    averages = [
+        ptrans.average_transmission
+        for ptrans in ptransmissions
+        if ptrans.filtered == False
+    ]
+    temps = [
+        ptrans.average_temperature
+        for ptrans in ptransmissions
+        if ptrans.filtered == False
+    ]
     averages.sort()
     expected_averages = [4.5, 21, 47.5, 78.75]
     assert averages == expected_averages
@@ -55,7 +71,15 @@ def test_process_ractor_data(reactor):  # noqa: F811
     preactor = process_reactor(reactor)
     assert preactor.unprocessed_reactor == reactor
     expected_averages = [4.5, 21, 47.5, 78.75]
-    averages = [ptemp.average_transmission for ptemp in preactor.temperatures]
-    temps = [ptemp.average_temperature for ptemp in preactor.temperatures]
+    averages = [
+        ptemp.average_transmission
+        for ptemp in preactor.temperatures
+        if ptemp.filtered == False
+    ]
+    temps = [
+        ptemp.average_temperature
+        for ptemp in preactor.temperatures
+        if ptemp.filtered == False
+    ]
     assert averages == expected_averages
     assert temps == [5, 10, 15, 20]

@@ -39,6 +39,7 @@ class Analyzer:
         unproc_columns = [
             "temperature",
             "transmission",
+            "filtered_transmission",
             "set_temperature",
             "time",
             "time_unit",
@@ -91,6 +92,7 @@ class Analyzer:
             rows.append(row.copy())
         df = pd.DataFrame(rows)
         self.df = pd.concat([self.df, df])
+        self.df["filtered"] = self.df["filtered"].astype(bool)
 
         # add unprocessed data
         rows = []
@@ -108,7 +110,7 @@ class Analyzer:
         if reactor.unprocessed_reactor.experiment.bottom_stir_rate is not None:
             row[
                 "bottom_stir_rate"
-            ] = reactor.unprocessed_reactor.experiment.bottom_stir_rate
+            ] = reactor.unprocessed_reactor.experiment.bottom_stir_rate.value
             row[
                 "bottom_stir_rate_unit"
             ] = reactor.unprocessed_reactor.experiment.bottom_stir_rate.unit
@@ -125,6 +127,9 @@ class Analyzer:
                 "temperature"
             ] = reactor.unprocessed_reactor.experiment.actual_temperature.values[i]
             row["transmission"] = reactor.unprocessed_reactor.transmission.values[i]
+            row[
+                "filtered_transmission"
+            ] = reactor.unprocessed_reactor.filtered_transmission.values[i]
             row[
                 "time"
             ] = reactor.unprocessed_reactor.experiment.time_since_experiment_start.values[

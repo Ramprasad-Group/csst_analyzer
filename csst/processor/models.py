@@ -17,6 +17,7 @@ class ProcessedTemperature(BaseModel):
         heating: 1 if temperature is being ramped up, else 0
         cooling: 1 id whether temperature is being ramped down, else 0
         holding: 1 if whether temperature is at a hold, else 0
+        filtered: True if it has been run through a filter, false otherwise
     """
 
     average_temperature: float
@@ -27,6 +28,7 @@ class ProcessedTemperature(BaseModel):
     heating: int
     cooling: int
     holding: int
+    filtered: bool
 
 
 class ProcessedReactor(BaseModel):
