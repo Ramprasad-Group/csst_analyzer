@@ -313,6 +313,7 @@ class Experiment:
                         ),
                     )
                 if step is not None:
+                    # TODO alter this as evidenly there is not always a tuning phase
                     if tuning:
                         solvent_tune.append(step)
                     elif loading_samples:

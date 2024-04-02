@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, DateTime, Text, ForeignKey, JSON, Boolean
+from sqlalchemy import Column, Integer, Float, DateTime, Text, ForeignKey, Boolean, JSON
 from sqlalchemy.dialects.postgresql import ARRAY
 
 from csst.db._base import Base

@@ -111,11 +111,11 @@ def add_experiment_and_or_get_id(
         session.add(exp)
         session.flush()
         session.refresh(exp)
+    if experiment.bottom_stir_rate is not None:
+        add_experiment_property_value(exp.id, experiment.bottom_stir_rate, session)
+    if experiment.top_stir_rate is not None:
+        add_experiment_property_value(exp.id, experiment.top_stir_rate, session)
     if upload_raw_properties:
-        if experiment.bottom_stir_rate is not None:
-            add_experiment_property_value(exp.id, experiment.bottom_stir_rate, session)
-        if experiment.top_stir_rate is not None:
-            add_experiment_property_value(exp.id, experiment.top_stir_rate, session)
         add_experiment_property_values(exp.id, experiment.actual_temperature, session)
         # use optional name since actual temperature will clash with set temperature
         add_experiment_property_values(
