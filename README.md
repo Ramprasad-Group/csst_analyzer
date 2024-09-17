@@ -189,10 +189,9 @@ poetry run alembic upgrade head
 
 Google if you have an issue
 
-### With database extra
-`poetry add git+ssh://git@github.com/jdkern11/csst_analyzer.git#v1.4.0 --extras db`
+### With database
 
-To connect to the database, you must configure a .env file with the following parameters
+After creating a database, to connect to the database, you must configure a .env file with the following parameters
 ```
 # equal the appropriate values
 CSST_DB_USER=
@@ -241,14 +240,3 @@ Session = sessionmaker(engine)
 ...
 server.stop()
 ```
-
-## Developer TODOs
-- [x] Load descriptions from CSST files
-- [x] Parse polymer and solvent ids from CSST descriptions
-- [x] Skip tuning sections of data collection prior to processing
-- [x] Add ability to upload raw data to a database
-- [x] Add ability to load raw data from a database
-- [x] Add ability to upload processed data to a database
-- [x] Add ability to load processed data from a database
-- [x] Add reactor number as reactor attribute and database reactor table column
-- [x] Add prettier printing for temperature program and property value(s)
