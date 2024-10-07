@@ -8,30 +8,10 @@ from csst.db.orm.csst import (
     CSSTExperiment,
     CSSTTemperatureProgram,
 )
+from csst.db import getter, adder
 
 from csst.experiment.models import PropertyValue
 from .fixtures.data import csste_1014  # noqa: F401
-
-# test if db and db_dev dependencies installed
-# db dependency
-adder = pytest.importorskip(
-    "csst.db.adder",
-    reason=(
-        "This test is only run if the optional database and database dev "
-        + "dependencies are installed. Use `poetry install --with db,db_dev` "
-        + "to install them."
-    ),
-)
-# db_dev dependency
-pytest.importorskip(
-    "sqlalchemy_utils",
-    reason=(
-        "This test is only run if the optional database and database dev "
-        + "dependencies are installed. Use `poetry install --with db,db_dev` "
-        + "to install them."
-    ),
-)
-from csst.db import getter
 
 
 def test_connection(session):

@@ -1,5 +1,5 @@
 """Polymer related database models"""
-from sqlalchemy import Column, ForeignKey, Integer, Text, Float, JSON
+from sqlalchemy import Column, ForeignKey, Integer, Text, Float
 
 from csst.db._base import Base
 
@@ -9,14 +9,12 @@ class Polymer(Base):
 
     Attributes:
         smiles: smiles string
-        fingerprint: Fingerprint dictionary
     """
 
     __tablename__ = "polymers"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     smiles = Column(Text, unique=True)
-    fingerprint = Column(JSON)
 
 
 class LabPolymer(Base):

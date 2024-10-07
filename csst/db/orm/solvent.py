@@ -4,7 +4,6 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Text,
-    JSON,
     Float,
 )
 
@@ -17,15 +16,12 @@ class Solvent(Base):
     Attributes:
         smiles (str):
             solvent smiles string
-        fingerprint (Dict[str: float]):
-            key value pair encoding fingerprint
     """
 
     __tablename__ = "solvents"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     smiles = Column(Text, unique=True, nullable=False)
-    fingerprint = Column(JSON, nullable=True)
 
 
 class LabSolvent(Base):

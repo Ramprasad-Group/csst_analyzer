@@ -147,7 +147,7 @@ def reactor():
     temp = [0, 0, 0, 0, 5, 5, 10, 10, 15, 15, 20, 20, 20, 20]
     trans = [0, 0, 0, 0, 5, 4, 20, 22, 50, 45, 78, 78, 79, 80]
     """
-    time = PropertyValues(name="time", unit="hours", values=np.linspace(0, 1.4, num=14))
+    time = PropertyValues(name="time", unit="hours", values=np.linspace(0, 1, num=14))
     temp = [0, 0, 0, 0, 5, 10, 15, 20, 20, 20, 20, 15, 10, 5]
     actual_temperature = PropertyValues(
         name="temperature", unit="C", values=np.array(temp)

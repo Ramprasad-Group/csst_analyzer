@@ -14,39 +14,11 @@ dotenv_path = Path(__file__).parent.absolute() / ".." / ".env"
 if not dotenv_path.exists():
     raise FileNotFoundError(
         ".env file must be created in the source folder with CSST_DB_USER, "
-        + "CSST_DB_PASSWORD, CSST_DB_HOST, CSST_DB_PORT, CSST_DB_NAME, "
-        + "CSST_DB_SSH_TUNNEL_HOST, CSST_DB_SSH_TUNNEL_PORT, CSST_DB_SSH_USERNAME, "
-        + "and CSST_DB_SSH_PASSWORD set."
+        + "CSST_DB_PASSWORD, CSST_DB_HOST, CSST_DB_PORT, and CSST_DB_NAME"
     )
 load_dotenv(str(dotenv_path))
-_remote_access = os.environ.get("CSST_DB_IS_REMOTE") == "true"
 
-try:
-    from sshtunnel import SSHTunnelForwarder
-except ImportError:
-    if _remote_access:
-        raise ValueError(
-            "CSST_DB_IS_REMOTE is set to true, but sshtunnel was not installed. "
-            + "Try running `poetry install --extras remote` to install it."
-        )
-
-if _remote_access:
-    server = SSHTunnelForwarder(
-        (
-            os.environ.get("CSST_DB_SSH_TUNNEL_HOST"),
-            int(os.environ.get("CSST_DB_SSH_TUNNEL_PORT")),
-        ),
-        ssh_username=os.environ.get("CSST_DB_SSH_USERNAME"),
-        ssh_password=os.environ.get("CSST_DB_SSH_PASSWORD"),
-        remote_bind_address=(
-            os.environ.get("CSST_DB_HOST"),
-            int(os.environ.get("CSST_DB_PORT")),
-        ),
-    )
-    server.start()
-    port = server.local_bind_port
-else:
-    port = os.environ.get("CSST_DB_PORT")
+port = os.environ.get("CSST_DB_PORT")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -127,6 +99,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-
-if _remote_access:
-    server.stop()

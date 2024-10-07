@@ -36,12 +36,12 @@ def test_process_reactor_transmission_at_temps(reactor):  # noqa: F811
     averages = [
         ptrans.average_transmission
         for ptrans in ptransmissions
-        if ptrans.filtered == False
+        if ptrans.filtered == False  # noqa: E712
     ]
     temps = [
         ptrans.average_temperature
         for ptrans in ptransmissions
-        if ptrans.filtered == False
+        if ptrans.filtered == False  # noqa: E712
     ]
     averages.sort()
     expected_averages = [4.5, 21, 47.5, 78.75]
@@ -54,12 +54,12 @@ def test_process_reactor_transmission_at_temps(reactor):  # noqa: F811
     averages = [
         ptrans.average_transmission
         for ptrans in ptransmissions
-        if ptrans.filtered == False
+        if ptrans.filtered == False  # noqa: E712
     ]
     temps = [
         ptrans.average_temperature
         for ptrans in ptransmissions
-        if ptrans.filtered == False
+        if ptrans.filtered == False  # noqa: E712
     ]
     averages.sort()
     expected_averages = [4.5, 21, 47.5, 78.75]
@@ -74,12 +74,12 @@ def test_process_ractor_data(reactor):  # noqa: F811
     averages = [
         ptemp.average_transmission
         for ptemp in preactor.temperatures
-        if ptemp.filtered == False
+        if ptemp.filtered == False  # noqa: E712
     ]
     temps = [
         ptemp.average_temperature
         for ptemp in preactor.temperatures
-        if ptemp.filtered == False
+        if ptemp.filtered == False  # noqa: E712
     ]
     assert averages == expected_averages
     assert temps == [5, 10, 15, 20]

@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 
+from csst import db
 from csst.db.orm.csst import (
     CSSTExperiment,
     CSSTTemperatureProgram,
@@ -15,27 +16,6 @@ from csst.experiment import Experiment
 from csst.experiment.models import PropertyNameEnum, PropertyValue, PropertyValues
 from csst.analyzer import Analyzer
 from .fixtures.data import csste_1014, manual_1014, reactor  # noqa: F401
-
-
-# test if db and db_dev dependencies installed
-# db dependency
-db = pytest.importorskip(
-    "csst.db",
-    reason=(
-        "This test is only run if the optional database and database dev "
-        + "dependencies are installed. Use `poetry install --with db,db_dev` "
-        + "to install them."
-    ),
-)
-# db_dev dependency
-pytest.importorskip(
-    "sqlalchemy_utils",
-    reason=(
-        "This test is only run if the optional database and database dev "
-        + "dependencies are installed. Use `poetry install --with db,db_dev` "
-        + "to install them."
-    ),
-)
 
 
 @pytest.mark.slow
@@ -153,8 +133,8 @@ def test_add_experiment(session, csste_1014):  # noqa: F811
 
 
 def test_add_temperature_program_and_or_get_program_id(
-    session, manual_1014
-):  # noqa: F811
+    session, manual_1014  # noqa: F811
+):
     db.adder.add_temperature_program_and_or_get_program_id(
         manual_1014.temperature_program, session
     )

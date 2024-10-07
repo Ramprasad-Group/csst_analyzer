@@ -8,7 +8,7 @@ def test_analyzer_add_reactor(reactor):  # noqa: F811
     assert len(analyzer.processed_reactors) == 0
     analyzer.add_reactor(reactor)
     assert len(analyzer.processed_reactors) == 1
-    tdf = analyzer.df.loc[analyzer.df.filtered == False]
+    tdf = analyzer.df.loc[analyzer.df.filtered == False]  # noqa: E712
     assert list(analyzer.df.polymer.unique()) == ["PEG"]
     assert list(analyzer.df.solvent.unique()) == ["MeOH"]
     assert list(analyzer.df.concentration_unit.unique()) == ["test_concentration"]

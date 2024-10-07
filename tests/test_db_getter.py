@@ -2,35 +2,16 @@ import pytest
 import numpy as np
 
 from csst.db.orm.csst import CSSTExperiment, CSSTTemperatureProgram
+from csst import db
 
 from csst.experiment import Experiment
 from csst.experiment.models import PropertyNameEnum, TemperatureSettingEnum
 from .fixtures.data import csste_1014, manual_1014  # noqa: F401
 
-# test if db and db_dev dependencies installed
-# db dependency
-db = pytest.importorskip(
-    "csst.db",
-    reason=(
-        "This test is only run if the optional database and database dev "
-        + "dependencies are installed. Use `poetry install --with db,db_dev` "
-        + "to install them."
-    ),
-)
-# db_dev dependency
-pytest.importorskip(
-    "sqlalchemy_utils",
-    reason=(
-        "This test is only run if the optional database and database dev "
-        + "dependencies are installed. Use `poetry install --with db,db_dev` "
-        + "to install them."
-    ),
-)
-
 
 def test_raise_lookup_error_if_query_count_is_not_one(
-    session, manual_1014
-):  # noqa: F811
+    session, manual_1014  # noqa: F811
+):
     with session() as sess:
         query = sess.query(CSSTExperiment).filter_by(**manual_1014.dict())
         with pytest.raises(LookupError, match=r"No experiment associated with"):

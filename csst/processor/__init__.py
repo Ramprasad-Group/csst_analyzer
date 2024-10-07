@@ -5,7 +5,7 @@ from math import floor, ceil
 import numpy as np
 
 from csst.processor.models import ProcessedTemperature, ProcessedReactor
-from csst.processor.helpers import find_index_after_sample_tune_and_load
+from csst.processor.helpers import find_index_after_x_hours
 from csst.experiment.models import Reactor
 
 logger = logging.getLogger(__name__)
@@ -87,8 +87,10 @@ def process_reactor_transmission_at_temp(
                 & (reactor.experiment.actual_temperature.values >= temp - half_range)
             )
         )[0]
-    start_ind = find_index_after_sample_tune_and_load(reactor)
+    start_ind = find_index_after_x_hours(reactor)
+    logger.debug(f"Start index for averaging is {start_ind}")
     temp_indices = temp_indices[temp_indices >= start_ind]
+    logger.debug(f"temp_indices for temp {temp}: {temp_indices}")
     if len(temp_indices) == 0:
         logger.debug(
             f"No index found at temperature {temp} +/- " + f"{round(temp_range / 2, 2)}"
