@@ -110,5 +110,5 @@ def test_temperature_program_hash(manual_1014):  # noqa: F811
 
 def test_load_experiments_from_folder():
     folder = str(Path(__file__).parent.absolute() / "test_data")
-    assert len(load_experiments_from_folder(folder)) == 1
-    assert len(load_experiments_from_folder(folder, recursive=True)) == 2
+    assert len(load_experiments_from_folder(folder)) == 2
+    assert len(load_experiments_from_folder(folder, recursive=True)) == 3
